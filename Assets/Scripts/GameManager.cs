@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
     public GameObject TestBtn;
     void Start()
     {
+        //플레이어 객체들 리스트에 추가
         GameObject[] tempPlayerList = GameObject.FindGameObjectsWithTag("Player");
         for (int i = 0; i < maxPlayerCnt; i++)
         {
@@ -75,40 +76,16 @@ public class GameManager : MonoBehaviour
 
             //제출한 카드 보고 승자 결정하기(카드매니저에 들어가 있는 함수 호출)
             Debug.Log("=========이번 턴 승자 결정=========");
-            for (int j = 0; j < playerList.Count; j++)
-            {
-                bool checker = cardManager.CardCompare(submitCardList, j);
+            yield return StartCoroutine(CheckTurnResult());
 
-                if (checker) //checker의 반환값이 true면...
-                {
-                    //playerList[curTurn]이 이번 턴 승자라는 뜻!
-                    winCntOfEachTurn[curTurn]++;
-                    Debug.Log("이번 턴의 승자는 " + playerList[curTurn] + "! (현재 " + winCntOfEachTurn[curTurn] + "승)");
-                }
-                curTurn++;
-                if (curTurn >= playerList.Count) curTurn = 0;
-            }
-            yield return new WaitForSeconds(5f);
         }
 
-        //라운드가 끝날 때마다 승수 맞췄는지 판단, 벌칙 결정(미완성)
+        //라운드가 끝날 때마다 승수 맞췄는지 판단, 벌칙 결정
         Debug.Log("=========이번 라운드 결과=========");
         for (int i = 0; i < playerList.Count; i++)
         {
-            GameObject curPlayer = playerList[curTurn];
-
-            if (predictedWinCnt[curTurn] == winCntOfEachTurn[curTurn])
-            {
-                Debug.Log(curPlayer + " 예측 성공!");
-            }
-            else
-            {
-                Debug.Log(curPlayer + " 예측 실패...");
-
-                //실패한 플레이어한테 폭탄 심지 등장시키게 하기
-                yield return StartCoroutine(scoreManager.CheckBomb(curPlayer.GetComponent<PlayerController>()));
-            }
-            yield return new WaitForSeconds(1f);
+            //승수 맞췄는지 판단
+            yield return StartCoroutine(CheckRoundResult());
 
             //벌칙 단계가 끝날 때마다 최후의 1인이 남았는지 확인하기
             JudgeGameResult();
@@ -176,6 +153,42 @@ public class GameManager : MonoBehaviour
             curTurn++;
             if (curTurn >= playerList.Count) curTurn = 0;
 
+        yield return new WaitForSeconds(1f);
+    }
+
+    IEnumerator CheckTurnResult()
+    {
+        for (int i = 0; i < playerList.Count; i++)
+        {
+            bool checker = cardManager.CardCompare(submitCardList, i);
+
+            if (checker) //checker의 반환값이 true면...
+            {
+                //playerList[curTurn]이 이번 턴 승자라는 뜻!
+                winCntOfEachTurn[curTurn]++;
+                Debug.Log("이번 턴의 승자는 " + playerList[curTurn] + "! (현재 " + winCntOfEachTurn[curTurn] + "승)");
+            }
+            curTurn++;
+            if (curTurn >= playerList.Count) curTurn = 0;
+        }
+        yield return new WaitForSeconds(3f);
+    }
+
+    IEnumerator CheckRoundResult()
+    {
+        GameObject curPlayer = playerList[curTurn];
+
+        if (predictedWinCnt[curTurn] == winCntOfEachTurn[curTurn])
+        {
+            Debug.Log(curPlayer + " 예측 성공!");
+        }
+        else
+        {
+            Debug.Log(curPlayer + " 예측 실패...");
+
+            //실패한 플레이어한테 폭탄 심지 등장시키게 하기
+            yield return StartCoroutine(scoreManager.CheckBomb(curPlayer.GetComponent<PlayerController>()));
+        }
         yield return new WaitForSeconds(1f);
     }
 
