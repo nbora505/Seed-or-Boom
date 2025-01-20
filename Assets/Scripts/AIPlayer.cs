@@ -24,30 +24,31 @@ public class AIPlayer : PlayerController
     List<float> eachOfSubmitedCardWeightList = new List<float>();
     Dictionary<int, float> eachOfAICardWeightList = new Dictionary<int, float>();
 
+    [Tooltip("AI Weight, alp = alpha, bet = beta, gam = gamma")]
     public float alp = 0.6f;
     public float bet = 0.2f;
     public float gam = 0.2f;
 
     int flowChecker = 0;
 
-    float timer = 0;
-    int waitingTime;
-
     public bool isAITurn = false;
 
     private void Start()
     {
         expectedWins = CalculateOddsOfWinning(0.7f, 0.3f);
-        waitingTime = UnityEngine.Random.Range(1, 3);
     }
-
+    /// <summary>
+    /// Don't use Update(). it doesn't required
+    /// </summary>
     private void Update()
     {
-        if(isDead || !isAITurn) return;
+        if(isDead) return;
+    }
+    public IEnumerator AITurn()
+    {
+        yield return new WaitForSeconds(UnityEngine.Random.Range(1, 3));
 
-        timer += Time.deltaTime;
-
-        if (nowTotalWins < expectedWins && timer >= waitingTime)
+        if (nowTotalWins < expectedWins)
         {
             flowChecker = DetermineWinningCard(cardList, alp, bet, gam, submitTime);
 
@@ -63,12 +64,11 @@ public class AIPlayer : PlayerController
                 isAITurn = false;
             }
         }
-
-        if(nowTotalWins >= expectedWins && timer >= waitingTime)
+        else
         {
             flowChecker = DetermineBestLosingCard(cardList, alp, bet, gam, submitTime);
 
-            if(flowChecker == 0)
+            if (flowChecker == 0)
             {
                 flowChecker = ThrowGarbageCard(true);
                 gm.submitCardList.Add(flowChecker);
