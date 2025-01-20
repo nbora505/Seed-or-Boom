@@ -49,17 +49,27 @@ public class AIPlayer : PlayerController
 
             if (flowChecker == 0)
             {
-                ThrowGarbageCard(false);
+                flowChecker = ThrowGarbageCard(false);
+                gm.submitCardList.Add(flowChecker);
+            }
+            else
+            {
+                gm.submitCardList.Add(flowChecker);
             }
         }
 
-        if(nowTotalWins > expectedWins && timer >= waitingTime)
+        if(nowTotalWins >= expectedWins && timer >= waitingTime)
         {
             flowChecker = DetermineBestLosingCard(cardList, alp, bet, gam, submitTime);
 
             if(flowChecker == 0)
             {
-                ThrowGarbageCard(true);
+                flowChecker = ThrowGarbageCard(true);
+                gm.submitCardList.Add(flowChecker);
+            }
+            else
+            {
+                gm.submitCardList.Add(flowChecker);
             }
         }
     }
