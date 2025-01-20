@@ -36,7 +36,7 @@ public class AIPlayer : PlayerController
         expectedWins = CalculateOddsOfWinning(0.7f, 0.3f);
     }
     /// <summary>
-    /// Don't use Update(). it doesn't required
+    /// Don't touch Update(). it doesn't required
     /// </summary>
     private void Update()
     {

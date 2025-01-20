@@ -34,35 +34,54 @@ public class PlayerController : MonoBehaviour
     // 플레이어 콘트롤러 쪽에서 게임메니저의 예상 승수를 받아오고, 자신의 턴이랑 비교해서 넣으면 되겠죠?
     public List<int> expectedWin = new List<int>();
 
+
+    /// <summary>
+    /// Exists for the player's animation output.<br></br>
+    /// UNCHECKCARD is an enum for the animation of putting the card down.Transitioning to IDLE to coincide with the end of the animation. <br></br>
+    /// CHECKCARD is an enum for the animation of checking the card.<br></br>
+    /// IDLE is the default state<br></br>
+    /// DEAD is the enum for the animation output when the user dies.
+    /// </summary>
+    [SerializeField]
+    enum STATE {
+        IDLE = 0,
+        UNCHECKCARD,
+        CHECKCARD,
+        DEAD
+    }
+
+    STATE state;
+
     private void Start()
     {
+        state = STATE.UNCHECKCARD;
     }
     private void Update()
     {
-        if (isDead) return;
+        if (isDead)
+        {
+            state = STATE.DEAD;
+            return;
+        }
 
-        if (isCardCheck)
+        if (OVRInput.Get(OVRInput.RawButton.LIndexTrigger) && isCardCheck)
         {
             leftControllerAnchor.position = fixedCharLeftHandPostion.position;
             leftControllerAnchor.rotation = fixedCharLeftHandPostion.rotation;
-            // 카드를 보는 애니메이션 실행
-        }
-        else
-        {
-            //카드를 덮는 애니메이션 실행.
-        }
 
-        if (OVRInput.GetDown(OVRInput.RawButton.LIndexTrigger) && isCardCheck)
-        {
-            isCardCheck = false;
+            state = STATE.CHECKCARD;
         }
-        if (OVRInput.GetDown(OVRInput.RawButton.LIndexTrigger) && !isCardCheck)
+        if (OVRInput.GetUp(OVRInput.RawButton.LIndexTrigger) && !isCardCheck)
         {
-            isCardCheck = true;
+            state = STATE.UNCHECKCARD;
+            // 애니메이션 이벤트에서 함수 할당. SetEnumToIDLE()
         }
     }
 
-
+    public void SetEnumToIDLE()
+    {
+        state = STATE.IDLE;
+    }
         // 왼팔이나, 다른 팔을 트레킹을 못하게 하려면
         // 우리 프리펩 내에 트래킹 관련 오브젝트가 있음
         // 그거 disable 하면 되드라고요.
