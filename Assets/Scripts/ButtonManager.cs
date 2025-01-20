@@ -1,4 +1,5 @@
 using Firebase.Firestore;
+using Meta.WitAi;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -43,8 +44,8 @@ public class ButtonManager : MonoBehaviour
     public GameObject checkPanel;
 
 
-    
 
+    public List<GameObject> activeCardInstances = new List<GameObject>();
     
 
     public void Start()
@@ -217,51 +218,54 @@ public class ButtonManager : MonoBehaviour
 
     public void ShowCard(List<int> cardList)
     {
+        // 이전에 생성된 카드 인스턴스 삭제
+        foreach (var cardInstance in activeCardInstances)
+        {
+            Destroy(cardInstance);
+        }
+        activeCardInstances.Clear(); // 리스트 초기화
+
         // 현재 플레이어의 'CardImage' 자식 객체 가져오기
         Transform cardImageParent = gameManager.playerList[gameManager.curTurn].transform.Find("CardImage");
-        if (cardImageParent == null)
-        {
-            Debug.LogError("CardImage 객체를 찾을 수 없습니다.");
-            return;
-        }
 
         // 카드 리스트의 각 값을 처리
         foreach (int cardValue in cardList)
         {
-            if (cardValue < 1 || cardValue > cardButtonPrefab.Count)
-            {
-                Debug.LogError($"유효하지 않은 카드 값: {cardValue}");
-                continue;
-            }
-
             // 카드 값에 맞는 프리팹 선택
             GameObject cardPrefab = cardButtonPrefab[cardValue - 1]; // 카드 값이 1부터 시작한다고 가정
             GameObject myInstance = Instantiate(cardPrefab, cardImageParent); // 부모를 CardImage로 설정
 
+            // 활성화된 인스턴스 저장
+            activeCardInstances.Add(myInstance);
+
             // 버튼 설정
             Button buttonComponent = myInstance.GetComponent<Button>();
-            if (buttonComponent != null)
-            {
-                int capturedValue = cardValue; // 로컬 변수로 캡처
-                buttonComponent.onClick.AddListener(() => OnSubmitCardButtonClicked(capturedValue));
-            }
-            else
-            {
-                Debug.LogWarning("생성된 카드에 Button 컴포넌트가 없습니다.");
-            }
+            int capturedValue = cardValue; // 로컬 변수로 캡처
+            buttonComponent.onClick.AddListener(() => OnSubmitCardButtonClicked(capturedValue, myInstance));
         }
     }
 
-    public void OnSubmitCardButtonClicked(int cardValue) // 카드제출 버튼 기능
+
+    public void OnSubmitCardButtonClicked(int cardValue,GameObject cardInstance) // 카드제출 버튼 기능
     {
         List<int> curCardList = gameManager.playerList[gameManager.curTurn].GetComponent<PlayerController>().cardList;
 
         // 카드 리스트에서 선택된 카드 제거 및 제출된 카드 리스트에 추가
         curCardList.Remove(cardValue);
         gameManager.submitCardList.Add(cardValue);
+        
+        //선택된 카드 파괴
+        activeCardInstances.Remove(cardInstance);
+        Destroy(cardInstance);
+       
+
 
         // 제출 완료 메시지
         logText.text = $"{cardValue}번 카드 제출 완료";
+        selectCard = 0;
+        gameManager.checkSubmitCard = selectCard;
+        
+        
 
         Debug.Log($"현재 플레이어의 제출 카드: {cardValue}");
     }

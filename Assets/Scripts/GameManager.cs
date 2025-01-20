@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> deadList;
     GameObject leaderPlayer;
     public GameObject cardImage;
+    public Text noticeturnText;
     public Text LogText;
     public int maxPlayerCnt = 4;
 
@@ -28,15 +29,13 @@ public class GameManager : MonoBehaviour
     public int[] predictedWinCnt; //각각의 라운드마다 플레이어들이 예측한 승리 횟수
     public int[] winCntOfEachTurn; //각각의 턴마다 플레이어들이 기록한 승리 횟수
 
-
-
     public CardManager cardManager;
     public ScoreManager scoreManager;
     public ButtonManager buttonManager;
     public GameObject TestBtn;
     void Start()
     {
-        cardImage = GameObject.FindGameObjectWithTag("Card");
+       
         //플레이어 객체들 리스트에 추가
         GameObject[] tempPlayerList = GameObject.FindGameObjectsWithTag("Player");
         for (int i = 0; i < maxPlayerCnt; i++)
@@ -120,18 +119,21 @@ public class GameManager : MonoBehaviour
     IEnumerator DecideWinCnt()
     {
         Debug.Log("=========승수 선언 단계=========");
-
-        //리더 플레이어부터 차례로 승수 선언. 임시로 랜덤숫자로 승리선언 처리해둠
+        
+        //리더 플레이어부터 차례로 승수 선언
         for (int i = 0; i < playerList.Count; i++)
         {
-            Debug.LogWarning(i+1 + "번째 순서");
+            string playerName = playerList[curTurn].name;
+            Debug.LogWarning( i+1 + "번째 순서" + playerName + "입니다.");
+            noticeturnText.text += (i + 1 + "번째 순서 " + playerName + "입니다.\n");
+
             //여기에서 플레이어 리스트[현재 차례]의 승수 선언 UI 활성화
             LogText.text = i+1 + "번쨰 순서" + " 승 수 선택하세요";
             TestBtn.SetActive(true);
             yield return new WaitUntil(() => selectedWin == 0);
             TestBtn.SetActive(false);
             selectedWin = -1;
-            //predictedWinCnt[curTurn] = Random.Range(0, 4);
+            
             Debug.Log(playerList[curTurn] + "의 승수 선언 : " + predictedWinCnt[curTurn] + "승");
 
             curTurn++;
@@ -144,24 +146,28 @@ public class GameManager : MonoBehaviour
 
     IEnumerator SubmitCard()
     {
-        // 현재 플레이어의 카드 리스트 가져오기
-        List<int> curCardList = playerList[curTurn].GetComponent<PlayerController>().cardList;
         
-        //GameObject playerCard = playerList[curTurn].GetComponentInChildren<GameObject>();     
-        LogText.text = curTurn + "번째 순서, 카드 선택 하세요";
-        buttonManager.ShowCard(curCardList);
-       // playerCard.gameObject.SetActive(true); 
-        yield return new WaitUntil(() => checkSubmitCard == 0);
-        //playerCard.gameObject.SetActive(false);
-        checkSubmitCard = -1;
+            // 현재 플레이어의 카드 리스트 가져오기
+            List<int> curCardList = playerList[curTurn].GetComponent<PlayerController>().cardList;
 
+            LogText.text = curTurn + "번째 순서, 카드 선택 하세요";
+
+            // 현재 플레이어의 카드만 표시
+            buttonManager.ShowCard(curCardList);
+
+            // 플레이어가 카드를 제출할 때까지 대기
+            yield return new WaitUntil(() => checkSubmitCard == 0);
+            checkSubmitCard = -1;
+
+            // 턴 이동
+            curTurn++;
+            if (curTurn >= playerList.Count)
+            {
+                curTurn = 0;              
+            }
         
-
-        // 턴 이동
-        curTurn++;
-        if (curTurn >= playerList.Count)
-            curTurn = 0;
     }
+
 
 
     IEnumerator CheckTurnResult()
