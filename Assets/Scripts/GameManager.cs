@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject[] playerList;
+    public List<GameObject> playerList;
     public List<GameObject> deadList;
     GameObject leaderPlayer;
     public Text LogText;
@@ -30,10 +30,14 @@ public class GameManager : MonoBehaviour
     public GameObject TestBtn;
     void Start()
     {
-        playerList = GameObject.FindGameObjectsWithTag("Player");
+        GameObject[] tempPlayerList = GameObject.FindGameObjectsWithTag("Player");
+        for (int i = 0; i < maxPlayerCnt; i++)
+        {
+            playerList.Add(tempPlayerList[i]);
+        }
 
         //리더 플레이어(맨 처음 시작할 사람) 정하기
-        curTurn = Random.Range(0, playerList.Length);
+        curTurn = Random.Range(0, playerList.Count);
         leaderPlayer = playerList[curTurn];
 
         //라운드 시작
@@ -50,10 +54,10 @@ public class GameManager : MonoBehaviour
 
         //플레이어들에게 카드 나눠주기
         cardManager.DoCardShuffle();
-        cardManager.TestUserCard(playerList.Length);
+        cardManager.TestUserCard(playerList.Count);
 
         //승수 결정받기;
-        yield return StartCoroutine(DecideWinCnt());
+        //yield return StartCoroutine(DecideWinCnt());
 
         //4번의 턴 시작
         for (int i = 1; i <= 4; i++)
@@ -64,14 +68,14 @@ public class GameManager : MonoBehaviour
 
             //카드 제출받기
             Debug.Log("=========카드 제출 단계=========");
-            for (int j = 0; j < playerList.Length; j++)
+            for (int j = 0; j < playerList.Count; j++)
             {
                 yield return StartCoroutine(SubmitCard());
             }
 
             //제출한 카드 보고 승자 결정하기(카드매니저에 들어가 있는 함수 호출)
             Debug.Log("=========이번 턴 승자 결정=========");
-            for (int j = 0; j < playerList.Length; j++)
+            for (int j = 0; j < playerList.Count; j++)
             {
                 bool checker = cardManager.CardCompare(submitCardList, j);
 
@@ -82,14 +86,14 @@ public class GameManager : MonoBehaviour
                     Debug.Log("이번 턴의 승자는 " + playerList[curTurn] + "! (현재 " + winCntOfEachTurn[curTurn] + "승)");
                 }
                 curTurn++;
-                if (curTurn >= playerList.Length) curTurn = 0;
+                if (curTurn >= playerList.Count) curTurn = 0;
             }
             yield return new WaitForSeconds(5f);
         }
 
         //라운드가 끝날 때마다 승수 맞췄는지 판단, 벌칙 결정(미완성)
         Debug.Log("=========이번 라운드 결과=========");
-        for (int i = 0; i < playerList.Length; i++)
+        for (int i = 0; i < playerList.Count; i++)
         {
             GameObject curPlayer = playerList[curTurn];
 
@@ -105,12 +109,19 @@ public class GameManager : MonoBehaviour
                 yield return StartCoroutine(scoreManager.CheckBomb(curPlayer.GetComponent<PlayerController>()));
             }
             yield return new WaitForSeconds(1f);
+
+            //벌칙 단계가 끝날 때마다 최후의 1인이 남았는지 확인하기
+            JudgeGameResult();
+
             curTurn++;
-            if (curTurn >= playerList.Length) curTurn = 0;
+            if (curTurn >= playerList.Count) curTurn = 0;
         }
         yield return new WaitForSeconds(10f);
 
         //라운드 종료
+        //사망 리스트에 있는 플레이어가 플레이어리스트에 아직 남아있을 경우 지워주기
+        RemovePlayerList();
+
         curRound++;
         if (curRound > maxRound)
         {
@@ -127,7 +138,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("=========승수 선언 단계=========");
 
         //리더 플레이어부터 차례로 승수 선언. 임시로 랜덤숫자로 승리선언 처리해둠
-        for (int i = 0; i < playerList.Length; i++)
+        for (int i = 0; i < playerList.Count; i++)
         {
             Debug.LogWarning(i+1 + "번째 순서");
             //여기에서 플레이어 리스트[현재 차례]의 승수 선언 UI 활성화
@@ -140,7 +151,7 @@ public class GameManager : MonoBehaviour
             Debug.Log(playerList[curTurn] + "의 승수 선언 : " + predictedWinCnt[curTurn] + "승");
 
             curTurn++;
-            if (curTurn >= playerList.Length) curTurn = 0;
+            if (curTurn >= playerList.Count) curTurn = 0;
 
             yield return new WaitForSeconds(1f);
         }
@@ -163,17 +174,49 @@ public class GameManager : MonoBehaviour
             submitCardList.Add(selectedCard);//제출된 카드끼리 비교하기 위해 제출카드리스트에 넣기
 
             curTurn++;
-            if (curTurn >= playerList.Length) curTurn = 0;
+            if (curTurn >= playerList.Count) curTurn = 0;
 
         yield return new WaitForSeconds(1f);
     }
+
+    //사망 리스트에 있는 플레이어가 플레이어리스트에 아직 남아있을 경우 지워주는 함수
+    void RemovePlayerList()
+    {
+        for (int i = 0; i < deadList.Count; i++)
+        {
+            for (int j = 0; j < playerList.Count; j++)
+            {
+                if(playerList.Count <= maxPlayerCnt - deadList.Count)
+                {
+                    break;
+                }
+                else if (deadList[i] == playerList[j])
+                {
+                    playerList.Remove(playerList[j]);
+                }
+            }
+        }
+    }
+
+    //게임에 최후의 1인이 남았는지 판단하는 함수
+    void JudgeGameResult()
+    {
+        if(deadList.Count == maxPlayerCnt - 1)
+        {
+            RemovePlayerList();
+            Debug.Log("::::: 게임 종료! :::::");
+            Debug.Log("::::: 승자는 " + playerList[0] + "! :::::");
+        }
+    }
+
+        //리스트 초기화
     void ResetLists()
     {
-        predictedWinCnt = new int[playerList.Length];
-        winCntOfEachTurn = new int[playerList.Length];
+        predictedWinCnt = new int[playerList.Count];
+        winCntOfEachTurn = new int[playerList.Count];
 
         cardManager.GetComponent<CardManager>().ResetCardSet();
-        for (int i = 0; i < playerList.Length; i++)
+        for (int i = 0; i < playerList.Count; i++)
         {
             playerList[i].GetComponent<PlayerController>().cardList.Clear();
         }

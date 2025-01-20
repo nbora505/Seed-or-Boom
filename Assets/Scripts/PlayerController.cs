@@ -58,18 +58,6 @@ public class PlayerController : MonoBehaviour
 
     }//함수 끝
 
-    public void AppearBomb() //함수 심지 등장(int 심지 수)
-    {
-        for (int i = 0; i < remainingBomb; i++)
-        {
-            gameObject.GetComponentInChildren<GameObject>().SetActive(true);
-        }
-
-        //  플레이어 선택 존중하려면 랜덤 배제해야 하나 편의상 선택과
-        //  무관하게 랜덤으로 터지는 폭탄 생성
-
-    }
-
     // Must to called at GameManager
     public void InitsubmitTime(int submitTime)
     {
@@ -83,18 +71,32 @@ public class PlayerController : MonoBehaviour
         if (isTrueBomb == selectedBombNum)
         {
             Debug.Log(gameObject.name + "... 사망!!!!!");
-            gm.deadList.Add(this.gameObject);
+
             // 사망처리
             isDead = true;
+            gm.deadList.Add(this.gameObject);
+
             //사망 연출은 여기서 처리하는 걸로
+            this.gameObject.SetActive(false);
         }
         else
         {
             Debug.Log(gameObject.name + "... 생존!!!!!");
+
+            RemoveBomb(); //화면에 남아있는 폭탄심지 비활성화
             remainingBomb--;
             bombList.RemoveAt(isTrueBomb);// false가 지워지겠죠.
+
             // 생존처리
         }
         gm.selectedBomb = -1;//다시 선택된 폭탄 번호 초기화
+    }
+
+    public void RemoveBomb()
+    {
+        for (int i = 0; i < remainingBomb; i++)
+        {
+            bombPrefab[i].SetActive(false);
+        }
     }
 }
