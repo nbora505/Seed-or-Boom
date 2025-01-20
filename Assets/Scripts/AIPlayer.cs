@@ -12,6 +12,9 @@ using Unity.VisualScripting;
 using UnityEngine.Rendering;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
 
+/// <summary>
+/// #Critical For all functions, if the AI is reacting too quickly (e.g., playing cards at a sub-second rate), a coroutine is required to wait and execute the function.
+/// </summary>
 public class AIPlayer : PlayerController
 {
     List<float> eachOfSubmitedCardWeightList = new List<float>();
@@ -47,7 +50,9 @@ public class AIPlayer : PlayerController
     // 도달하지 못했다면 DeterminWinningCard를 사용하여야 함.
 
 
-
+    /// <summary>
+    /// Func of make AI to draw Bomb
+    /// </summary>
     public void AIDrawBomb()
     {
         int isTrueBomb = UnityEngine.Random.Range(0, remainingBomb);
@@ -57,17 +62,15 @@ public class AIPlayer : PlayerController
         {
             UnityEngine.Debug.Log(gameObject.name + "... 사망!!!!!");
             gm.deadList.Add(this.gameObject);
-            // 사망처리
+
             isDead = true;
-            //사망 연출은 여기서 처리하는 걸로
         }
         else
         {
             UnityEngine.Debug.Log(gameObject.name + "... 생존!!!!!");
             remainingBomb--;
-            // 생존처리
         }
-        gm.selectedBomb = -1;//다시 선택된 폭탄 번호 초기화
+        gm.selectedBomb = -1;
     }
 
     /// <summary>
