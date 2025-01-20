@@ -2,6 +2,7 @@
 //using System.Collections.Generic;
 //using UnityEngine;
 
+using OVR.OpenVR;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -9,25 +10,58 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Unity.VisualScripting;
+using UnityEngine;
 using UnityEngine.Rendering;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 /// <summary>
-/// #Critical For all functions, if the AI is reacting too quickly (e.g., playing cards at a sub-second rate), a coroutine is required to wait and execute the function.
+/// #Critical For all functions, if the AI is reacting too quickly (e.g., playing cards at a sub-second rate), a coroutine or timer is required to wait and execute the function.
 /// </summary>
 public class AIPlayer : PlayerController
 {
     List<float> eachOfSubmitedCardWeightList = new List<float>();
     Dictionary<int, float> eachOfAICardWeightList = new Dictionary<int, float>();
 
+    float alp = 0.6f;
+    float bet = 0.2f;
+    float gam = 0.2f;
+
+    int flowChecker = 0;
+
+    float timer = 0;
+    int waitingTime;
+
     private void Start()
     {
         expectedWins = CalculateOddsOfWinning(0.7f, 0.3f);
+        waitingTime = UnityEngine.Random.Range(1, 3);
     }
 
     private void Update()
     {
-        
+        if(isDead) return;
+
+        timer += Time.deltaTime;
+
+        if (nowTotalWins < expectedWins && timer >= waitingTime)
+        {
+            flowChecker = DetermineWinningCard(cardList, alp, bet, gam, submitTime);
+
+            if (flowChecker == 0)
+            {
+                ThrowGarbageCard(false);
+            }
+        }
+
+        if(nowTotalWins > expectedWins && timer >= waitingTime)
+        {
+            flowChecker = DetermineBestLosingCard(cardList, alp, bet, gam, submitTime);
+
+            if(flowChecker == 0)
+            {
+                ThrowGarbageCard(true);
+            }
+        }
     }
 
     //    public void DecideAction() //행동 결정
