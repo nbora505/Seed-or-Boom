@@ -225,14 +225,14 @@ public class ButtonManager : MonoBehaviour
         }
         activeCardInstances.Clear(); // 리스트 초기화
 
-        // 현재 플레이어의 'CardImage' 자식 객체 가져오기
+        // 현재 플레이어의 CardImage 자식 객체 가져오기
         Transform cardImageParent = gameManager.playerList[gameManager.curTurn].transform.Find("CardImage");
 
         // 카드 리스트의 각 값을 처리
         foreach (int cardValue in cardList)
         {
             // 카드 값에 맞는 프리팹 선택
-            GameObject cardPrefab = cardButtonPrefab[cardValue - 1]; // 카드 값이 1부터 시작한다고 가정
+            GameObject cardPrefab = cardButtonPrefab[cardValue - 1]; // 카드 값이 1부터 시작
             GameObject myInstance = Instantiate(cardPrefab, cardImageParent); // 부모를 CardImage로 설정
 
             // 활성화된 인스턴스 저장
@@ -317,7 +317,8 @@ public class ButtonManager : MonoBehaviour
         {
             Debug.LogWarning("gameManager가 null임.");
         }
-        if (CardOutline != null)
+
+        /*if (CardOutline != null)
         {
             BombWickOutline.effectColor = originalBombWickOutlineColor;
         }
@@ -325,7 +326,7 @@ public class ButtonManager : MonoBehaviour
         if (originalCardPosition != null)
         {
             BombWickOutline.transform.position = originalBombWickPosition;
-        }
+        }*/
 
         //게임매니저
 

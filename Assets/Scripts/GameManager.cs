@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> playerList;
     public List<GameObject> deadList;
     GameObject leaderPlayer;
-    public GameObject cardImage;
+    
     public Text noticeturnText;
     public Text LogText;
     public int maxPlayerCnt = 4;
