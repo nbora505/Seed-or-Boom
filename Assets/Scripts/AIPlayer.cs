@@ -47,6 +47,29 @@ public class AIPlayer : PlayerController
     // 도달하지 못했다면 DeterminWinningCard를 사용하여야 함.
 
 
+
+    public void AIDrawBomb()
+    {
+        int isTrueBomb = UnityEngine.Random.Range(0, remainingBomb);
+        int selectBomb = UnityEngine.Random.Range(0, remainingBomb);
+
+        if (isTrueBomb == selectBomb)
+        {
+            UnityEngine.Debug.Log(gameObject.name + "... 사망!!!!!");
+            gm.deadList.Add(this.gameObject);
+            // 사망처리
+            isDead = true;
+            //사망 연출은 여기서 처리하는 걸로
+        }
+        else
+        {
+            UnityEngine.Debug.Log(gameObject.name + "... 생존!!!!!");
+            remainingBomb--;
+            // 생존처리
+        }
+        gm.selectedBomb = -1;//다시 선택된 폭탄 번호 초기화
+    }
+
     /// <summary>
     /// Use this function if the current AI player has reached the predicted win and shouldn't win anymore.
     /// This function finds the weight of each previously submitted card, 

@@ -12,8 +12,6 @@ public class PlayerController : MonoBehaviour
     public bool AIPlayer = false;
     public List<int> cardList = new List<int>(); // 카드를 나눠줄 때, 해당 플레이어에 .Add()
 
-    public List<bool> bombList = new List<bool>() {
-        false, false, true };
     public GameObject[] bombPrefab;
     public int remainingBomb = 3; //  int 남은 폭탄심지 수
     //public int playerOrder = 0; //    플레이어 순서별 가중치 0 to 3;
@@ -78,7 +76,7 @@ public class PlayerController : MonoBehaviour
 
     public void DrawBomb(int selectedBombNum)//함수 폭탄 결정(파라메터:선택된 심지 번호)
     {
-        int isTrueBomb = Random.Range(0, bombList.Count);
+        int isTrueBomb = Random.Range(0, remainingBomb);
 
         if (isTrueBomb == selectedBombNum)
         {
@@ -92,7 +90,6 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log(gameObject.name + "... 생존!!!!!");
             remainingBomb--;
-            bombList.RemoveAt(isTrueBomb);// false가 지워지겠죠.
             // 생존처리
         }
         gm.selectedBomb = -1;//다시 선택된 폭탄 번호 초기화
