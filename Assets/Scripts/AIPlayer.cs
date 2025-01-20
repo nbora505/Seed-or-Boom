@@ -4,6 +4,7 @@
 
 using OVR.OpenVR;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
@@ -16,6 +17,7 @@ using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 /// <summary>
 /// #Critical For all functions, if the AI is reacting too quickly (e.g., playing cards at a sub-second rate), a coroutine or timer is required to wait and execute the function.
+/// AIDrawBomb() must called by GameManager.
 /// </summary>
 public class AIPlayer : PlayerController
 {
@@ -74,38 +76,15 @@ public class AIPlayer : PlayerController
         }
     }
 
-    //    public void DecideAction() //행동 결정
-    //    {
-    //        AnalyzeCard(); // 1. 카드 분석   
-    //        SetExpectedWin(); // 2. 예상 승리 설정      
-    //        ChooseCardForTurn(); // 3. 현재 턴에 낼 카드
-    //    }
-    //    public void Start()   
-    //    {
-    //        AnalyzeCard();   
-    //    }
-
-    // 더 추가 되야 하는건 Update 됐을 때 계속해서 상호작용 되도록 하는거랑
-    // Update에서 저 승리 검사 했을 때 0이 나오면 가비지 카드 나오게 하는거랑
-    // 예측 승수에 도달했을 때, 패배는 하되 최대한 높은 가중치의 카드를 내게 하는거.
-
-    // 기존의 DetermineWinningCard 함수를 똑같이 복붙을 하고 조금만 수정하면 됨.
-    // 그럼 AI가 0승을 선언했고 첫 턴이라면?
-    // -> 가장 낮은 가중치의 카드를 던지게.
-
-    // Update 문에서는 두 가지 조건으로 갈라져야 함.
-    // AI 플레이어가 예측한 승수에 도달하였는가. 또는 그렇지 않은가.
-    // AI 플레이어는 예측한 승수에 도달하였다면, DetermineBestLosingCard를 사용해야 하고,
-    // 도달하지 못했다면 DeterminWinningCard를 사용하여야 함.
-
-
     /// <summary>
     /// Func of make AI to draw Bomb
     /// </summary>
-    public void AIDrawBomb()
+    public IEnumerator AIDrawBomb()
     {
         int isTrueBomb = UnityEngine.Random.Range(0, remainingBomb);
         int selectBomb = UnityEngine.Random.Range(0, remainingBomb);
+
+        yield return new WaitForSeconds(UnityEngine.Random.Range(1, 3));
 
         if (isTrueBomb == selectBomb)
         {
