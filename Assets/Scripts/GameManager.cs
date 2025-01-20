@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> playerList;
     public List<GameObject> deadList;
     GameObject leaderPlayer;
+    public GameObject cardImage;
     public Text LogText;
     public int maxPlayerCnt = 4;
 
@@ -18,11 +19,16 @@ public class GameManager : MonoBehaviour
     public int curTurn;
     public int maxCardCnt = 5;
 
+
     public int selectedBomb = -1;
     public int selectedWin = -1;
+    public int checkSubmitCard = -1;
+    public int selectedCard =0;
     public List<int> submitCardList; //제출된 카드리스트
     public int[] predictedWinCnt; //각각의 라운드마다 플레이어들이 예측한 승리 횟수
     public int[] winCntOfEachTurn; //각각의 턴마다 플레이어들이 기록한 승리 횟수
+
+
 
     public CardManager cardManager;
     public ScoreManager scoreManager;
@@ -30,6 +36,7 @@ public class GameManager : MonoBehaviour
     public GameObject TestBtn;
     void Start()
     {
+        cardImage = GameObject.FindGameObjectWithTag("Card");
         //플레이어 객체들 리스트에 추가
         GameObject[] tempPlayerList = GameObject.FindGameObjectsWithTag("Player");
         for (int i = 0; i < maxPlayerCnt; i++)
@@ -58,7 +65,7 @@ public class GameManager : MonoBehaviour
         cardManager.TestUserCard(playerList.Count);
 
         //승수 결정받기;
-        //yield return StartCoroutine(DecideWinCnt());
+        yield return StartCoroutine(DecideWinCnt());
 
         //4번의 턴 시작
         for (int i = 1; i <= 4; i++)
@@ -135,26 +142,27 @@ public class GameManager : MonoBehaviour
         yield return null;
     }
 
-    IEnumerator SubmitCard() // SubmitCard(int subitCard)
+    IEnumerator SubmitCard()
     {
-        //리더 플레이어부터 차례로 카드 제출. 임시로 랜덤숫자로 카드제출 처리해둠
+        // 현재 플레이어의 카드 리스트 가져오기
         List<int> curCardList = playerList[curTurn].GetComponent<PlayerController>().cardList;
-        // tempCard was init for testing
-        int tempCard = Random.Range(0, curCardList.Count);
         
-        // 실제 구현 단계에서는, 이거를 레이케이스트로 해서 받아온 카드의 정보가 되겠죠?
-        int selectedCard = curCardList[tempCard];
+        //GameObject playerCard = playerList[curTurn].GetComponentInChildren<GameObject>();     
+        LogText.text = curTurn + "번째 순서, 카드 선택 하세요";
+        buttonManager.ShowCard(curCardList);
+       // playerCard.gameObject.SetActive(true); 
+        yield return new WaitUntil(() => checkSubmitCard == 0);
+        //playerCard.gameObject.SetActive(false);
+        checkSubmitCard = -1;
 
-            Debug.Log(playerList[curTurn] + "의 카드 제출 : " + selectedCard);
+        
 
-            curCardList.RemoveAt(tempCard);
-            submitCardList.Add(selectedCard);//제출된 카드끼리 비교하기 위해 제출카드리스트에 넣기
-
-            curTurn++;
-            if (curTurn >= playerList.Count) curTurn = 0;
-
-        yield return new WaitForSeconds(1f);
+        // 턴 이동
+        curTurn++;
+        if (curTurn >= playerList.Count)
+            curTurn = 0;
     }
+
 
     IEnumerator CheckTurnResult()
     {
