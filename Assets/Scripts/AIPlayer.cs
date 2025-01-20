@@ -24,9 +24,9 @@ public class AIPlayer : PlayerController
     List<float> eachOfSubmitedCardWeightList = new List<float>();
     Dictionary<int, float> eachOfAICardWeightList = new Dictionary<int, float>();
 
-    float alp = 0.6f;
-    float bet = 0.2f;
-    float gam = 0.2f;
+    public float alp = 0.6f;
+    public float bet = 0.2f;
+    public float gam = 0.2f;
 
     int flowChecker = 0;
 
