@@ -25,6 +25,11 @@ public class AIPlayer : PlayerController
         expectedWins = CalculateOddsOfWinning(0.7f, 0.3f);
     }
 
+    private void Update()
+    {
+        
+    }
+
     //    public void DecideAction() //행동 결정
     //    {
     //        AnalyzeCard(); // 1. 카드 분석   

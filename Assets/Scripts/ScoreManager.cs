@@ -51,18 +51,11 @@ public class ScoreManager : MonoBehaviour
 
         if (!isSelect)
         {
-            player.DrawBomb(0);//무조건 터지도록 추후 수정 필요
+            player.DrawBomb(Random.Range(0, player.remainingBomb));//무조건 터지도록 추후 수정 필요
         }
         else
         {
             yield return null;
         }
     }   //    함수 끝
-
-    public void DistinguishScore(PlayerController player)
-    {
-            player.remainingBomb--; // This is a temporary line put in for the current structure.
-                                   // If a bomb selection line is ever created,
-                                   // it should run the function, subtract the bomb, and so on.
-    }
 }
