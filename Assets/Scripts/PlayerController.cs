@@ -1,4 +1,5 @@
 //using Photon.Realtime;
+using Oculus.Interaction;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -24,12 +25,43 @@ public class PlayerController : MonoBehaviour
     public int expectedWins = 0;
     public int nowTotalWins = 0;
 
+    bool isCardCheck = false;
+
+    public Transform fixedCharLeftHandPostion; // Character's Left Hand postion.
+    public Transform leftControllerAnchor; // OVR of LeftControllerAnchor
+
     // 요거를 게임메니저에서 받아와가지고 초기화할 수 있도록.
     // 플레이어 콘트롤러 쪽에서 게임메니저의 예상 승수를 받아오고, 자신의 턴이랑 비교해서 넣으면 되겠죠?
     public List<int> expectedWin = new List<int>();
+
+    private void Start()
+    {
+    }
     private void Update()
     {
-        if(isDead) return;
+        if (isDead) return;
+
+        if (isCardCheck)
+        {
+            leftControllerAnchor.position = fixedCharLeftHandPostion.position;
+            leftControllerAnchor.rotation = fixedCharLeftHandPostion.rotation;
+            // 카드를 보는 애니메이션 실행
+        }
+        else
+        {
+            //카드를 덮는 애니메이션 실행.
+        }
+
+        if (OVRInput.GetDown(OVRInput.RawButton.LIndexTrigger) && isCardCheck)
+        {
+            isCardCheck = false;
+        }
+        if (OVRInput.GetDown(OVRInput.RawButton.LIndexTrigger) && !isCardCheck)
+        {
+            isCardCheck = true;
+        }
+    }
+
 
         // 왼팔이나, 다른 팔을 트레킹을 못하게 하려면
         // 우리 프리펩 내에 트래킹 관련 오브젝트가 있음
@@ -43,7 +75,6 @@ public class PlayerController : MonoBehaviour
 
         // 오른손 트리거를 눌렀을 때, 카드를 선택할 수 있어야 하고.
         // 왼손 트리거를 눌렀을 땐, 내 패를 볼 수 있어야 겠죠?
-    }
     // 카드 제출과 카드 확인이 필요하다.
 
     //[함수]
