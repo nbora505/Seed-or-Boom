@@ -145,13 +145,13 @@ public class GameManager : MonoBehaviour
         // 실제 구현 단계에서는, 이거를 레이케이스트로 해서 받아온 카드의 정보가 되겠죠?
         int selectedCard = curCardList[tempCard];
 
-            Debug.Log(playerList[curTurn] + "의 카드 제출 : " + selectedCard);
+        Debug.Log(playerList[curTurn] + "의 카드 제출 : " + selectedCard); //isAIplayer를 기준으로 해서 한번 정제하고, 거기서 다시 isAIturn으로 한번 더 정제 해야 한다.
 
-            curCardList.RemoveAt(tempCard);
-            submitCardList.Add(selectedCard);//제출된 카드끼리 비교하기 위해 제출카드리스트에 넣기
+        curCardList.RemoveAt(tempCard);
+        submitCardList.Add(selectedCard);//제출된 카드끼리 비교하기 위해 제출카드리스트에 넣기
 
-            curTurn++;
-            if (curTurn >= playerList.Count) curTurn = 0;
+        curTurn++;
+        if (curTurn >= playerList.Count) curTurn = 0;
 
         yield return new WaitForSeconds(1f);
     }

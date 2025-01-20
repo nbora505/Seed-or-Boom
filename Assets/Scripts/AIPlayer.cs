@@ -33,6 +33,8 @@ public class AIPlayer : PlayerController
     float timer = 0;
     int waitingTime;
 
+    public bool isAITurn = false;
+
     private void Start()
     {
         expectedWins = CalculateOddsOfWinning(0.7f, 0.3f);
@@ -41,7 +43,7 @@ public class AIPlayer : PlayerController
 
     private void Update()
     {
-        if(isDead) return;
+        if(isDead || !isAITurn) return;
 
         timer += Time.deltaTime;
 
@@ -53,10 +55,12 @@ public class AIPlayer : PlayerController
             {
                 flowChecker = ThrowGarbageCard(false);
                 gm.submitCardList.Add(flowChecker);
+                isAITurn = false;
             }
             else
             {
                 gm.submitCardList.Add(flowChecker);
+                isAITurn = false;
             }
         }
 
@@ -68,10 +72,12 @@ public class AIPlayer : PlayerController
             {
                 flowChecker = ThrowGarbageCard(true);
                 gm.submitCardList.Add(flowChecker);
+                isAITurn = false;
             }
             else
             {
                 gm.submitCardList.Add(flowChecker);
+                isAITurn = false;
             }
         }
     }

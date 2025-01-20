@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
 {
 
     //[변수]
-    public bool AIPlayer = false;
+    public bool AIPlayer = false; // <- 이 플레그 값이 거짓이면, 그냥 그대로. 만약에 참이면, player.isAITurn = true
     public List<int> cardList = new List<int>(); // 카드를 나눠줄 때, 해당 플레이어에 .Add()
 
     public GameObject[] bombPrefab;
@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     public int submitTime = 0; // 만약에, 유저가 레이케이스트로 카드를 선택하고 제출했을 때, 그때의 유저의 순서가 몇 번인가를 기준으로 초기화
     public bool bombVisible = false;
     public bool isDead = false;//플레이어의 사망
+
     public GameManager gm;
 
     public int expectedWins = 0;
