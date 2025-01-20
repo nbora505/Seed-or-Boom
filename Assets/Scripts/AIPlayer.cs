@@ -31,8 +31,6 @@ public class AIPlayer : PlayerController
 
     int flowChecker = 0;
 
-    public bool isAITurn = false;
-
     private void Start()
     {
         expectedWins = CalculateOddsOfWinning(0.7f, 0.3f);
@@ -44,6 +42,10 @@ public class AIPlayer : PlayerController
     {
         if(isDead) return;
     }
+    /// <summary>
+    /// If this AI's turn is came, Call this Coroutine.
+    /// </summary>
+    /// <returns></returns>
     public IEnumerator AITurn()
     {
         yield return new WaitForSeconds(UnityEngine.Random.Range(1, 3));
@@ -56,12 +58,10 @@ public class AIPlayer : PlayerController
             {
                 flowChecker = ThrowGarbageCard(false);
                 gm.submitCardList.Add(flowChecker);
-                isAITurn = false;
             }
             else
             {
                 gm.submitCardList.Add(flowChecker);
-                isAITurn = false;
             }
         }
         else
@@ -72,12 +72,10 @@ public class AIPlayer : PlayerController
             {
                 flowChecker = ThrowGarbageCard(true);
                 gm.submitCardList.Add(flowChecker);
-                isAITurn = false;
             }
             else
             {
                 gm.submitCardList.Add(flowChecker);
-                isAITurn = false;
             }
         }
     }
