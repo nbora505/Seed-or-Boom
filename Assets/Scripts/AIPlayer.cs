@@ -233,7 +233,10 @@ public class AIPlayer : PlayerController
         foreach(var dicItem in eachOfAICardWeightList)
         {
             if (dicItem.weight > highWeight)
+            {
                 target.Add(dicItem.card);
+                UnityEngine.Debug.LogWarning($"{dicItem.card} :::: {dicItem.weight}");
+            }
         }
 
         if (target.Count == 0)
@@ -288,7 +291,7 @@ public class AIPlayer : PlayerController
 
         for (int i = 0; i < cardList.Count; i++)
         {
-            finalTotalWin += (CalculateWeightsForWining_I(cardList[i], alpha, beta));
+            finalTotalWin += UnityEngine.Mathf.Round((float)(CalculateWeightsForWining_I(cardList[i], alpha, beta)));
         }
 
         UnityEngine.Debug.Log(finalTotalWin);
