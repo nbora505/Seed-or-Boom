@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 1405261842652217837}
   - component: {fileID: 1159786976054710120}
   - component: {fileID: 3655828775775538805}
-  - component: {fileID: 5094913570701807599}
   - component: {fileID: -4964661155953669608}
   m_Layer: 0
   m_Name: Card2
@@ -30,8 +29,8 @@ Transform:
   m_GameObject: {fileID: 6543507672598923233}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.3}
+  m_LocalPosition: {x: -0.4, y: 0, z: 0.6}
+  m_LocalScale: {x: 1, y: 1.5, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -107,19 +106,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5094913570701807599
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6543507672598923233}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3639ddc494e5c9345974bcf8b809dde5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cardValue: 2
 --- !u!114 &-4964661155953669608
 MonoBehaviour:
   m_ObjectHideFlags: 0

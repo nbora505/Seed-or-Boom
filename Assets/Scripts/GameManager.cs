@@ -33,6 +33,7 @@ public class GameManager : MonoBehaviour
     public ScoreManager scoreManager;
     public ButtonManager buttonManager;
     public GameObject TestBtn;
+    public CameraManager cameraManager;
     void Start()
     {
        
@@ -175,9 +176,10 @@ public class GameManager : MonoBehaviour
 
             // 현재 플레이어의 카드만 표시
             buttonManager.ShowCard(curCardList);
-
+            cameraManager.CameraMoveTrue(playerList.Count);
             // 플레이어가 카드를 제출할 때까지 대기
             yield return new WaitUntil(() => checkSubmitCard == 0);
+            cameraManager.CameraMoveFalse(playerList.Count);
             checkSubmitCard = -1;
         }
 
