@@ -149,6 +149,7 @@ public class CardManager : MonoBehaviour
 
         cards = cardList;
         int submitCard = cardList[submitTime];
+        Debug.Log($"submitTime : {submitTime}, submitCard(cardList[submitTime]) : {cardList[submitTime]}, ");
 
         for (int i = 0; i < cards.Count; i++)
         {

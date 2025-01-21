@@ -135,7 +135,7 @@ public class GameManager : MonoBehaviour
             if (playerList[curTurn].GetComponent<PlayerController>().isAIPlayer || playerList[curTurn].GetComponent<AIPlayer>().isAIPlayer)
             {
                 playerList[curTurn].GetComponent<AIPlayer>().expectedWins = playerList[curTurn].GetComponent<AIPlayer>().CalculateOddsOfWinning(0.69f, 0.29f);
-
+                predictedWinCnt[curTurn] = playerList[curTurn].GetComponent<AIPlayer>().expectedWins;
             }
             else
             {
@@ -222,7 +222,14 @@ public class GameManager : MonoBehaviour
             Debug.Log(curPlayer + " 예측 실패...");
 
             //실패한 플레이어한테 폭탄 심지 등장시키게 하기
-            yield return StartCoroutine(scoreManager.CheckBomb(curPlayer.GetComponent<PlayerController>()));
+            if (curPlayer.GetComponent<PlayerController>().isAIPlayer || curPlayer.GetComponent<AIPlayer>().isAIPlayer)
+            {
+                yield return StartCoroutine(curPlayer.GetComponent<AIPlayer>().AIDrawBomb());
+            }
+            else
+            {
+                yield return StartCoroutine(scoreManager.CheckBomb(curPlayer.GetComponent<PlayerController>()));
+            }
         }
         yield return new WaitForSeconds(1f);
     }
@@ -260,6 +267,11 @@ public class GameManager : MonoBehaviour
         //리스트 초기화
     void ResetLists()
     {
+        if (curTurn > playerList.Count - 1)
+        {
+            curTurn = 0;
+        }
+
         predictedWinCnt = new int[playerList.Count];
         winCntOfEachTurn = new int[playerList.Count];
 
