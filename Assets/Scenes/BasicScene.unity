@@ -534,7 +534,6 @@ GameObject:
   - component: {fileID: 259528527}
   - component: {fileID: 259528526}
   - component: {fileID: 259528525}
-  - component: {fileID: 259528529}
   m_Layer: 0
   m_Name: Player3
   m_TagString: Player
@@ -572,7 +571,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5afac2e4ab60e0f42b885dc0b8fac6d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isAIPlayer: 0
+  AIPlayer: 0
   cardList: 
   bombList: 000001
   bombPrefab:
@@ -658,34 +657,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 259528523}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &259528529
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 259528523}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9f609df25b91204bbcd6e86688ccdc1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isAIPlayer: 0
-  cardList: 
-  bombList: 000001
-  bombPrefab: []
-  remainingBomb: 3
-  submitTime: 0
-  bombVisible: 0
-  isDead: 0
-  gm: {fileID: 1734969100}
-  expectedWins: 0
-  nowTotalWins: 0
-  expectedWin: 
-  eachOfSubmitedCardWeightList: []
-  alp: 0.6
-  bet: 0.2
-  gam: 0.2
 --- !u!1 &299639867
 GameObject:
   m_ObjectHideFlags: 0
@@ -1136,7 +1107,6 @@ GameObject:
   - component: {fileID: 455787123}
   - component: {fileID: 455787122}
   - component: {fileID: 455787121}
-  - component: {fileID: 455787125}
   m_Layer: 0
   m_Name: Player1
   m_TagString: Player
@@ -1169,12 +1139,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 455787119}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5afac2e4ab60e0f42b885dc0b8fac6d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isAIPlayer: 0
+  AIPlayer: 0
   cardList: 
   bombList: 000001
   bombPrefab:
@@ -1260,6 +1230,7 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 455787119}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
@@ -1365,6 +1336,8 @@ Transform:
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 >>>>>>> Stashed changes
+=======
+>>>>>>> parent of cdf08dc (.)
 --- !u!1 &538162716
 GameObject:
   m_ObjectHideFlags: 0
@@ -1590,7 +1563,6 @@ GameObject:
   - component: {fileID: 604149876}
   - component: {fileID: 604149875}
   - component: {fileID: 604149874}
-  - component: {fileID: 604149878}
   m_Layer: 0
   m_Name: Player2
   m_TagString: Player
@@ -1628,7 +1600,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5afac2e4ab60e0f42b885dc0b8fac6d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isAIPlayer: 0
+  AIPlayer: 0
   cardList: 
   bombList: 000001
   bombPrefab:
@@ -1714,34 +1686,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 604149872}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &604149878
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 604149872}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9f609df25b91204bbcd6e86688ccdc1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isAIPlayer: 0
-  cardList: 
-  bombList: 000001
-  bombPrefab: []
-  remainingBomb: 3
-  submitTime: 0
-  bombVisible: 0
-  isDead: 0
-  gm: {fileID: 1734969100}
-  expectedWins: 0
-  nowTotalWins: 0
-  expectedWin: 
-  eachOfSubmitedCardWeightList: []
-  alp: 0.6
-  bet: 0.2
-  gam: 0.2
 --- !u!1 &704512085
 GameObject:
   m_ObjectHideFlags: 0
@@ -2769,7 +2713,6 @@ GameObject:
   - component: {fileID: 1641913599}
   - component: {fileID: 1641913598}
   - component: {fileID: 1641913597}
-  - component: {fileID: 1641913601}
   m_Layer: 0
   m_Name: Player4
   m_TagString: Player
@@ -2807,7 +2750,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5afac2e4ab60e0f42b885dc0b8fac6d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isAIPlayer: 0
+  AIPlayer: 0
   cardList: 
   bombList: 000001
   bombPrefab:
@@ -2893,34 +2836,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1641913595}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &1641913601
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1641913595}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9f609df25b91204bbcd6e86688ccdc1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isAIPlayer: 0
-  cardList: 
-  bombList: 000001
-  bombPrefab: []
-  remainingBomb: 3
-  submitTime: 0
-  bombVisible: 0
-  isDead: 0
-  gm: {fileID: 1734969100}
-  expectedWins: 0
-  nowTotalWins: 0
-  expectedWin: 
-  eachOfSubmitedCardWeightList: []
-  alp: 0.6
-  bet: 0.2
-  gam: 0.2
 --- !u!1 &1652004668
 GameObject:
   m_ObjectHideFlags: 0
