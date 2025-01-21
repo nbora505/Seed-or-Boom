@@ -324,15 +324,20 @@ public class AIPlayer : PlayerController
                 sigmaPlusMeterForCards += i;
             }
         }
-        float losingProbability = (sigmaPlusMeterForCards - card_I) / sigmaPlusMeterForCards;
+        float losingProbability;
+
+        if (sigmaPlusMeterForCards != 0) losingProbability = (sigmaPlusMeterForCards - card_I) / sigmaPlusMeterForCards;
+        else losingProbability = 0;
+        // 인피니티 원인 해결
 
         if (card_I == 0)
         {
             losingProbability = 0;
         }
 
-        float cardValueFormulasResult = card_I / 4;
+        float cardValueFormulasResult = (float)card_I / 4f;
         // 두번 째 원인은 얘다. 얘가 지금 0이 나온다.
+        // 1차 수정
 
         UnityEngine.Debug.Log($"{losingProbability}, {cardValueFormulasResult}");
 
@@ -392,6 +397,8 @@ public class AIPlayer : PlayerController
         // #Critical: Specify that the base is the denominator.
         // The numerator is calculated by subtracting card_I after the denominator sigma calculation.
         float sigmaPlusMeterForCards = 0;
+        // 첫번째 원인은 얘다. 0으로 무언가를 계산하니까 이런 일이 벌어진거다.
+        // 인피니티, 부동소수점 오류가 뜬다.
 
         if (card_I != 4)
         {
@@ -400,14 +407,16 @@ public class AIPlayer : PlayerController
                 sigmaPlusMeterForCards += i;
             }
         }
-        float losingProbability = (sigmaPlusMeterForCards - card_I) / sigmaPlusMeterForCards;
+        float losingProbability;
 
-        if (card_I == 0)
-        {
-            losingProbability = 0;
-        }
+        if (sigmaPlusMeterForCards != 0) losingProbability = (sigmaPlusMeterForCards - card_I) / sigmaPlusMeterForCards;
+        else losingProbability = 0;
+        // 인피니티 원인 해결
 
-        float cardValueFormulasResult = card_I / 4;
+
+        float cardValueFormulasResult = (float)card_I / 4f;
+        // 두번 째 원인은 얘다. 얘가 지금 0이 나온다.
+        // 1차 수정
 
         float orderWeight = 0;
 
