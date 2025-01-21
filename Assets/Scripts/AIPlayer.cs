@@ -22,7 +22,7 @@ using static UnityEngine.UIElements.UxmlAttributeDescription;
 public class AIPlayer : PlayerController
 {
     List<float> eachOfSubmitedCardWeightList = new List<float>();
-    Dictionary<int, float> eachOfAICardWeightList = new Dictionary<int, float>();
+    List<(int card, float weight)> eachOfAICardWeightList = new List<(int card, float weight)>();
 
     [Tooltip("AI Weight, alp = alpha, bet = beta, gam = gamma")]
     public float alp = 0.6f;
@@ -143,13 +143,13 @@ public class AIPlayer : PlayerController
 
         for (int j = 0; j < cardList.Count; j++)
         {
-            eachOfAICardWeightList.Add(cardList[j], CalculateWeightsForCard_I(cardList[j], alpha, beta, gamma, submitOrder));
+            eachOfAICardWeightList.Add((cardList[j], CalculateWeightsForCard_I(cardList[j], alpha, beta, gamma, submitOrder)));
         }
 
         foreach (var dicItem in eachOfAICardWeightList)
         {
-            if (dicItem.Value <= highWeight)
-                target.Add(dicItem.Key);
+            if (dicItem.weight <= highWeight)
+                target.Add(dicItem.card);
         }
 
         if (target.Count == 0)
@@ -224,13 +224,13 @@ public class AIPlayer : PlayerController
 
         for (int j = 0; j < cardList.Count; j++)
         {
-            eachOfAICardWeightList.Add(cardList[j], CalculateWeightsForCard_I(cardList[j], alpha, beta, gamma, submitOrder));
+            eachOfAICardWeightList.Add((cardList[j], CalculateWeightsForCard_I(cardList[j], alpha, beta, gamma, submitOrder)));
         }
 
         foreach(var dicItem in eachOfAICardWeightList)
         {
-            if (dicItem.Value > highWeight)
-                target.Add(dicItem.Key);
+            if (dicItem.weight > highWeight)
+                target.Add(dicItem.card);
         }
 
         if (target.Count == 0)
