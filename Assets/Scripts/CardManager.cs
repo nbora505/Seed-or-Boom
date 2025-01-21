@@ -117,7 +117,12 @@ public class CardManager : MonoBehaviour
             // 이쪽 아래 포문이, 유저 한 명에게 카드를 주는 코드라인.
             for (int j = 0; j < 4; j++)
             {
-                gameManager.playerList[i].GetComponent<PlayerController>().cardList.Add(GiveACardToUsers());
+                if (gameManager.playerList[i].GetComponent<PlayerController>().isAIPlayer || gameManager.playerList[i].GetComponent<AIPlayer>().isAIPlayer)
+                {
+                    gameManager.playerList[i].GetComponent<AIPlayer>().cardList.Add(GiveACardToUsers());
+                }
+                else
+                    gameManager.playerList[i].GetComponent<PlayerController>().cardList.Add(GiveACardToUsers());
             }
         }
         Debug.Log($"Remained Card :{card.Count}");

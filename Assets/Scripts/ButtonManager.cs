@@ -1,3 +1,5 @@
+using Firebase.Firestore;
+using Meta.WitAi;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,8 +21,10 @@ public class ButtonManager : MonoBehaviour
     [Header("Score,UI")]
     public Text text;
     public int expectedWin = 0;
+    public int selectCard;
     public Text logText;
-
+    public List<GameObject> cardButtonPrefab;
+    public Transform buttonParent; 
     [Header("bomb")]
     public List<int> selectedBomb = new List<int>() {0,1,2};
     public int selectedBombIndex;
@@ -40,8 +44,8 @@ public class ButtonManager : MonoBehaviour
     public GameObject checkPanel;
 
 
-    
 
+    public List<GameObject> activeCardInstances = new List<GameObject>();
     
 
     public void Start()
@@ -169,9 +173,19 @@ public class ButtonManager : MonoBehaviour
     }
     public void OnSubmitScoreButtonClicked()
     {
-        gameManager.predictedWinCnt[gameManager.curTurn] = expectedWin;
-        gameManager.selectedWin = 0;
-        logText.text = "예상 승리횟수 : " + gameManager.playerList.Count.ToString() + "번 제출완료";
+        logText.color = Color.black;
+        logText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번 제출완료";
+
+        if (expectedWin >= 0 && expectedWin <= 4)
+        {
+            gameManager.predictedWinCnt[gameManager.curTurn] = expectedWin;
+            gameManager.selectedWin = 0;
+        }
+        else
+        {
+            logText.text = "0에서 4사이의 값만 넣어라";
+            logText.color = Color.red;
+        }
     }
     #endregion
 
@@ -200,23 +214,65 @@ public class ButtonManager : MonoBehaviour
         //testBtn.gameObject.SetActive(true); // 버튼 활성화
 
     }
-    public void OnSubmitCardButtonClicked(int cardValue) // 카드제출 버튼 기능
+
+
+    public void ShowCard(List<int> cardList)
     {
-        playerCards.RemoveAt(cardValue);
-        
-        cardManager.CardCompare(playerCards,2);
-        if (CardOutline != null)
+        // 이전에 생성된 카드 인스턴스 삭제
+        foreach (var cardInstance in activeCardInstances)
         {
-            CardOutline.effectColor = originalOutlineColor;
+            Destroy(cardInstance);
         }
+        activeCardInstances.Clear(); // 리스트 초기화
 
-        if (originalCardPosition != null)
-        {     
-            CardOutline.transform.position = originalCardPosition;
+        // 현재 플레이어의 CardImage 자식 객체 가져오기
+        Transform cardImageParent = gameManager.playerList[gameManager.curTurn].transform.Find("CardImage");
+
+        // 카드 리스트의 각 값을 처리
+        foreach (int cardValue in cardList)
+        {
+            // 카드 값에 맞는 프리팹 선택
+            GameObject cardPrefab = cardButtonPrefab[cardValue - 1]; // 카드 값이 1부터 시작
+            GameObject myInstance = Instantiate(cardPrefab, cardImageParent); // 부모를 CardImage로 설정
+
+            // 활성화된 인스턴스 저장
+            activeCardInstances.Add(myInstance);
+
+            // 버튼 설정
+            Button buttonComponent = myInstance.GetComponent<Button>();
+            int capturedValue = cardValue; // 로컬 변수로 캡처
+            buttonComponent.onClick.AddListener(() => OnSubmitCardButtonClicked(capturedValue, myInstance));
         }
-        logText.text = "? 카드 제출완료";
-
     }
+
+
+    public void OnSubmitCardButtonClicked(int cardValue,GameObject cardInstance) // 카드제출 버튼 기능
+    {
+        List<int> curCardList = gameManager.playerList[gameManager.curTurn].GetComponent<PlayerController>().cardList;
+
+        // 카드 리스트에서 선택된 카드 제거 및 제출된 카드 리스트에 추가
+        curCardList.Remove(cardValue);
+        gameManager.submitCardList.Add(cardValue);
+        
+        //선택된 카드 파괴
+        activeCardInstances.Remove(cardInstance);
+        Destroy(cardInstance);
+       
+
+
+        // 제출 완료 메시지
+        logText.text = $"{cardValue}번 카드 제출 완료";
+        selectCard = 0;
+        gameManager.checkSubmitCard = selectCard;
+        
+        
+
+        Debug.Log($"현재 플레이어의 제출 카드: {cardValue}");
+    }
+
+
+
+
 
     #endregion
 
@@ -261,7 +317,8 @@ public class ButtonManager : MonoBehaviour
         {
             Debug.LogWarning("gameManager가 null임.");
         }
-        if (CardOutline != null)
+
+        /*if (CardOutline != null)
         {
             BombWickOutline.effectColor = originalBombWickOutlineColor;
         }
@@ -269,7 +326,7 @@ public class ButtonManager : MonoBehaviour
         if (originalCardPosition != null)
         {
             BombWickOutline.transform.position = originalBombWickPosition;
-        }
+        }*/
 
         //게임매니저
 
