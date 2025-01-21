@@ -21,8 +21,9 @@ using static UnityEngine.UIElements.UxmlAttributeDescription;
 /// </summary>
 public class AIPlayer : PlayerController
 {
-    List<float> eachOfSubmitedCardWeightList = new List<float>();
-    List<(int card, float weight)> eachOfAICardWeightList = new List<(int card, float weight)>();
+    [SerializeField]                    List<float> eachOfSubmitedCardWeightList = new List<float>();
+
+    [SerializeField]                    List<(int card, float weight)> eachOfAICardWeightList = new List<(int card, float weight)>();
 
     [Tooltip("AI Weight, alp = alpha, bet = beta, gam = gamma")]
     public float alp = 0.6f;
