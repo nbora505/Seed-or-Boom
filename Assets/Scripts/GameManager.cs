@@ -51,6 +51,11 @@ public class GameManager : MonoBehaviour
         StartCoroutine(StartRound());
     }
 
+    // AI플레이어의         expectedWins = CalculateOddsOfWinning(0.7f, 0.3f); 요거를
+    // 다른 사람들이 승수를 선언할 때, 만약에 AI 플레이어면
+    //playerList[curTurn].GetComponent<AIPlayer>().expectedWins = playerList[curTurn].GetComponent<AIPlayer>().CalculateOddsOfWinning(알파, 베타);
+
+
     IEnumerator StartRound()
     {
         //리스트 초기화
@@ -126,12 +131,22 @@ public class GameManager : MonoBehaviour
             Debug.LogWarning( i+1 + "번째 순서" + playerName + "입니다.");
             noticeturnText.text += (i + 1 + "번째 순서 " + playerName + "입니다.\n");
 
-            //여기에서 플레이어 리스트[현재 차례]의 승수 선언 UI 활성화
-            LogText.text = playerName + " 승 수 선택하세요";
-            TestBtn.SetActive(true);
-            yield return new WaitUntil(() => selectedWin == 0);
-            TestBtn.SetActive(false);
-            selectedWin = -1;
+            //ai일 경우
+            if (playerList[curTurn].GetComponent<PlayerController>().isAIPlayer || playerList[curTurn].GetComponent<AIPlayer>().isAIPlayer)
+            {
+                playerList[curTurn].GetComponent<AIPlayer>().expectedWins = playerList[curTurn].GetComponent<AIPlayer>().CalculateOddsOfWinning(0.69f, 0.29f);
+
+            }
+            else
+            {
+                //여기에서 플레이어 리스트[현재 차례]의 승수 선언 UI 활성화
+                LogText.text = playerName + " 승 수 선택하세요";
+                TestBtn.SetActive(true);
+                yield return new WaitUntil(() => selectedWin == 0);
+
+                TestBtn.SetActive(false);
+                selectedWin = -1;
+            }
             
             Debug.Log(playerName + "의 승수 선언 : " + predictedWinCnt[curTurn] + "승");
 
@@ -174,8 +189,6 @@ public class GameManager : MonoBehaviour
         }
 
     }
-
-
 
     IEnumerator CheckTurnResult()
     {

@@ -267,7 +267,7 @@ public class ButtonManager : MonoBehaviour
         
         
 
-        Debug.Log($"현재 플레이어의 제출 카드: {cardValue}");
+        Debug.Log($"{gameManager.playerList[gameManager.curTurn].name}의 제출 카드: {cardValue}");
     }
 
 

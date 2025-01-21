@@ -21,9 +21,11 @@ using static UnityEngine.UIElements.UxmlAttributeDescription;
 /// </summary>
 public class AIPlayer : PlayerController
 {
-    [SerializeField]                    List<float> eachOfSubmitedCardWeightList = new List<float>();
+    [SerializeField]
+    List<float> eachOfSubmitedCardWeightList = new List<float>();
 
-    [SerializeField]                    List<(int card, float weight)> eachOfAICardWeightList = new List<(int card, float weight)>();
+    [SerializeField]
+    List<(int card, float weight)> eachOfAICardWeightList = new List<(int card, float weight)>();
 
     [Tooltip("AI Weight, alp = alpha, bet = beta, gam = gamma")]
     public float alp = 0.6f;
@@ -34,7 +36,7 @@ public class AIPlayer : PlayerController
 
     private void Start()
     {
-        expectedWins = CalculateOddsOfWinning(0.7f, 0.3f);
+        //expectedWins = CalculateOddsOfWinning(0.7f, 0.3f);
     }
     /// <summary>
     /// Don't touch Update(). it doesn't required
@@ -268,6 +270,7 @@ public class AIPlayer : PlayerController
             return 0;
         }
 
+        UnityEngine.Debug.Log("****************************************");
         //// 1안
         //float calTotalWinningRate = 0;
         //for (int i = 0; i < cardList.Count; i++)
@@ -281,14 +284,68 @@ public class AIPlayer : PlayerController
 
         // 2안
 
-        int finalTotalWin = 0;
+        double finalTotalWin = 0;
 
         for (int i = 0; i < cardList.Count; i++)
         {
-            finalTotalWin += (int)Math.Round(CalculateWeightsForCard_I(cardList[i], alpha, beta, 0, submitTime));
+            finalTotalWin += (CalculateWeightsForWining_I(cardList[i], alpha, beta));
         }
 
-        return finalTotalWin;
+        UnityEngine.Debug.Log(finalTotalWin);
+
+        return (int)finalTotalWin;
+    }
+
+    public float CalculateWeightsForWining_I(int card_I, float alpha, float beta)
+    {
+        if (card_I > 4 || card_I < 1)
+        {
+            UnityEngine.Debug.LogError($"현재 파라메타로 들어온 카드의 값이 4를 초과하거나, 1 미만입니다. 카드의 값을 확인해보시오. {card_I}");
+            return 0;
+        }
+
+        if (alpha + beta > 1)
+        {
+            UnityEngine.Debug.LogError($"알파, 베타, 감마의 총 합이 1을 넘어 섰습니다. 알파 베타 감마의 현재 총합 {alpha + beta}");
+            return 0;
+        }
+
+
+        // #Critical: Specify that the base is the denominator.
+        // The numerator is calculated by subtracting card_I after the denominator sigma calculation.
+        float sigmaPlusMeterForCards = 0;
+        // 첫번째 원인은 얘다. 0으로 무언가를 계산하니까 이런 일이 벌어진거다.
+        // 인피니티, 부동소수점 오류가 뜬다.
+
+        if (card_I != 4)
+        {
+            for (int i = card_I; i <= 4; i++)
+            {
+                sigmaPlusMeterForCards += i;
+            }
+        }
+        float losingProbability = (sigmaPlusMeterForCards - card_I) / sigmaPlusMeterForCards;
+
+        if (card_I == 0)
+        {
+            losingProbability = 0;
+        }
+
+        float cardValueFormulasResult = card_I / 4;
+        // 두번 째 원인은 얘다. 얘가 지금 0이 나온다.
+
+        UnityEngine.Debug.Log($"{losingProbability}, {cardValueFormulasResult}");
+
+        // (1 - losingProbability) is the probability of winning.
+        // cardValueFormulasResult means the result of the calculation for the value of the card.
+        // orderWeight is the computational weight of the AI's own ordering.
+        float result = alpha * (1 - losingProbability) +
+            beta * cardValueFormulasResult;
+
+        UnityEngine.Debug.Log($"{result}");
+
+        // return card_i's weight
+        return result;
     }
 
     /// <summary>
