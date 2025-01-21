@@ -1231,6 +1231,7 @@ MeshFilter:
   m_GameObject: {fileID: 455787119}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 <<<<<<< HEAD
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
@@ -1336,6 +1337,8 @@ Transform:
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 >>>>>>> Stashed changes
+=======
+>>>>>>> parent of cdf08dc (.)
 =======
 >>>>>>> parent of cdf08dc (.)
 --- !u!1 &538162716
