@@ -33,7 +33,7 @@ public class ScoreManager : MonoBehaviour
         // -> 게임 메니저에서 for문 돌려서 해당하는 모든 플레이어에게 이 함수 실행킨다.
 
         //남아있는 심지 수만큼 랜덤 돌려서 당첨 심지 결정하기
-        int realBomb = Random.Range(0, player.remainingBomb);
+        //int realBomb = Random.Range(0, player.remainingBomb);
 
         //심지가 골라질때까지 기다리기(기본값은 -1)
         yield return new WaitUntil(() => gm.selectedBomb >= 0);
