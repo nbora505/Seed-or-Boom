@@ -96,6 +96,10 @@ public class AIPlayer : PlayerController
             gm.deadList.Add(this.gameObject);
 
             isDead = true;
+
+            //사망 연출은 여기서 처리하는 걸로
+            this.gameObject.SetActive(false);
+            gm.LogText.text = gameObject.name + "사망";
         }
         else
         {
