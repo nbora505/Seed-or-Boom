@@ -51,7 +51,6 @@ public class GameManager : MonoBehaviour
         StartCoroutine(StartRound());
     }
 
-
     IEnumerator StartRound()
     {
         //리스트 초기화
@@ -146,12 +145,18 @@ public class GameManager : MonoBehaviour
 
     IEnumerator SubmitCard()
     {
-        
+        // 만약에 겟 컴포넌트를 했을 때, 그게 널이면, 
+        if (playerList[curTurn].GetComponent<PlayerController>().isAIPlayer || playerList[curTurn].GetComponent<AIPlayer>().isAIPlayer)
+        {
+            StartCoroutine(playerList[curTurn].GetComponent<AIPlayer>().AITurn());
+        }
+        else
+        {
             // 현재 플레이어의 카드 리스트 가져오기
             List<int> curCardList = playerList[curTurn].GetComponent<PlayerController>().cardList;
-        string playerName = playerList[curTurn].name;
+            string playerName = playerList[curTurn].name;
 
-        LogText.text = playerName + " 카드 선택 하세요";
+            LogText.text = playerName + " 카드 선택 하세요";
 
             // 현재 플레이어의 카드만 표시
             buttonManager.ShowCard(curCardList);
@@ -159,14 +164,15 @@ public class GameManager : MonoBehaviour
             // 플레이어가 카드를 제출할 때까지 대기
             yield return new WaitUntil(() => checkSubmitCard == 0);
             checkSubmitCard = -1;
+        }
 
-            // 턴 이동
-            curTurn++;
-            if (curTurn >= playerList.Count)
-            {
-                curTurn = 0;              
-            }
-        
+        // 턴 이동
+        curTurn++;
+        if (curTurn >= playerList.Count)
+        {
+            curTurn = 0;
+        }
+
     }
 
 

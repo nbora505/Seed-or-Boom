@@ -21,8 +21,8 @@ using static UnityEngine.UIElements.UxmlAttributeDescription;
 /// </summary>
 public class AIPlayer : PlayerController
 {
-    List<float> eachOfSubmitedCardWeightList = new List<float>();
-    Dictionary<int, float> eachOfAICardWeightList = new Dictionary<int, float>();
+    [SerializeField]                                        List<float> eachOfSubmitedCardWeightList = new List<float>();
+    [SerializeField]                                        Dictionary<int, float> eachOfAICardWeightList = new Dictionary<int, float>();
 
     [Tooltip("AI Weight, alp = alpha, bet = beta, gam = gamma")]
     public float alp = 0.6f;
@@ -33,7 +33,7 @@ public class AIPlayer : PlayerController
 
     private void Start()
     {
-        expectedWins = CalculateOddsOfWinning(0.7f, 0.3f);
+        //expectedWins = CalculateOddsOfWinning(0.7f, 0.3f);
     }
     /// <summary>
     /// Don't touch Update(). it doesn't required
@@ -48,6 +48,8 @@ public class AIPlayer : PlayerController
     /// <returns></returns>
     public IEnumerator AITurn()
     {
+        expectedWins = CalculateOddsOfWinning(0.7f, 0.3f);
+
         yield return new WaitForSeconds(UnityEngine.Random.Range(1, 3));
 
         if (nowTotalWins < expectedWins)
