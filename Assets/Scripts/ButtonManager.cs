@@ -227,8 +227,33 @@ public class ButtonManager : MonoBehaviour
 
         // 현재 플레이어의 CardImage 자식 객체 가져오기
         Transform cardImageParent = gameManager.playerList[gameManager.curTurn].transform.Find("CardImage");
+        
+        //Transform currentPlayerTransform = gameManager.playerList[gameManager.curTurn].transform;
+        //float cardSpacing = 2f; // 카드 간 간격
+        //float startX = -cardSpacing * (cardList.Count - 1) / 2;
+        //// 카드 리스트의 각 값을 처리
+        //for (int i = 0; i < cardList.Count; i++)
+        //{
+        //    int cardValue = cardList[i];
 
-        // 카드 리스트의 각 값을 처리
+        //    // 카드 값에 맞는 프리팹 선택
+        //    GameObject cardPrefab = cardButtonPrefab[cardValue - 1]; // 카드 값이 1부터 시작
+        //    GameObject myInstance = Instantiate(cardPrefab, cardImageParent); // 부모를 CardImage로 설정
+
+        //    // 카드 위치 조정
+        //    Vector3 playerPosition = currentPlayerTransform.position;
+        //    Transform transform = myInstance.GetComponent<Transform>();
+        //    transform.position = new Vector3(playerPosition.x + startX + i * cardSpacing, playerPosition.y, playerPosition.z - 3); // X축과 Z축을 조정
+        //    transform.rotation = Quaternion.Euler(0, 180, 0);
+
+        //    // 활성화된 인스턴스 저장
+        //    activeCardInstances.Add(myInstance);
+
+        //    // 버튼 설정
+        //    Button buttonComponent = myInstance.GetComponent<Button>();
+        //    int capturedValue = cardValue; // 로컬 변수로 캡처
+        //    buttonComponent.onClick.AddListener(() => OnSubmitCardButtonClicked(capturedValue, myInstance));
+        //}
         foreach (int cardValue in cardList)
         {
             // 카드 값에 맞는 프리팹 선택
@@ -236,7 +261,7 @@ public class ButtonManager : MonoBehaviour
             GameObject myInstance = Instantiate(cardPrefab, cardImageParent); // 부모를 CardImage로 설정
 
             // 활성화된 인스턴스 저장
-            activeCardInstances.Add(myInstance);
+           activeCardInstances.Add(myInstance);
 
             // 버튼 설정
             Button buttonComponent = myInstance.GetComponent<Button>();
