@@ -89,7 +89,7 @@ public class AIPlayer : PlayerController
     public IEnumerator AIDrawBomb()
     {
         int isTrueBomb = UnityEngine.Random.Range(0, remainingBomb);
-        int selectBomb = UnityEngine.Random.Range(0, remainingBomb);
+        int selectBomb = 0;
 
         yield return new WaitForSeconds(UnityEngine.Random.Range(1, 3));
 
