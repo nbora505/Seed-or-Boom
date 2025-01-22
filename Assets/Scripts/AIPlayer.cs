@@ -28,9 +28,9 @@ public class AIPlayer : PlayerController
     List<(int card, float weight)> eachOfAICardWeightList = new List<(int card, float weight)>();
 
     [Tooltip("AI Weight, alp = alpha, bet = beta, gam = gamma")]
-    public float alp = 0.6f;
-    public float bet = 0.2f;
-    public float gam = 0.2f;
+    float alp = 0.6f;
+    float bet = 0.19f;
+    float gam = 0.19f;
 
     int flowChecker = 0;
 
