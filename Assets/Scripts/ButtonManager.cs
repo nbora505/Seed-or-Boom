@@ -50,7 +50,7 @@ public class ButtonManager : MonoBehaviour
     public GameObject checkPanel;
 
 
-
+    public Transform target;
     public List<GameObject> activeCardInstances = new List<GameObject>();
     
     
@@ -203,6 +203,7 @@ public class ButtonManager : MonoBehaviour
         
         Transform PlayerPanelPos = gameManager.playerList[gameManager.curTurn].transform.Find("Player_Canvas/Panel/P1_LogMain");
         Text playerText = PlayerPanelPos.GetComponent<Text>();
+
         expectedWin++;
         logText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번";
         playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번";
@@ -223,7 +224,8 @@ public class ButtonManager : MonoBehaviour
         Text playerText = PlayerPanelPos.GetComponent<Text>();
         logText.color = Color.black;
         //logText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번 제출완료";
-        logText.DOText("예상 승리횟수 :" + expectedWin.ToString()+"번 제출완료", 3);
+        logText.text = "";
+        logText.DOText("승리횟수 :" + expectedWin.ToString()+"번 제출완료", 2);
         playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번 제출완료";
         if (expectedWin >= 0 && expectedWin <= 4)
         {
@@ -323,11 +325,13 @@ public class ButtonManager : MonoBehaviour
         //선택된 카드 파괴
         activeCardInstances.Remove(cardInstance);
         Destroy(cardInstance);
-       
+
 
 
         // 제출 완료 메시지
-        logText.text = $"{cardValue}번 카드 제출 완료";
+        logText.text = "";
+        logText.DOText("카드값 : "+cardValue.ToString() + "제출완료", 2.2f);
+        
         selectCard = 0;
         gameManager.checkSubmitCard = selectCard;
         

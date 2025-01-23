@@ -141,6 +141,7 @@ public class GameManager : MonoBehaviour
             else
             {
                 //여기에서 플레이어 리스트[현재 차례]의 승수 선언 UI 활성화
+                yield return new WaitForSeconds(2f);
                 LogText.text = playerName + " 승 수 선택하세요";
                 buttonManager.showWinBtn();
                 buttonManager.ShowPlayerPanel(true);
@@ -172,7 +173,7 @@ public class GameManager : MonoBehaviour
             // 현재 플레이어의 카드 리스트 가져오기
             List<int> curCardList = playerList[curTurn].GetComponent<PlayerController>().cardList;
             string playerName = playerList[curTurn].name;
-
+            yield return new WaitForSeconds(2f);
             LogText.text = playerName + " 카드 선택 하세요";
 
             // 현재 플레이어의 카드만 표시
