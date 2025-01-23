@@ -256,16 +256,33 @@ public class ButtonManager : MonoBehaviour
         activeCardInstances.Clear(); // 리스트 초기화
 
         // 현재 플레이어의 CardImage 자식 객체 가져오기
-        Transform cardImageParent = gameManager.playerList[gameManager.curTurn].transform.Find("CardImage");
-               
-        foreach (int cardValue in cardList)
+        Transform[] cardPositions = new Transform[4];
+        cardPositions[0] = gameManager.playerList[gameManager.curTurn].transform.Find("CardImage/FirstCardPos");
+        cardPositions[1] = gameManager.playerList[gameManager.curTurn].transform.Find("CardImage/SecondCardPos");
+        cardPositions[2] = gameManager.playerList[gameManager.curTurn].transform.Find("CardImage/ThirdCardPos");
+        cardPositions[3] = gameManager.playerList[gameManager.curTurn].transform.Find("CardImage/FourthCardPos");
+
+
+        for (int i = 0; i < cardList.Count && i < cardPositions.Length; i++)
         {
+            int cardValue = cardList[i];
+
             // 카드 값에 맞는 프리팹 선택
             GameObject cardPrefab = cardButtonPrefab[cardValue - 1]; // 카드 값이 1부터 시작
-            GameObject myInstance = Instantiate(cardPrefab, cardImageParent); // 부모를 CardImage로 설정
+            Transform targetPosition = cardPositions[i];
+
+            if (targetPosition == null)
+            {
+                Debug.LogWarning($"카드위치 {i + 1} 을 찾을수가없네");
+                continue;
+            }
+
+            // 카드 인스턴스 생성 및 위치 설정
+            GameObject myInstance = Instantiate(cardPrefab, targetPosition.position, targetPosition.rotation);
+            myInstance.transform.SetParent(targetPosition); 
 
             // 활성화된 인스턴스 저장
-           activeCardInstances.Add(myInstance);
+            activeCardInstances.Add(myInstance);
 
             // 버튼 설정
             Button buttonComponent = myInstance.GetComponent<Button>();
