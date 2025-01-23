@@ -4,8 +4,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 
 
@@ -19,12 +21,15 @@ public class ButtonManager : MonoBehaviour
     public CardManager cardManager;
 
     [Header("Score,UI")]
-    public Text text;
+    //public GameObject playerLogPanel;
+    public Text playerLogText;
     public int expectedWin = 0;
     public int selectCard;
     public Text logText;
     public List<GameObject> cardButtonPrefab;
-    public Transform buttonParent; 
+    
+    
+
     [Header("bomb")]
     public List<int> selectedBomb = new List<int>() {0,1,2};
     public int selectedBombIndex;
@@ -47,10 +52,12 @@ public class ButtonManager : MonoBehaviour
 
     public List<GameObject> activeCardInstances = new List<GameObject>();
     
+    
 
     public void Start()
     {
         playerCards = cardManager.card;
+        
     }
     #region 레이 충돌시 관련(추후 사용예정)
     public void GetLayName(string buttonName)
@@ -159,23 +166,59 @@ public class ButtonManager : MonoBehaviour
     #endregion 
 
     #region 승 수 관련
+    public void ShowPlayerPanel(bool onoff)
+    {
+        Transform PlayerPanel = gameManager.playerList[gameManager.curTurn].transform.Find("Player_Canvas/Panel");
+        GameObject playerPanel = PlayerPanel.gameObject;
+
+        
+        if (onoff)
+        {
+            playerPanel.SetActive(true);
+        }
+        else
+        {
+            playerPanel.SetActive(false);
+        }
+    }
+    public void showWinBtn( )
+    {
+        Transform WinBtnParent = gameManager.playerList[gameManager.curTurn].transform.Find("winBtn");
+        GameObject winBtnParent = WinBtnParent.gameObject;
+        winBtnParent.SetActive(true);
+        
+    }
+    public void hideWinBtn()
+    {
+        Transform WinBtnParent = gameManager.playerList[gameManager.curTurn].transform.Find("winBtn");
+        GameObject winBtnParent = WinBtnParent.gameObject;
+        winBtnParent.SetActive(false);
+        
+    }
     public void OnIncreaseScoreButtonClicked() // 승수 증가
     {
+        Transform PlayerPanelPos = gameManager.playerList[gameManager.curTurn].transform.Find("Player_Canvas/Panel/P1_LogMain");
+        Text playerText = PlayerPanelPos.GetComponent<Text>();
         expectedWin++;
         logText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번";
-
+        playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번";
     }
    
     public void OnDecreaseScoreButtonClicked() // 승수 감소
     {
+        Transform PlayerPanelPos = gameManager.playerList[gameManager.curTurn].transform.Find("Player_Canvas/Panel/P1_LogMain");
+        Text playerText = PlayerPanelPos.GetComponent<Text>();
         expectedWin--;
         logText.text = "예상 승리횟수 " + expectedWin.ToString() + "번";
+        playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번";
     }
     public void OnSubmitScoreButtonClicked()
     {
+        Transform PlayerPanelPos = gameManager.playerList[gameManager.curTurn].transform.Find("Player_Canvas/Panel/P1_LogMain");
+        Text playerText = PlayerPanelPos.GetComponent<Text>();
         logText.color = Color.black;
         logText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번 제출완료";
-
+        playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번 제출완료";
         if (expectedWin >= 0 && expectedWin <= 4)
         {
             gameManager.predictedWinCnt[gameManager.curTurn] = expectedWin;
@@ -183,6 +226,7 @@ public class ButtonManager : MonoBehaviour
         }
         else
         {
+            playerText.text = "0에서 4사이의 값만 넣어라";
             logText.text = "0에서 4사이의 값만 넣어라";
             logText.color = Color.red;
         }
@@ -226,14 +270,30 @@ public class ButtonManager : MonoBehaviour
         activeCardInstances.Clear(); // 리스트 초기화
 
         // 현재 플레이어의 CardImage 자식 객체 가져오기
-        Transform cardImageParent = gameManager.playerList[gameManager.curTurn].transform.Find("CardImage");
+        Transform[] cardPositions = new Transform[4];
+        cardPositions[0] = gameManager.playerList[gameManager.curTurn].transform.Find("CardImage/FirstCardPos");
+        cardPositions[1] = gameManager.playerList[gameManager.curTurn].transform.Find("CardImage/SecondCardPos");
+        cardPositions[2] = gameManager.playerList[gameManager.curTurn].transform.Find("CardImage/ThirdCardPos");
+        cardPositions[3] = gameManager.playerList[gameManager.curTurn].transform.Find("CardImage/FourthCardPos");
 
-        // 카드 리스트의 각 값을 처리
-        foreach (int cardValue in cardList)
+
+        for (int i = 0; i < cardList.Count && i < cardPositions.Length; i++)
         {
+            int cardValue = cardList[i];
+
             // 카드 값에 맞는 프리팹 선택
             GameObject cardPrefab = cardButtonPrefab[cardValue - 1]; // 카드 값이 1부터 시작
-            GameObject myInstance = Instantiate(cardPrefab, cardImageParent); // 부모를 CardImage로 설정
+            Transform targetPosition = cardPositions[i];
+
+            if (targetPosition == null)
+            {
+                Debug.LogWarning($"카드위치 {i + 1} 을 찾을수가없네");
+                continue;
+            }
+
+            // 카드 인스턴스 생성 및 위치 설정
+            GameObject myInstance = Instantiate(cardPrefab, targetPosition.position, targetPosition.rotation);
+            myInstance.transform.SetParent(targetPosition); 
 
             // 활성화된 인스턴스 저장
             activeCardInstances.Add(myInstance);
