@@ -10,6 +10,8 @@ public class GameManager : MonoBehaviour
     public List<GameObject> playerList;
     public List<GameObject> deadList;
     GameObject leaderPlayer;
+    
+    public Text noticeturnText;
     public Text LogText;
     public int maxPlayerCnt = 4;
 
@@ -18,8 +20,11 @@ public class GameManager : MonoBehaviour
     public int curTurn;
     public int maxCardCnt = 5;
 
+
     public int selectedBomb = -1;
     public int selectedWin = -1;
+    public int checkSubmitCard = -1;
+    public int selectedCard =0;
     public List<int> submitCardList; //제출된 카드리스트
     public int[] predictedWinCnt; //각각의 라운드마다 플레이어들이 예측한 승리 횟수
     public int[] winCntOfEachTurn; //각각의 턴마다 플레이어들이 기록한 승리 횟수
@@ -27,9 +32,11 @@ public class GameManager : MonoBehaviour
     public CardManager cardManager;
     public ScoreManager scoreManager;
     public ButtonManager buttonManager;
-    public GameObject TestBtn;
+    
+    public CameraManager cameraManager;
     void Start()
     {
+       
         //플레이어 객체들 리스트에 추가
         GameObject[] tempPlayerList = GameObject.FindGameObjectsWithTag("Player");
         for (int i = 0; i < maxPlayerCnt; i++)
@@ -45,6 +52,10 @@ public class GameManager : MonoBehaviour
         StartCoroutine(StartRound());
     }
 
+    // AI플레이어의         expectedWins = CalculateOddsOfWinning(0.7f, 0.3f); 요거를
+    // 다른 사람들이 승수를 선언할 때, 만약에 AI 플레이어면
+    //playerList[curTurn].GetComponent<AIPlayer>().expectedWins = playerList[curTurn].GetComponent<AIPlayer>().CalculateOddsOfWinning(알파, 베타);
+
 
     IEnumerator StartRound()
     {
@@ -58,7 +69,7 @@ public class GameManager : MonoBehaviour
         cardManager.TestUserCard(playerList.Count);
 
         //승수 결정받기;
-        //yield return StartCoroutine(DecideWinCnt());
+        yield return StartCoroutine(DecideWinCnt());
 
         //4번의 턴 시작
         for (int i = 1; i <= 4; i++)
@@ -93,39 +104,61 @@ public class GameManager : MonoBehaviour
             curTurn++;
             if (curTurn >= playerList.Count) curTurn = 0;
         }
-        yield return new WaitForSeconds(10f);
+        yield return new WaitForSeconds(5f);
 
         //라운드 종료
         //사망 리스트에 있는 플레이어가 플레이어리스트에 아직 남아있을 경우 지워주기
         RemovePlayerList();
-
+        noticeturnText.text = "";
         curRound++;
-        if (curRound > maxRound)
+
+        if (playerList.Count <= 1)
         {
-            Debug.Log("최대 라운드 초과");
+            LogText.text = $"최후의 승자는 {playerList[0].gameObject.name}";
         }
         else
         {
-            StartCoroutine(StartRound());
+            if (curRound > maxRound)
+            {
+                Debug.Log("최대 라운드 초과");
+            }
+            else
+            {
+                StartCoroutine(StartRound());
+            }
         }
     }
 
     IEnumerator DecideWinCnt()
     {
         Debug.Log("=========승수 선언 단계=========");
-
-        //리더 플레이어부터 차례로 승수 선언. 임시로 랜덤숫자로 승리선언 처리해둠
+        
+        //리더 플레이어부터 차례로 승수 선언
         for (int i = 0; i < playerList.Count; i++)
         {
-            Debug.LogWarning(i+1 + "번째 순서");
-            //여기에서 플레이어 리스트[현재 차례]의 승수 선언 UI 활성화
-            LogText.text = i+1 + "번쨰 순서" + " 승 수 선택하세요";
-            TestBtn.SetActive(true);
-            yield return new WaitUntil(() => selectedWin == 0);
-            TestBtn.SetActive(false);
-            selectedWin = -1;
-            //predictedWinCnt[curTurn] = Random.Range(0, 4);
-            Debug.Log(playerList[curTurn] + "의 승수 선언 : " + predictedWinCnt[curTurn] + "승");
+            string playerName = playerList[curTurn].name;
+            Debug.LogWarning( i+1 + "번째 순서" + playerName + "입니다.");
+            noticeturnText.text += (i + 1 + "번째 순서 " + playerName + "입니다.\n");
+
+            //ai일 경우
+            if (playerList[curTurn].GetComponent<PlayerController>().isAIPlayer || playerList[curTurn].GetComponent<AIPlayer>().isAIPlayer)
+            {
+                playerList[curTurn].GetComponent<AIPlayer>().expectedWins = playerList[curTurn].GetComponent<AIPlayer>().CalculateOddsOfWinning(0.69f, 0.29f);
+                predictedWinCnt[curTurn] = playerList[curTurn].GetComponent<AIPlayer>().expectedWins;
+            }
+            else
+            {
+                //여기에서 플레이어 리스트[현재 차례]의 승수 선언 UI 활성화
+                LogText.text = playerName + " 승 수 선택하세요";
+                buttonManager.showWinBtn();
+                buttonManager.ShowPlayerPanel(true);
+                yield return new WaitUntil(() => selectedWin == 0);
+                buttonManager.ShowPlayerPanel(false);
+                buttonManager.hideWinBtn();                
+                selectedWin = -1;
+            }
+            
+            Debug.Log(playerName + "의 승수 선언 : " + predictedWinCnt[curTurn] + "승");
 
             curTurn++;
             if (curTurn >= playerList.Count) curTurn = 0;
@@ -135,25 +168,37 @@ public class GameManager : MonoBehaviour
         yield return null;
     }
 
-    IEnumerator SubmitCard() // SubmitCard(int subitCard)
+    IEnumerator SubmitCard()
     {
-        //리더 플레이어부터 차례로 카드 제출. 임시로 랜덤숫자로 카드제출 처리해둠
-        List<int> curCardList = playerList[curTurn].GetComponent<PlayerController>().cardList;
-        // tempCard was init for testing
-        int tempCard = Random.Range(0, curCardList.Count);
-        
-        // 실제 구현 단계에서는, 이거를 레이케이스트로 해서 받아온 카드의 정보가 되겠죠?
-        int selectedCard = curCardList[tempCard];
+        // 만약에 겟 컴포넌트를 했을 때, 그게 널이면, 
+        if (playerList[curTurn].GetComponent<PlayerController>().isAIPlayer || playerList[curTurn].GetComponent<AIPlayer>().isAIPlayer)
+        {
+            StartCoroutine(playerList[curTurn].GetComponent<AIPlayer>().AITurn());
+        }
+        else
+        {
+            // 현재 플레이어의 카드 리스트 가져오기
+            List<int> curCardList = playerList[curTurn].GetComponent<PlayerController>().cardList;
+            string playerName = playerList[curTurn].name;
 
-        Debug.Log(playerList[curTurn] + "의 카드 제출 : " + selectedCard); //isAIplayer를 기준으로 해서 한번 정제하고, 거기서 다시 isAIturn으로 한번 더 정제 해야 한다.
+            LogText.text = playerName + " 카드 선택 하세요";
 
-        curCardList.RemoveAt(tempCard);
-        submitCardList.Add(selectedCard);//제출된 카드끼리 비교하기 위해 제출카드리스트에 넣기
+            // 현재 플레이어의 카드만 표시
+            buttonManager.ShowCard(curCardList);
+            //cameraManager.CameraMoveTrue(playerList.Count);
+            // 플레이어가 카드를 제출할 때까지 대기
+            yield return new WaitUntil(() => checkSubmitCard == 0);
+            //cameraManager.CameraMoveFalse(playerList.Count);
+            checkSubmitCard = -1;
+        }
 
+        // 턴 이동
         curTurn++;
-        if (curTurn >= playerList.Count) curTurn = 0;
+        if (curTurn >= playerList.Count)
+        {
+            curTurn = 0;
+        }
 
-        yield return new WaitForSeconds(1f);
     }
 
     IEnumerator CheckTurnResult()
@@ -161,12 +206,13 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < playerList.Count; i++)
         {
             bool checker = cardManager.CardCompare(submitCardList, i);
-
+            string playerName = playerList[curTurn].name;
             if (checker) //checker의 반환값이 true면...
             {
                 //playerList[curTurn]이 이번 턴 승자라는 뜻!
                 winCntOfEachTurn[curTurn]++;
                 Debug.Log("이번 턴의 승자는 " + playerList[curTurn] + "! (현재 " + winCntOfEachTurn[curTurn] + "승)");
+                LogText.text = "이번 턴의 승자는 : " + playerName + "! (현재 " + winCntOfEachTurn[curTurn] + "승)";
             }
             curTurn++;
             if (curTurn >= playerList.Count) curTurn = 0;
@@ -187,7 +233,14 @@ public class GameManager : MonoBehaviour
             Debug.Log(curPlayer + " 예측 실패...");
 
             //실패한 플레이어한테 폭탄 심지 등장시키게 하기
-            yield return StartCoroutine(scoreManager.CheckBomb(curPlayer.GetComponent<PlayerController>()));
+            if (curPlayer.GetComponent<PlayerController>().isAIPlayer || curPlayer.GetComponent<AIPlayer>().isAIPlayer)
+            {
+                yield return StartCoroutine(curPlayer.GetComponent<AIPlayer>().AIDrawBomb());
+            }
+            else
+            {
+                yield return StartCoroutine(scoreManager.CheckBomb(curPlayer.GetComponent<PlayerController>()));
+            }
         }
         yield return new WaitForSeconds(1f);
     }
@@ -225,6 +278,11 @@ public class GameManager : MonoBehaviour
         //리스트 초기화
     void ResetLists()
     {
+        if (curTurn > playerList.Count - 1)
+        {
+            curTurn = 0;
+        }
+
         predictedWinCnt = new int[playerList.Count];
         winCntOfEachTurn = new int[playerList.Count];
 

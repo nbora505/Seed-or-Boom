@@ -1,5 +1,4 @@
 //using Photon.Realtime;
-using Oculus.Interaction;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -8,80 +7,31 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-
+    
     //[변수]
-    public bool AIPlayer = false; // <- 이 플레그 값이 거짓이면, 그냥 그대로. 만약에 참이면, player.isAITurn = true
+    public bool isAIPlayer = false;
     public List<int> cardList = new List<int>(); // 카드를 나눠줄 때, 해당 플레이어에 .Add()
 
+    public List<bool> bombList = new List<bool>() {
+        false, false, true };
     public GameObject[] bombPrefab;
     public int remainingBomb = 3; //  int 남은 폭탄심지 수
     //public int playerOrder = 0; //    플레이어 순서별 가중치 0 to 3;
     public int submitTime = 0; // 만약에, 유저가 레이케이스트로 카드를 선택하고 제출했을 때, 그때의 유저의 순서가 몇 번인가를 기준으로 초기화
     public bool bombVisible = false;
     public bool isDead = false;//플레이어의 사망
-
     public GameManager gm;
 
     public int expectedWins = 0;
     public int nowTotalWins = 0;
 
-    bool isCardCheck = false;
-
-    public Transform fixedCharLeftHandPostion; // Character's Left Hand postion.
-    public Transform leftControllerAnchor; // OVR of LeftControllerAnchor
-
     // 요거를 게임메니저에서 받아와가지고 초기화할 수 있도록.
     // 플레이어 콘트롤러 쪽에서 게임메니저의 예상 승수를 받아오고, 자신의 턴이랑 비교해서 넣으면 되겠죠?
     public List<int> expectedWin = new List<int>();
-
-
-    /// <summary>
-    /// Exists for the player's animation output.<br></br>
-    /// UNCHECKCARD is an enum for the animation of putting the card down.Transitioning to IDLE to coincide with the end of the animation. <br></br>
-    /// CHECKCARD is an enum for the animation of checking the card.<br></br>
-    /// IDLE is the default state<br></br>
-    /// DEAD is the enum for the animation output when the user dies.
-    /// </summary>
-    [SerializeField]
-    enum STATE {
-        IDLE = 0,
-        UNCHECKCARD,
-        CHECKCARD,
-        DEAD
-    }
-
-    STATE state;
-
-    private void Start()
-    {
-        state = STATE.UNCHECKCARD;
-    }
     private void Update()
     {
-        if (isDead)
-        {
-            state = STATE.DEAD;
-            return;
-        }
+        if(isDead) return;
 
-        if (OVRInput.Get(OVRInput.RawButton.LIndexTrigger) && isCardCheck)
-        {
-            leftControllerAnchor.position = fixedCharLeftHandPostion.position;
-            leftControllerAnchor.rotation = fixedCharLeftHandPostion.rotation;
-
-            state = STATE.CHECKCARD;
-        }
-        if (OVRInput.GetUp(OVRInput.RawButton.LIndexTrigger) && !isCardCheck)
-        {
-            state = STATE.UNCHECKCARD;
-            // 애니메이션 이벤트에서 함수 할당. SetEnumToIDLE()
-        }
-    }
-
-    public void SetEnumToIDLE()
-    {
-        state = STATE.IDLE;
-    }
         // 왼팔이나, 다른 팔을 트레킹을 못하게 하려면
         // 우리 프리펩 내에 트래킹 관련 오브젝트가 있음
         // 그거 disable 하면 되드라고요.
@@ -94,6 +44,7 @@ public class PlayerController : MonoBehaviour
 
         // 오른손 트리거를 눌렀을 때, 카드를 선택할 수 있어야 하고.
         // 왼손 트리거를 눌렀을 땐, 내 패를 볼 수 있어야 겠죠?
+    }
     // 카드 제출과 카드 확인이 필요하다.
 
     //[함수]
@@ -107,18 +58,6 @@ public class PlayerController : MonoBehaviour
 
     }//함수 끝
 
-    public void AppearBomb() //함수 심지 등장(int 심지 수)
-    {
-        for (int i = 0; i < remainingBomb; i++)
-        {
-            gameObject.GetComponentInChildren<GameObject>().SetActive(true);
-        }
-
-        //  플레이어 선택 존중하려면 랜덤 배제해야 하나 편의상 선택과
-        //  무관하게 랜덤으로 터지는 폭탄 생성
-
-    }
-
     // Must to called at GameManager
     public void InitsubmitTime(int submitTime)
     {
@@ -127,22 +66,38 @@ public class PlayerController : MonoBehaviour
 
     public void DrawBomb(int selectedBombNum)//함수 폭탄 결정(파라메터:선택된 심지 번호)
     {
-        int isTrueBomb = Random.Range(0, remainingBomb);
-
+        int isTrueBomb = Random.Range(0, bombList.Count);
+        string playerName = gm.playerList[gm.curTurn].name;
         if (isTrueBomb == selectedBombNum)
         {
             Debug.Log(gameObject.name + "... 사망!!!!!");
-            gm.deadList.Add(this.gameObject);
+
             // 사망처리
             isDead = true;
+            gm.deadList.Add(this.gameObject);
+
             //사망 연출은 여기서 처리하는 걸로
+            this.gameObject.SetActive(false);
+            gm.LogText.text = playerName + "사망";
         }
         else
         {
             Debug.Log(gameObject.name + "... 생존!!!!!");
+
+            RemoveBomb(); //화면에 남아있는 폭탄심지 비활성화
             remainingBomb--;
+            bombList.RemoveAt(isTrueBomb);// false가 지워지겠죠.
+            gm.LogText.text = playerName + "생존";
             // 생존처리
         }
         gm.selectedBomb = -1;//다시 선택된 폭탄 번호 초기화
+    }
+
+    public void RemoveBomb()
+    {
+        for (int i = 0; i < remainingBomb; i++)
+        {
+            bombPrefab[i].SetActive(false);
+        }
     }
 }
