@@ -21,15 +21,14 @@ public class ButtonManager : MonoBehaviour
     public CardManager cardManager;
 
     [Header("Score,UI")]
-    public Text text;
+    //public GameObject playerLogPanel;
+    public Text playerLogText;
     public int expectedWin = 0;
     public int selectCard;
     public Text logText;
     public List<GameObject> cardButtonPrefab;
     
-    public GameObject decreaseBtnPrefab;
-    public GameObject increaseBtnPrefab;
-    public GameObject expectedWinsubMitBtn;
+    
 
     [Header("bomb")]
     public List<int> selectedBomb = new List<int>() {0,1,2};
@@ -58,6 +57,7 @@ public class ButtonManager : MonoBehaviour
     public void Start()
     {
         playerCards = cardManager.card;
+        
     }
     #region 레이 충돌시 관련(추후 사용예정)
     public void GetLayName(string buttonName)
@@ -166,17 +166,26 @@ public class ButtonManager : MonoBehaviour
     #endregion 
 
     #region 승 수 관련
+    public void ShowPlayerPanel(bool onoff)
+    {
+        Transform PlayerPanel = gameManager.playerList[gameManager.curTurn].transform.Find("Player_Canvas/Panel");
+        GameObject playerPanel = PlayerPanel.gameObject;
+
+        
+        if (onoff)
+        {
+            playerPanel.SetActive(true);
+        }
+        else
+        {
+            playerPanel.SetActive(false);
+        }
+    }
     public void showWinBtn( )
     {
         Transform WinBtnParent = gameManager.playerList[gameManager.curTurn].transform.Find("winBtn");
         GameObject winBtnParent = WinBtnParent.gameObject;
         winBtnParent.SetActive(true);
-        //decreaseBtnPrefab.SetActive(true);       
-        //increaseBtnPrefab.SetActive(true);
-        //expectedWinsubMitBtn.SetActive(true);
-        // 현재 플레이어의 CardImage 자식 객체 가져오기
-        
-
         
     }
     public void hideWinBtn()
@@ -184,28 +193,32 @@ public class ButtonManager : MonoBehaviour
         Transform WinBtnParent = gameManager.playerList[gameManager.curTurn].transform.Find("winBtn");
         GameObject winBtnParent = WinBtnParent.gameObject;
         winBtnParent.SetActive(false);
-        //decreaseBtnPrefab.SetActive(false);
-        //increaseBtnPrefab.SetActive(false);
-        //expectedWinsubMitBtn.SetActive(false);
+        
     }
     public void OnIncreaseScoreButtonClicked() // 승수 증가
     {
-        
+        Transform PlayerPanelPos = gameManager.playerList[gameManager.curTurn].transform.Find("Player_Canvas/Panel/P1_LogMain");
+        Text playerText = PlayerPanelPos.GetComponent<Text>();
         expectedWin++;
         logText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번";
-
+        playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번";
     }
    
     public void OnDecreaseScoreButtonClicked() // 승수 감소
     {
+        Transform PlayerPanelPos = gameManager.playerList[gameManager.curTurn].transform.Find("Player_Canvas/Panel/P1_LogMain");
+        Text playerText = PlayerPanelPos.GetComponent<Text>();
         expectedWin--;
         logText.text = "예상 승리횟수 " + expectedWin.ToString() + "번";
+        playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번";
     }
     public void OnSubmitScoreButtonClicked()
     {
+        Transform PlayerPanelPos = gameManager.playerList[gameManager.curTurn].transform.Find("Player_Canvas/Panel/P1_LogMain");
+        Text playerText = PlayerPanelPos.GetComponent<Text>();
         logText.color = Color.black;
         logText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번 제출완료";
-
+        playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번 제출완료";
         if (expectedWin >= 0 && expectedWin <= 4)
         {
             gameManager.predictedWinCnt[gameManager.curTurn] = expectedWin;
@@ -213,6 +226,7 @@ public class ButtonManager : MonoBehaviour
         }
         else
         {
+            playerText.text = "0에서 4사이의 값만 넣어라";
             logText.text = "0에서 4사이의 값만 넣어라";
             logText.color = Color.red;
         }

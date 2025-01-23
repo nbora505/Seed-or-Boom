@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
     public CardManager cardManager;
     public ScoreManager scoreManager;
     public ButtonManager buttonManager;
-    public GameObject TestBtn;
+    
     public CameraManager cameraManager;
     void Start()
     {
@@ -143,10 +143,10 @@ public class GameManager : MonoBehaviour
                 //여기에서 플레이어 리스트[현재 차례]의 승수 선언 UI 활성화
                 LogText.text = playerName + " 승 수 선택하세요";
                 buttonManager.showWinBtn();
-                TestBtn.SetActive(true);
+                buttonManager.ShowPlayerPanel(true);
                 yield return new WaitUntil(() => selectedWin == 0);
-                buttonManager.hideWinBtn();
-                TestBtn.SetActive(false);
+                buttonManager.ShowPlayerPanel(false);
+                buttonManager.hideWinBtn();                
                 selectedWin = -1;
             }
             
