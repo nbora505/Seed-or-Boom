@@ -111,13 +111,21 @@ public class GameManager : MonoBehaviour
         RemovePlayerList();
         noticeturnText.text = "";
         curRound++;
-        if (curRound > maxRound)
+
+        if (playerList.Count <= 1)
         {
-            Debug.Log("최대 라운드 초과");
+            LogText.text = $"최후의 승자는 {playerList[0].gameObject.name}";
         }
         else
         {
-            StartCoroutine(StartRound());
+            if (curRound > maxRound)
+            {
+                Debug.Log("최대 라운드 초과");
+            }
+            else
+            {
+                StartCoroutine(StartRound());
+            }
         }
     }
 
