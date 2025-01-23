@@ -4,8 +4,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 
 
@@ -24,7 +26,11 @@ public class ButtonManager : MonoBehaviour
     public int selectCard;
     public Text logText;
     public List<GameObject> cardButtonPrefab;
-    public Transform buttonParent; 
+    
+    public GameObject decreaseBtnPrefab;
+    public GameObject increaseBtnPrefab;
+    public GameObject expectedWinsubMitBtn;
+
     [Header("bomb")]
     public List<int> selectedBomb = new List<int>() {0,1,2};
     public int selectedBombIndex;
@@ -46,6 +52,7 @@ public class ButtonManager : MonoBehaviour
 
 
     public List<GameObject> activeCardInstances = new List<GameObject>();
+    
     
 
     public void Start()
@@ -159,8 +166,31 @@ public class ButtonManager : MonoBehaviour
     #endregion 
 
     #region 승 수 관련
+    public void showWinBtn( )
+    {
+        Transform WinBtnParent = gameManager.playerList[gameManager.curTurn].transform.Find("winBtn");
+        GameObject winBtnParent = WinBtnParent.gameObject;
+        winBtnParent.SetActive(true);
+        //decreaseBtnPrefab.SetActive(true);       
+        //increaseBtnPrefab.SetActive(true);
+        //expectedWinsubMitBtn.SetActive(true);
+        // 현재 플레이어의 CardImage 자식 객체 가져오기
+        
+
+        
+    }
+    public void hideWinBtn()
+    {
+        Transform WinBtnParent = gameManager.playerList[gameManager.curTurn].transform.Find("winBtn");
+        GameObject winBtnParent = WinBtnParent.gameObject;
+        winBtnParent.SetActive(false);
+        //decreaseBtnPrefab.SetActive(false);
+        //increaseBtnPrefab.SetActive(false);
+        //expectedWinsubMitBtn.SetActive(false);
+    }
     public void OnIncreaseScoreButtonClicked() // 승수 증가
     {
+        
         expectedWin++;
         logText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번";
 
@@ -227,33 +257,7 @@ public class ButtonManager : MonoBehaviour
 
         // 현재 플레이어의 CardImage 자식 객체 가져오기
         Transform cardImageParent = gameManager.playerList[gameManager.curTurn].transform.Find("CardImage");
-        
-        //Transform currentPlayerTransform = gameManager.playerList[gameManager.curTurn].transform;
-        //float cardSpacing = 2f; // 카드 간 간격
-        //float startX = -cardSpacing * (cardList.Count - 1) / 2;
-        //// 카드 리스트의 각 값을 처리
-        //for (int i = 0; i < cardList.Count; i++)
-        //{
-        //    int cardValue = cardList[i];
-
-        //    // 카드 값에 맞는 프리팹 선택
-        //    GameObject cardPrefab = cardButtonPrefab[cardValue - 1]; // 카드 값이 1부터 시작
-        //    GameObject myInstance = Instantiate(cardPrefab, cardImageParent); // 부모를 CardImage로 설정
-
-        //    // 카드 위치 조정
-        //    Vector3 playerPosition = currentPlayerTransform.position;
-        //    Transform transform = myInstance.GetComponent<Transform>();
-        //    transform.position = new Vector3(playerPosition.x + startX + i * cardSpacing, playerPosition.y, playerPosition.z - 3); // X축과 Z축을 조정
-        //    transform.rotation = Quaternion.Euler(0, 180, 0);
-
-        //    // 활성화된 인스턴스 저장
-        //    activeCardInstances.Add(myInstance);
-
-        //    // 버튼 설정
-        //    Button buttonComponent = myInstance.GetComponent<Button>();
-        //    int capturedValue = cardValue; // 로컬 변수로 캡처
-        //    buttonComponent.onClick.AddListener(() => OnSubmitCardButtonClicked(capturedValue, myInstance));
-        //}
+               
         foreach (int cardValue in cardList)
         {
             // 카드 값에 맞는 프리팹 선택

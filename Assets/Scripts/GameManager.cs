@@ -142,9 +142,10 @@ public class GameManager : MonoBehaviour
             {
                 //여기에서 플레이어 리스트[현재 차례]의 승수 선언 UI 활성화
                 LogText.text = playerName + " 승 수 선택하세요";
+                buttonManager.showWinBtn();
                 TestBtn.SetActive(true);
                 yield return new WaitUntil(() => selectedWin == 0);
-
+                buttonManager.hideWinBtn();
                 TestBtn.SetActive(false);
                 selectedWin = -1;
             }
