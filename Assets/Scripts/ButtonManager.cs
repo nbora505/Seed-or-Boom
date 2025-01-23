@@ -28,8 +28,8 @@ public class ButtonManager : MonoBehaviour
     public int selectCard;
     public Text logText;
     public List<GameObject> cardButtonPrefab;
-    
-    
+    public Transform buttonTransform; 
+
 
     [Header("bomb")]
     public List<int> selectedBomb = new List<int>() {0,1,2};
@@ -173,8 +173,7 @@ public class ButtonManager : MonoBehaviour
     {
         Transform PlayerPanel = gameManager.playerList[gameManager.curTurn].transform.Find("Player_Canvas/Panel");
         GameObject playerPanel = PlayerPanel.gameObject;
-
-        
+    
         if (onoff)
         {
             playerPanel.SetActive(true);
@@ -184,7 +183,7 @@ public class ButtonManager : MonoBehaviour
             playerPanel.SetActive(false);
         }
     }
-    public void showWinBtn( )
+    public void showWinBtn()
     {
         Transform WinBtnParent = gameManager.playerList[gameManager.curTurn].transform.Find("winBtn");
         GameObject winBtnParent = WinBtnParent.gameObject;
@@ -198,15 +197,18 @@ public class ButtonManager : MonoBehaviour
         winBtnParent.SetActive(false);
         
     }
-    public void OnIncreaseScoreButtonClicked() // 승수 증가
+    public void OnIncreaseScoreButtonClicked( ) // 승수 증가
     {
         
         Transform PlayerPanelPos = gameManager.playerList[gameManager.curTurn].transform.Find("Player_Canvas/Panel/P1_LogMain");
         Text playerText = PlayerPanelPos.GetComponent<Text>();
-
+        buttonTransform = gameManager.playerList[gameManager.curTurn].transform.Find("winBtn/WinIncreaseBtn");
+        
         expectedWin++;
         logText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번";
         playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번";
+
+        buttonTransform.DOPunchScale(new Vector3(0.2f, 0.2f, 0), 2.5f, 5, 2);
     }
    
     public void OnDecreaseScoreButtonClicked() // 승수 감소
@@ -214,15 +216,23 @@ public class ButtonManager : MonoBehaviour
         
         Transform PlayerPanelPos = gameManager.playerList[gameManager.curTurn].transform.Find("Player_Canvas/Panel/P1_LogMain");
         Text playerText = PlayerPanelPos.GetComponent<Text>();
+        buttonTransform = gameManager.playerList[gameManager.curTurn].transform.Find("winBtn/WinDecreaseBtn");
+
         expectedWin--;
         logText.text = "예상 승리횟수 " + expectedWin.ToString() + "번";
         playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번";
+
+        buttonTransform.DOPunchScale(new Vector3(0.2f, 0.2f, 0), 2.5f, 5, 2);
     }
     public void OnSubmitScoreButtonClicked()
     {
         Transform PlayerPanelPos = gameManager.playerList[gameManager.curTurn].transform.Find("Player_Canvas/Panel/P1_LogMain");
         Text playerText = PlayerPanelPos.GetComponent<Text>();
         logText.color = Color.black;
+
+        buttonTransform = gameManager.playerList[gameManager.curTurn].transform.Find("winBtn/SubmitBtn");
+        buttonTransform.DOPunchScale(new Vector3(0.2f, 0.2f, 0), 1f, 5, 2);
+
         //logText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번 제출완료";
         logText.text = "";
         logText.DOText("승리횟수 :" + expectedWin.ToString()+"번 제출완료", 2);
