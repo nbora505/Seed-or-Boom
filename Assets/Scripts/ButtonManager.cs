@@ -1,3 +1,4 @@
+using DG.Tweening;
 using Firebase.Firestore;
 using Meta.WitAi;
 using System;
@@ -27,8 +28,8 @@ public class ButtonManager : MonoBehaviour
     public int selectCard;
     public Text logText;
     public List<GameObject> cardButtonPrefab;
-    
-    
+    public Transform buttonTransform; 
+
 
     [Header("bomb")]
     public List<int> selectedBomb = new List<int>() {0,1,2};
@@ -49,7 +50,7 @@ public class ButtonManager : MonoBehaviour
     public GameObject checkPanel;
 
 
-
+    public Transform target;
     public List<GameObject> activeCardInstances = new List<GameObject>();
     
     
@@ -57,7 +58,8 @@ public class ButtonManager : MonoBehaviour
     public void Start()
     {
         playerCards = cardManager.card;
-        
+        DOTween.Init();
+
     }
     #region 레이 충돌시 관련(추후 사용예정)
     public void GetLayName(string buttonName)
@@ -165,13 +167,13 @@ public class ButtonManager : MonoBehaviour
     }
     #endregion 
 
+    
     #region 승 수 관련
     public void ShowPlayerPanel(bool onoff)
     {
         Transform PlayerPanel = gameManager.playerList[gameManager.curTurn].transform.Find("Player_Canvas/Panel");
         GameObject playerPanel = PlayerPanel.gameObject;
-
-        
+    
         if (onoff)
         {
             playerPanel.SetActive(true);
@@ -181,7 +183,7 @@ public class ButtonManager : MonoBehaviour
             playerPanel.SetActive(false);
         }
     }
-    public void showWinBtn( )
+    public void showWinBtn()
     {
         Transform WinBtnParent = gameManager.playerList[gameManager.curTurn].transform.Find("winBtn");
         GameObject winBtnParent = WinBtnParent.gameObject;
@@ -195,34 +197,53 @@ public class ButtonManager : MonoBehaviour
         winBtnParent.SetActive(false);
         
     }
-    public void OnIncreaseScoreButtonClicked() // 승수 증가
+    public void OnIncreaseScoreButtonClicked( ) // 승수 증가
     {
+        
         Transform PlayerPanelPos = gameManager.playerList[gameManager.curTurn].transform.Find("Player_Canvas/Panel/P1_LogMain");
         Text playerText = PlayerPanelPos.GetComponent<Text>();
+        buttonTransform = gameManager.playerList[gameManager.curTurn].transform.Find("winBtn/WinIncreaseBtn");
+        
         expectedWin++;
         logText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번";
         playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번";
+
+        buttonTransform.DOPunchScale(new Vector3(0.2f, 0.2f, 0), 2.5f, 5, 2);
     }
    
     public void OnDecreaseScoreButtonClicked() // 승수 감소
     {
+        
         Transform PlayerPanelPos = gameManager.playerList[gameManager.curTurn].transform.Find("Player_Canvas/Panel/P1_LogMain");
         Text playerText = PlayerPanelPos.GetComponent<Text>();
+        buttonTransform = gameManager.playerList[gameManager.curTurn].transform.Find("winBtn/WinDecreaseBtn");
+
         expectedWin--;
         logText.text = "예상 승리횟수 " + expectedWin.ToString() + "번";
         playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번";
+
+        buttonTransform.DOPunchScale(new Vector3(0.2f, 0.2f, 0), 2.5f, 5, 2);
     }
     public void OnSubmitScoreButtonClicked()
     {
         Transform PlayerPanelPos = gameManager.playerList[gameManager.curTurn].transform.Find("Player_Canvas/Panel/P1_LogMain");
         Text playerText = PlayerPanelPos.GetComponent<Text>();
         logText.color = Color.black;
-        logText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번 제출완료";
-        playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번 제출완료";
+
+        buttonTransform = gameManager.playerList[gameManager.curTurn].transform.Find("winBtn/SubmitBtn");
+        buttonTransform.DOPunchScale(new Vector3(0.2f, 0.2f, 0), 1f, 5, 2);
+
+        //logText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번 제출완료";
+        
+        
+        
         if (expectedWin >= 0 && expectedWin <= 4)
         {
             gameManager.predictedWinCnt[gameManager.curTurn] = expectedWin;
             gameManager.selectedWin = 0;
+            logText.text = "";
+            logText.DOText("승리횟수 :" + expectedWin.ToString() + "번 제출완료", 1.2f);
+            playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번 제출완료";
         }
         else
         {
@@ -236,26 +257,26 @@ public class ButtonManager : MonoBehaviour
     #region 카드 관련
     public void OnSelectCardButtonClicked(Button clickBtn) // 카드 선택 버튼 기능,클릭한 버튼 인자로 받음
     {
-
-        // 레이에 맞은 오브젝트의 테두리 색깔과 y값 포지션 증가
-        CardOutline = clickBtn.GetComponent<Outline>();
-        Vector3 CardClickYPosition = clickBtn.transform.position;
         
-        if (CardOutline != null)
-        {
-            originalOutlineColor = CardOutline.effectColor; // 원래 색상 저장
-            CardOutline.effectColor = Color.yellow; // 테두리 색상을 노란색으로 변경
-        }
+        //// 레이에 맞은 오브젝트의 테두리 색깔과 y값 포지션 증가
+        //CardOutline = clickBtn.GetComponent<Outline>();
+        //Vector3 CardClickYPosition = clickBtn.transform.position;
 
-        originalCardPosition = clickBtn.transform.position; // 원래 카드 위치 저장
-        CardClickYPosition = originalCardPosition; // 현재 위치 값 저장
-        CardClickYPosition.y += 50; // y값 증가
-        clickBtn.transform.position = CardClickYPosition;// 카드 위치 변경
-        checkPanel.SetActive(true);
+        //if (CardOutline != null)
+        //{
+        //    originalOutlineColor = CardOutline.effectColor; // 원래 색상 저장
+        //    CardOutline.effectColor = Color.yellow; // 테두리 색상을 노란색으로 변경
+        //}
 
-        // 선택하시겠습니까?의 ui 활성화
-        // CardManager의 제출된 함수 쪽으로 해당 카드 제출
-        //testBtn.gameObject.SetActive(true); // 버튼 활성화
+        //originalCardPosition = clickBtn.transform.position; // 원래 카드 위치 저장
+        //CardClickYPosition = originalCardPosition; // 현재 위치 값 저장
+        //CardClickYPosition.y += 50; // y값 증가
+        //clickBtn.transform.position = CardClickYPosition;// 카드 위치 변경
+        //checkPanel.SetActive(true);
+
+        //// 선택하시겠습니까?의 ui 활성화
+        //// CardManager의 제출된 함수 쪽으로 해당 카드 제출
+        ////testBtn.gameObject.SetActive(true); // 버튼 활성화
 
     }
 
@@ -317,11 +338,13 @@ public class ButtonManager : MonoBehaviour
         //선택된 카드 파괴
         activeCardInstances.Remove(cardInstance);
         Destroy(cardInstance);
-       
+
 
 
         // 제출 완료 메시지
-        logText.text = $"{cardValue}번 카드 제출 완료";
+        logText.text = "";
+        logText.DOText("카드값 : "+cardValue.ToString() + "제출완료", 1f);
+        
         selectCard = 0;
         gameManager.checkSubmitCard = selectCard;
         

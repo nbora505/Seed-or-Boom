@@ -4,7 +4,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-
+using DG.Tweening;
 public class GameManager : MonoBehaviour
 {
     public List<GameObject> playerList;
@@ -148,7 +148,9 @@ public class GameManager : MonoBehaviour
             else
             {
                 //여기에서 플레이어 리스트[현재 차례]의 승수 선언 UI 활성화
-                LogText.text = playerName + " 승 수 선택하세요";
+                yield return new WaitForSeconds(2f);
+                LogText.text = "";
+                LogText.DOText(playerName + " 승 수 선택하세요",1);
                 buttonManager.showWinBtn();
                 buttonManager.ShowPlayerPanel(true);
                 yield return new WaitUntil(() => selectedWin == 0);
@@ -180,14 +182,16 @@ public class GameManager : MonoBehaviour
             List<int> curCardList = playerList[curTurn].GetComponent<PlayerController>().cardList;
             string playerName = playerList[curTurn].name;
 
-            LogText.text = playerName + " 카드 선택 하세요";
-
+            
+            yield return new WaitForSeconds(2f);
             // 현재 플레이어의 카드만 표시
+            LogText.text = "";
+            LogText.text = playerName + " 카드 선택 하세요";
             buttonManager.ShowCard(curCardList);
-            //cameraManager.CameraMoveTrue(playerList.Count);
+            
             // 플레이어가 카드를 제출할 때까지 대기
             yield return new WaitUntil(() => checkSubmitCard == 0);
-            //cameraManager.CameraMoveFalse(playerList.Count);
+            
             checkSubmitCard = -1;
         }
 
@@ -206,12 +210,15 @@ public class GameManager : MonoBehaviour
         {
             bool checker = cardManager.CardCompare(submitCardList, i);
             string playerName = playerList[curTurn].name;
+
             if (checker) //checker의 반환값이 true면...
             {
                 //playerList[curTurn]이 이번 턴 승자라는 뜻!
                 winCntOfEachTurn[curTurn]++;
                 Debug.Log("이번 턴의 승자는 " + playerList[curTurn] + "! (현재 " + winCntOfEachTurn[curTurn] + "승)");
-                LogText.text = "이번 턴의 승자는 : " + playerName + "! (현재 " + winCntOfEachTurn[curTurn] + "승)";
+                LogText.text = "";
+                LogText.DOText("이번 턴의 승자는 : " + playerName + "! (현재 " + winCntOfEachTurn[curTurn] + "승",1f);
+                yield return new WaitForSeconds(1.5f);
             }
             curTurn++;
             if (curTurn >= playerList.Count) curTurn = 0;

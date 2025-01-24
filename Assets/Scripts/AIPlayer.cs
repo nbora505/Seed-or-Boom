@@ -14,7 +14,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
-
+using DG.Tweening; //트윈 버튼에 쓸 예정임 로그에 써도 좋겠네
 /// <summary>
 /// #Critical For all functions, if the AI is reacting too quickly (e.g., playing cards at a sub-second rate), a coroutine or timer is required to wait and execute the function.
 /// AIDrawBomb() must called by GameManager.
