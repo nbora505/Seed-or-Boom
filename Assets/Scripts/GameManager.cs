@@ -76,6 +76,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitUntil(() => isGameReady);
 
         //버튼이 눌리면 게임 시작
+        startBtn.SetActive(false);
         Debug.Log("::::::::: 게임 시작!!! ::::::::");
         yield return new WaitForSeconds(3f);
         StartCoroutine(StartRound());
