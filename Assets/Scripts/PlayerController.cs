@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
     public bool bombVisible = false;
     public bool isDead = false;//플레이어의 사망
     public GameManager gm;
+    Animator anim;
 
     public int expectedWins = 0;
     public int nowTotalWins = 0;
@@ -77,7 +78,9 @@ public class PlayerController : MonoBehaviour
             gm.deadList.Add(this.gameObject);
 
             //사망 연출은 여기서 처리하는 걸로
-            this.gameObject.SetActive(false);
+            //this.gameObject.SetActive(false);
+            anim = gameObject.GetComponent<Animator>();
+            anim.SetBool("isDead", true);
             gm.LogText.text = playerName + "사망";
         }
         else
