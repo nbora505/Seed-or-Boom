@@ -28,4 +28,11 @@ public class InLobbyPlayerController : MonoBehaviour
         if (other.gameObject.name == "PlayerInfoColider") playerInfoCanvas.SetActive(true);
         if (other.gameObject.name == "SinglePlayColider") singleCanvas.SetActive(true);
     }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.name == "MultiPlayColider") multiCanvas.SetActive(false);
+        if (other.gameObject.name == "PlayerInfoColider") playerInfoCanvas.SetActive(false);
+        if (other.gameObject.name == "SinglePlayColider") singleCanvas.SetActive(false);
+    }
 }
