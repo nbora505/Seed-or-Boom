@@ -14,7 +14,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
-
+using DG.Tweening; //트윈 버튼에 쓸 예정임 로그에 써도 좋겠네
 /// <summary>
 /// #Critical For all functions, if the AI is reacting too quickly (e.g., playing cards at a sub-second rate), a coroutine or timer is required to wait and execute the function.
 /// AIDrawBomb() must called by GameManager.
@@ -101,7 +101,9 @@ public class AIPlayer : PlayerController
             isDead = true;
 
             //사망 연출은 여기서 처리하는 걸로
-            this.gameObject.SetActive(false);
+            //this.gameObject.SetActive(false);
+            Animator anim = gameObject.GetComponent<Animator>();
+            anim.SetBool("isDead", true);
             gm.LogText.text = gameObject.name + "사망";
         }
         else

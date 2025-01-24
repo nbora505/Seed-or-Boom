@@ -4,22 +4,24 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-
+using DG.Tweening;
 public class GameManager : MonoBehaviour
 {
     public List<GameObject> playerList;
     public List<GameObject> deadList;
-    GameObject leaderPlayer;
-    
+    public GameObject startBtn;
+    public GameObject leaderPlayer;
+
     public Text noticeturnText;
     public Text LogText;
-    public int maxPlayerCnt = 4;
 
+    public bool isGameReady = false;
+
+    public int maxPlayerCnt = 4;
     public int curRound = 1;
     public int maxRound = 3;
     public int curTurn;
     public int maxCardCnt = 5;
-
 
     public int selectedBomb = -1;
     public int selectedWin = -1;
@@ -32,11 +34,10 @@ public class GameManager : MonoBehaviour
     public CardManager cardManager;
     public ScoreManager scoreManager;
     public ButtonManager buttonManager;
-    
     public CameraManager cameraManager;
+
     void Start()
-    {
-       
+    {      
         //플레이어 객체들 리스트에 추가
         GameObject[] tempPlayerList = GameObject.FindGameObjectsWithTag("Player");
         for (int i = 0; i < maxPlayerCnt; i++)
@@ -48,14 +49,37 @@ public class GameManager : MonoBehaviour
         curTurn = Random.Range(0, playerList.Count);
         leaderPlayer = playerList[curTurn];
 
-        //라운드 시작
-        StartCoroutine(StartRound());
+        //준비/시작버튼 대기
+        StartCoroutine(ReadyToStart());
     }
 
-    // AI플레이어의         expectedWins = CalculateOddsOfWinning(0.7f, 0.3f); 요거를
-    // 다른 사람들이 승수를 선언할 때, 만약에 AI 플레이어면
-    //playerList[curTurn].GetComponent<AIPlayer>().expectedWins = playerList[curTurn].GetComponent<AIPlayer>().CalculateOddsOfWinning(알파, 베타);
+    //플레이어들이 모두 Ready 상태인지 체크
+    IEnumerator ReadyToStart()
+    {
+        //플레이어들이 준비버튼을 눌렀는지 확인. 확인만 순서대로 하는거지 준비버튼 누르는 단계가 순서대로 진행되는 건 아님!
+        for (int i = 0; i < playerList.Count; i++)
+        {
+            //AI 플레이어인 경우에는 그냥 넘어가고...
+            if (playerList[i].GetComponent<PlayerController>().isAIPlayer || playerList[i].GetComponent<AIPlayer>().isAIPlayer) ;
+            //플레이어인 경우 상태가 isReady가 될 때까지 대기하다가 체크되면 다음 플레이어로 넘어가서 체크.
+            else
+            {
+                yield return new WaitUntil(() => playerList[i].GetComponent<PlayerController>().isReady);
 
+            }
+        }
+
+        //마지막 플레이어까지 넘어갔으면 게임 시작 버튼 활성화
+        startBtn.SetActive(true);
+
+        //게임 시작 버튼 눌릴 때까지 대기
+        yield return new WaitUntil(() => isGameReady);
+
+        //버튼이 눌리면 게임 시작
+        Debug.Log("::::::::: 게임 시작!!! ::::::::");
+        yield return new WaitForSeconds(3f);
+        StartCoroutine(StartRound());
+    }
 
     IEnumerator StartRound()
     {
@@ -149,7 +173,9 @@ public class GameManager : MonoBehaviour
             else
             {
                 //여기에서 플레이어 리스트[현재 차례]의 승수 선언 UI 활성화
-                LogText.text = playerName + " 승 수 선택하세요";
+                yield return new WaitForSeconds(2f);
+                LogText.text = "";
+                LogText.DOText(playerName + " 승 수 선택하세요",1);
                 buttonManager.showWinBtn();
                 buttonManager.ShowPlayerPanel(true);
                 yield return new WaitUntil(() => selectedWin == 0);
@@ -181,14 +207,16 @@ public class GameManager : MonoBehaviour
             List<int> curCardList = playerList[curTurn].GetComponent<PlayerController>().cardList;
             string playerName = playerList[curTurn].name;
 
-            LogText.text = playerName + " 카드 선택 하세요";
-
+            
+            yield return new WaitForSeconds(2f);
             // 현재 플레이어의 카드만 표시
+            LogText.text = "";
+            LogText.text = playerName + " 카드 선택 하세요";
             buttonManager.ShowCard(curCardList);
-            //cameraManager.CameraMoveTrue(playerList.Count);
+            
             // 플레이어가 카드를 제출할 때까지 대기
             yield return new WaitUntil(() => checkSubmitCard == 0);
-            //cameraManager.CameraMoveFalse(playerList.Count);
+            
             checkSubmitCard = -1;
         }
 
@@ -207,12 +235,15 @@ public class GameManager : MonoBehaviour
         {
             bool checker = cardManager.CardCompare(submitCardList, i);
             string playerName = playerList[curTurn].name;
+
             if (checker) //checker의 반환값이 true면...
             {
                 //playerList[curTurn]이 이번 턴 승자라는 뜻!
                 winCntOfEachTurn[curTurn]++;
                 Debug.Log("이번 턴의 승자는 " + playerList[curTurn] + "! (현재 " + winCntOfEachTurn[curTurn] + "승)");
-                LogText.text = "이번 턴의 승자는 : " + playerName + "! (현재 " + winCntOfEachTurn[curTurn] + "승)";
+                LogText.text = "";
+                LogText.DOText("이번 턴의 승자는 : " + playerName + "! (현재 " + winCntOfEachTurn[curTurn] + "승",1f);
+                yield return new WaitForSeconds(1.5f);
             }
             curTurn++;
             if (curTurn >= playerList.Count) curTurn = 0;
