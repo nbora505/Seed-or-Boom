@@ -25585,6 +25585,7 @@ MonoBehaviour:
   - {fileID: 6543507672598923233, guid: c72e00640585a9846b99016fb5c41d0b, type: 3}
   - {fileID: 5379619790451274251, guid: 4fbd51bc63fbe334488a64fd531f4acf, type: 3}
   - {fileID: 5852004934108787535, guid: 33f0bc96524b59c439d07758b8858309, type: 3}
+  buttonTransform: {fileID: 0}
   selectedBomb: 000000000100000002000000
   selectedBombIndex: 0
   BombWickOutline: {fileID: 0}
@@ -25597,6 +25598,7 @@ MonoBehaviour:
   originalCardPosition: {x: 0, y: 0, z: 0}
   originalOutlineColor: {r: 0, g: 0, b: 0, a: 0}
   checkPanel: {fileID: 0}
+  target: {fileID: 0}
   activeCardInstances: []
 --- !u!1001 &935534903
 PrefabInstance:
@@ -29590,7 +29592,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -108}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1057223484
@@ -59270,15 +59272,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 707a6638b8f856c4ba111d1f899a3ebf, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
