@@ -9,6 +9,10 @@ public class InLobbyPlayerController : MonoBehaviour
     public GameObject singleCanvas;
     public GameObject playerInfoCanvas;
 
+    Vector3 multiCanvasScale;
+    Vector3 singleCanvasScale;
+    Vector3 playerInfoScale;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -16,6 +20,10 @@ public class InLobbyPlayerController : MonoBehaviour
         multiCanvas.SetActive(false);
         singleCanvas.SetActive(false);
         playerInfoCanvas.SetActive(false);
+
+        multiCanvasScale = multiCanvas.transform.localScale;
+        singleCanvasScale = singleCanvas.transform.localScale;
+        playerInfoScale = singleCanvas.transform.localScale;
     }
 
     // Update is called once per frame
@@ -28,24 +36,21 @@ public class InLobbyPlayerController : MonoBehaviour
     {
         if (other.gameObject.name == "MultiPlayColider")
         {
-            Vector3 temp = multiCanvas.transform.localScale;
             multiCanvas.transform.localScale = Vector3.zero;
             multiCanvas.SetActive(true);
-            multiCanvas.transform.DOScale(temp, 1f);
+            multiCanvas.transform.DOScale(multiCanvasScale, 1f);
         }
         if (other.gameObject.name == "PlayerInfoColider")
         {
-            Vector3 temp = playerInfoCanvas.transform.localScale;
             playerInfoCanvas.transform.localScale = Vector3.zero;
             playerInfoCanvas.SetActive(true);
-            playerInfoCanvas.transform.DOScale(temp, 1f);
+            playerInfoCanvas.transform.DOScale(singleCanvasScale, 1f);
         }
         if (other.gameObject.name == "SinglePlayColider")
         {
-            Vector3 temp = singleCanvas.transform.localScale;
             singleCanvas.transform.localScale = Vector3.zero;
             singleCanvas.SetActive(true);
-            singleCanvas.transform.DOScale(temp, 1f);
+            singleCanvas.transform.DOScale(playerInfoScale, 1f);
         }
     }
 
