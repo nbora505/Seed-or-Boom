@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> playerList;
     public List<GameObject> deadList;
     public GameObject startBtn;
+    public GameObject leaderPlayer;
     
     public Text noticeturnText;
     public Text LogText;
