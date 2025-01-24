@@ -11,10 +11,13 @@ public class GameManager : MonoBehaviour
     public List<GameObject> deadList;
     public GameObject startBtn;
     public GameObject leaderPlayer;
+
     public Text noticeturnText;
     public Text LogText;
-    public int maxPlayerCnt = 4;
 
+    public bool isGameReady = false;
+
+    public int maxPlayerCnt = 4;
     public int curRound = 1;
     public int maxRound = 3;
     public int curTurn;
@@ -34,8 +37,7 @@ public class GameManager : MonoBehaviour
     public CameraManager cameraManager;
 
     void Start()
-    {
-       
+    {      
         //플레이어 객체들 리스트에 추가
         GameObject[] tempPlayerList = GameObject.FindGameObjectsWithTag("Player");
         for (int i = 0; i < maxPlayerCnt; i++)
@@ -47,14 +49,36 @@ public class GameManager : MonoBehaviour
         curTurn = Random.Range(0, playerList.Count);
         leaderPlayer = playerList[curTurn];
 
-        //라운드 시작
-        //StartCoroutine(StartRound());
+        //준비/시작버튼 대기
+        StartCoroutine(ReadyToStart());
     }
 
-    // AI플레이어의         expectedWins = CalculateOddsOfWinning(0.7f, 0.3f); 요거를
-    // 다른 사람들이 승수를 선언할 때, 만약에 AI 플레이어면
-    //playerList[curTurn].GetComponent<AIPlayer>().expectedWins = playerList[curTurn].GetComponent<AIPlayer>().CalculateOddsOfWinning(알파, 베타);
+    //플레이어들이 모두 Ready 상태인지 체크
+    IEnumerator ReadyToStart()
+    {
+        //플레이어들이 준비버튼을 눌렀는지 확인. 확인만 순서대로 하는거지 준비버튼 누르는 단계가 순서대로 진행되는 건 아님!
+        for (int i = 0; i < playerList.Count; i++)
+        {
+            //AI 플레이어인 경우에는 그냥 넘어가고...
+            if (playerList[i].GetComponent<PlayerController>().isAIPlayer || playerList[i].GetComponent<AIPlayer>().isAIPlayer) ;
+            //플레이어인 경우 상태가 isReady가 될 때까지 대기하다가 체크되면 다음 플레이어로 넘어가서 체크.
+            else
+            {
+                yield return new WaitUntil(() => playerList[i].GetComponent<PlayerController>().isReady);
+            }
+        }
 
+        //마지막 플레이어까지 넘어갔으면 게임 시작 버튼 활성화
+        startBtn.SetActive(true);
+
+        //게임 시작 버튼 눌릴 때까지 대기
+        yield return new WaitUntil(() => isGameReady);
+
+        //버튼이 눌리면 게임 시작
+        Debug.Log("::::::::: 게임 시작!!! ::::::::");
+        yield return new WaitForSeconds(3f);
+        StartCoroutine(StartRound());
+    }
 
     IEnumerator StartRound()
     {
