@@ -234,13 +234,16 @@ public class ButtonManager : MonoBehaviour
         buttonTransform.DOPunchScale(new Vector3(0.2f, 0.2f, 0), 1f, 5, 2);
 
         //logText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번 제출완료";
-        logText.text = "";
-        logText.DOText("승리횟수 :" + expectedWin.ToString()+"번 제출완료", 2);
-        playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번 제출완료";
+        
+        
+        
         if (expectedWin >= 0 && expectedWin <= 4)
         {
             gameManager.predictedWinCnt[gameManager.curTurn] = expectedWin;
             gameManager.selectedWin = 0;
+            logText.text = "";
+            logText.DOText("승리횟수 :" + expectedWin.ToString() + "번 제출완료", 1.2f);
+            playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번 제출완료";
         }
         else
         {
@@ -340,7 +343,7 @@ public class ButtonManager : MonoBehaviour
 
         // 제출 완료 메시지
         logText.text = "";
-        logText.DOText("카드값 : "+cardValue.ToString() + "제출완료", 2.2f);
+        logText.DOText("카드값 : "+cardValue.ToString() + "제출완료", 1f);
         
         selectCard = 0;
         gameManager.checkSubmitCard = selectCard;
