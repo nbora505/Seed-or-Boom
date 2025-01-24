@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     
     //[변수]
     public bool isAIPlayer = false;
+    public bool isReady = false;
     public List<int> cardList = new List<int>(); // 카드를 나눠줄 때, 해당 플레이어에 .Add()
 
     public List<bool> bombList = new List<bool>() {

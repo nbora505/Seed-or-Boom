@@ -101,7 +101,9 @@ public class AIPlayer : PlayerController
             isDead = true;
 
             //사망 연출은 여기서 처리하는 걸로
-            this.gameObject.SetActive(false);
+            //this.gameObject.SetActive(false);
+            Animator anim = gameObject.GetComponent<Animator>();
+            anim.SetBool("isDead", true);
             gm.LogText.text = gameObject.name + "사망";
         }
         else

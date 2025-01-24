@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
 {
     public List<GameObject> playerList;
     public List<GameObject> deadList;
-    GameObject leaderPlayer;
+    public GameObject startBtn;
     
     public Text noticeturnText;
     public Text LogText;
@@ -19,7 +19,6 @@ public class GameManager : MonoBehaviour
     public int maxRound = 3;
     public int curTurn;
     public int maxCardCnt = 5;
-
 
     public int selectedBomb = -1;
     public int selectedWin = -1;
@@ -32,8 +31,8 @@ public class GameManager : MonoBehaviour
     public CardManager cardManager;
     public ScoreManager scoreManager;
     public ButtonManager buttonManager;
-    
     public CameraManager cameraManager;
+
     void Start()
     {
        
