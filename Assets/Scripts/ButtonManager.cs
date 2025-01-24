@@ -167,7 +167,13 @@ public class ButtonManager : MonoBehaviour
     }
     #endregion
 
-    
+    #region 시작버튼
+    public void StartBtn()
+    {
+        gameManager.isGameReady = true;
+    }
+    #endregion
+
     #region 승 수 관련
     public void ShowPlayerPanel(bool onoff)
     {

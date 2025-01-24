@@ -65,6 +65,7 @@ public class GameManager : MonoBehaviour
             else
             {
                 yield return new WaitUntil(() => playerList[i].GetComponent<PlayerController>().isReady);
+
             }
         }
 
