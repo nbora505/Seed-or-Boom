@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class InLobbyPlayerController : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class InLobbyPlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        DOTween.Init();
         multiCanvas.SetActive(false);
         singleCanvas.SetActive(false);
         playerInfoCanvas.SetActive(false);
@@ -24,7 +26,13 @@ public class InLobbyPlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.name == "MultiPlayColider") multiCanvas.SetActive(true);
+        if (other.gameObject.name == "MultiPlayColider")
+        {
+            Vector3 temp = multiCanvas.transform.localScale;
+            multiCanvas.transform.localScale = Vector3.zero;
+            multiCanvas.SetActive(true);
+            multiCanvas.transform.DOScale(temp, 1f);
+        }
         if (other.gameObject.name == "PlayerInfoColider") playerInfoCanvas.SetActive(true);
         if (other.gameObject.name == "SinglePlayColider") singleCanvas.SetActive(true);
     }
