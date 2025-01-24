@@ -28,6 +28,9 @@ TagManager:
   - Bomb
   - GameManager
   - Card
+  - Transformable
+  - TransformablePickupable
+  - InRobbyPlayer
   layers:
   - Default
   - TransparentFX
