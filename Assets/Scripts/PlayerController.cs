@@ -1,4 +1,5 @@
 //using Photon.Realtime;
+using Oculus.Interaction.HandGrab;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -79,6 +80,11 @@ public class PlayerController : MonoBehaviour
 
             //사망 연출은 여기서 처리하는 걸로
             //this.gameObject.SetActive(false);
+            for (int i = 0; i < remainingBomb; i++)
+            {
+                bombPrefab[i].SetActive(false);
+            }
+
             anim = gameObject.GetComponent<Animator>();
             anim.SetBool("isDead", true);
             gm.LogText.text = playerName + "사망";
