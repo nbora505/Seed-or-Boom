@@ -58,8 +58,8 @@ public class ButtonManager : MonoBehaviour
     public void Start()
     {
         playerCards = cardManager.card;
+       
         DOTween.Init();
-
     }
     #region 레이 충돌시 관련(추후 사용예정)
     public void GetLayName(string buttonName)
@@ -165,7 +165,7 @@ public class ButtonManager : MonoBehaviour
         }
 
     }
-    #endregion 
+    #endregion
 
     
     #region 승 수 관련

@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> playerList;
     public List<GameObject> deadList;
     public GameObject startBtn;
-    
+    public GameObject leaderPlayer;
     public Text noticeturnText;
     public Text LogText;
     public int maxPlayerCnt = 4;
@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
         leaderPlayer = playerList[curTurn];
 
         //라운드 시작
-        StartCoroutine(StartRound());
+        //StartCoroutine(StartRound());
     }
 
     // AI플레이어의         expectedWins = CalculateOddsOfWinning(0.7f, 0.3f); 요거를
