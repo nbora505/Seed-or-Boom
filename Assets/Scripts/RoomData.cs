@@ -20,7 +20,26 @@ public class RoomData : MonoBehaviour
 
             roomInfoText.text = $"{_roomInfo.Name} ({_roomInfo.PlayerCount}/{_roomInfo.MaxPlayers})";
 
-           
+            GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => OnEnterRoom(_roomInfo.Name));
         }
+    }
+
+    private void Awake()
+    {
+        roomInfoText = GetComponent<Text>();
+        photonManager = GameObject.Find("PhotonManager").GetComponent<PhotonManager>();
+    }
+
+    void OnEnterRoom(string roomName)
+    {
+        photonManager.SetUserId();
+
+        RoomOptions ro = new RoomOptions();
+
+        ro.MaxPlayers = 4;
+        ro.IsOpen = true;
+        ro.IsVisible = true;
+
+        PhotonNetwork.JoinOrCreateRoom(roomName, ro, TypedLobby.Default);
     }
 }
