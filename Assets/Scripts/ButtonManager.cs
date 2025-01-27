@@ -171,6 +171,7 @@ public class ButtonManager : MonoBehaviour
     public void StartBtn()
     {
         gameManager.isGameReady = true;
+        logText.text = "GAME START";
     }
     #endregion
 
@@ -211,8 +212,8 @@ public class ButtonManager : MonoBehaviour
         buttonTransform = gameManager.playerList[gameManager.curTurn].transform.Find("winBtn/WinIncreaseBtn");
         
         expectedWin++;
-        logText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번";
-        playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번";
+        logText.text = expectedWin.ToString();
+        playerText.text = expectedWin.ToString();
 
         buttonTransform.DOPunchScale(new Vector3(0.2f, 0.2f, 0), 2.5f, 5, 2);
     }
@@ -225,8 +226,8 @@ public class ButtonManager : MonoBehaviour
         buttonTransform = gameManager.playerList[gameManager.curTurn].transform.Find("winBtn/WinDecreaseBtn");
 
         expectedWin--;
-        logText.text = "예상 승리횟수 " + expectedWin.ToString() + "번";
-        playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번";
+        logText.text = expectedWin.ToString();
+        playerText.text = expectedWin.ToString();
 
         buttonTransform.DOPunchScale(new Vector3(0.2f, 0.2f, 0), 2.5f, 5, 2);
     }
@@ -250,6 +251,7 @@ public class ButtonManager : MonoBehaviour
             logText.text = "";
             logText.DOText("승리횟수 :" + expectedWin.ToString() + "번 제출완료", 1.2f);
             playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번 제출완료";
+            expectedWin = 0;
         }
         else
         {
