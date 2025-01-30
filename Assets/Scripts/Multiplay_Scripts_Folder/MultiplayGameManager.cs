@@ -94,6 +94,43 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     }
     #endregion
 
+
+    /*
+             ***|Operating structure|********************************************************************************
+             *  % |At its core, it's an event system and doesn't require Start() or Update().| %                    *
+             *                                                                                                      *
+             *  *Joined Room                                                                                        *
+             *      OnJoinedRoom() -> SpawnPlayer(RPC)                                                              *
+             *  ->                                                                                                  *
+             *  *Press Ready Button                                                                                 *
+             *      OnClickReadyButtonEventListener() -> CheckPlayerReady(RPC) -> CheckAllPlayerReady()             *
+             *          -> startBtn Activate                                                                        *
+             *  ->                                                                                                  *
+             *  *Press Start Button                                                                                 *
+             *      OnClickStartGameEventListener() -> StartGame(RPC) -> StartRoundCoroutine() -> StartRound(RPC)   *
+             *          -> ResetList(RPC) -> DistributeCards(RPC)                                                   *
+             *  ->                                                                                                  *
+             *  *Decide Win Count                                                                                   *
+             *      StartDecideWinCount(RPC) -> ProcessDecideWinCount(RPC)                                          *
+             *          -> if (player is AI): straight SubmitWinCount(RPC)                                          *
+             *          -> if (player is non AI): WaitForPlayerWinCountSubmit() -> SubmitWinCount(RPC)              *
+             *  ->                                                                                                  *
+             *  *Circle Turn 4 time                                                                                 *
+             *      StartTurn() -> ProcessTurn(PRC) -> SubmitCard(Coroutine)                                        *
+             *          if (All Player submit card) CheckTurnResult(RPC) -> UpdateTurnWinner(RPC)                   *
+             *          -> StartNextTurn()                                                                          *
+             *  ->                                                                                                  *
+             *  *Round End                                                                                          *
+             *      StartRoundEnd(RPC) -> ProcessRoundEnd() -> CheckPlayerResuit()                                  *
+             *          if (Failed expect winning count) ProcessAIBombPenalty() OR ProcessPlayerBombPenalty()       *
+             *          -> PrepareNextRound(RPC)                                                                    *
+             *  ->                                                                                                  *
+             *  *Game End check                                                                                     *
+             *  if(player count is 1 OR current turn bigger then max round) EndGame(RPC)                            *
+             *  else Turn back StartRound(RPC)                                                                      *
+             *                                                                                                      *
+             ********************************************************************************************************
+     */
     #region MultiPlayFuncLines
     /// <summary>
     /// A button function used in multiplayer. 
@@ -147,6 +184,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         {
             photonView.RPC("ResetLists", RpcTarget.All);
             photonView.RPC("DistributeCards", RpcTarget.All);
+            photonView.RPC("StartDecideWinCount", RpcTarget.All);
             StartCoroutine(StartTurnCoroutine());
         }
     }
@@ -181,11 +219,11 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
             if (playerList[playerID].GetComponent<AIPlayer>().isAIPlayer)
             {
                 int aiWinCount = playerList[playerID].GetComponent<AIPlayer>().CalculateOddsOfWinning(0.69f, 0.29f);
-
+                photonView.RPC("SubmitWinCount", RpcTarget.All, playerID, aiWinCount);
             }
             else
             {
-            
+                StartCoroutine(WaitForPlayerWinCountSubmit(playerID));
             }
         }
     }
@@ -194,7 +232,29 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     {
         LogText.text = "";
         LogText.DOText($"{playerList[playerID].name}´ÔÀÌ ½Â¼ö¸¦ ¼±ÅÃÇÒ Â÷·ÊÀÔ´Ï´Ù.", 1);
+        buttonManager.showWinBtn();
+        buttonManager.ShowPlayerPanel(true);
 
+        yield return new WaitUntil(() => selectedWin == 0);
+
+        photonView.RPC("SubmitWinCount", RpcTarget.All, playerID, predictedWinCnt[playerID]);
+
+        buttonManager.ShowPlayerPanel(false);
+        buttonManager.hideWinBtn();
+
+        selectedWin = -1;
+    }
+
+    [PunRPC]
+    void SubmitWinCount(int playerID, int winCount)
+    {
+        predictedWinCnt[playerID] = winCount;
+        Debug.Log($"{playerList[playerID].name}ÀÇ ½Â¼ö ¼±¾ð : {winCount}½Â");
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("ProcessDecideWinCount", RpcTarget.All, playerID + 1);
+        }
     }
 
     [PunRPC]
@@ -282,6 +342,127 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
             }
         }
     }
+
+    [PunRPC]
+    void CheckTurnResult()
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        Debug.Log("************* Find Winner");
+
+        for (int i = 0; i < playerList.Count; i++)
+        {
+            bool checker = cardManager.CardCompare(submitCardList, i);
+            string playerName = playerList[i].name;
+
+            if (checker)
+            {
+                photonView.RPC("UpdateTurnWinner", RpcTarget.All, i);
+            }
+        }
+        StartNextTurn();
+    }
+
+    [PunRPC]
+    void UpdateTurnWinner(int winnerID)
+    {
+        winCntOfEachTurn[winnerID]++;
+        string playerName = playerList[winnerID].name;
+
+        Debug.Log($"ÀÌ¹ø ÅÏÀÇ ½ÂÀÚ´Â {playerName}! (ÇöÀç {winCntOfEachTurn[winnerID]}½Â");
+        LogText.text = "";
+        LogText.DOText($"ÀÌ¹ø ÅÏÀÇ ½ÂÀÚ´Â : {playerName}! (ÇöÀç{winCntOfEachTurn[winnerID]}½Â", 1f);
+    }
+
+    void StartNextTurn()
+    {
+        if(submitCardList.Count >= playerList.Count * 4)
+        {
+            photonView.RPC("StartRoundEnd", RpcTarget.All);
+        }
+        else
+        {
+            submitCardList.Clear();
+            StartCoroutine(StartTurnCoroutine());
+        }
+    }
+
+    [PunRPC]
+    void StartRoundEnd()
+    {
+        Debug.Log("*****************result round");
+        
+        if(PhotonNetwork.IsMasterClient)
+        {
+            StartCoroutine(ProcessRoundEnd());
+        }
+    }
+
+    [PunRPC]
+    void PlayerDead(int playerID)
+    {
+        GameObject deadPlayer = playerList[playerID];
+        deadList.Add(deadPlayer);
+    }
+
+    [PunRPC]
+    void PrepareNextRound()
+    {
+        RemovePlayerList();
+        noticeturnText.text = "";
+        curRound++;
+
+        if(playerList.Count <= 1)
+        {
+            photonView.RPC("EndGame", RpcTarget.All);
+        }
+        else
+        {
+            if(curTurn > maxRound)
+            {
+                photonView.RPC("EndGame", RpcTarget.All);
+            }
+            else
+            {
+                if(PhotonNetwork.IsMasterClient)
+                {
+                    StartCoroutine(StartRoundCoroutine());
+                }
+            }
+        }
+    }
+
+    void RemovePlayerList()
+    {
+        for (int i = 0; i < deadList.Count; i++)
+        {
+            for (int j = 0; j < playerList.Count; j++)
+            {
+                if (playerList.Count <= maxPlayerCnt - deadList.Count)
+                {
+                    break;
+                }
+                else if (deadList[i] == playerList[j])
+                {
+                    playerList.Remove(playerList[j]);
+                }
+            }
+        }
+    }
+
+    bool CheckGameEnd()
+    {
+        return deadList.Count >= maxPlayerCnt - 1;
+    }
+
+    [PunRPC]
+    void EndGame()
+    {
+        if(playerList.Count == 1)
+        {
+            LogText.text = $"ÃÖÈÄÀÇ ½ÂÀÚ´Â {playerList[0].gameObject.name}";
+        }
+    }
     #endregion
     #endregion
 
@@ -297,6 +478,49 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     {
         yield return new WaitForSeconds(2f);
         StartTurn();
+    }
+
+    IEnumerator ProcessRoundEnd()
+    {
+        for(int i = 0; i< playerList.Count; i++) 
+        {
+            yield return StartCoroutine(CheckPlayerResult(i));
+
+            if(CheckGameEnd())
+            {
+                photonView.RPC("EndGame", RpcTarget.All);
+                yield break;
+            }
+        }
+
+        yield return new WaitForSeconds(2f);
+        photonView.RPC("PrepareNextRound", RpcTarget.All);
+    }
+    IEnumerator ProcessAIBombPenalty(int playerID)
+    {
+        yield return new WaitForSeconds(3f);
+        StartCoroutine(playerList[playerID].GetComponent<AIPlayer>().AIDrawBomb());
+    }
+
+    IEnumerator ProcessPlayerBombPenalty(int playerID)
+    {
+        yield return StartCoroutine(scoreManager.CheckBomb(playerList[playerID].GetComponent<PlayerController>()));
+    }
+
+    IEnumerator CheckPlayerResult(int playerID)
+    {
+        if (predictedWinCnt[playerID] != winCntOfEachTurn[playerID])
+        {
+            if (playerList[playerID].GetComponent<AIPlayer>().isAIPlayer)
+            {
+                yield return StartCoroutine(ProcessAIBombPenalty(playerID));
+            }
+            else
+            {
+                yield return StartCoroutine(ProcessPlayerBombPenalty(playerID));
+            }
+        }
+        yield return new WaitForSeconds(1f);
     }
     #endregion
 /*
