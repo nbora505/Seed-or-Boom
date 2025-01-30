@@ -5,10 +5,10 @@ using UnityEngine;
 using Firebase.Extensions;
 
 public class GetDataFirebase : MonoBehaviour
-{   
+{
     /// <summary>
-     /// GameData Dicionary class.
-     /// </summary>
+    /// GameData Dicionary class.
+    /// </summary>
     [FirestoreData]
     class GameDataProperty
     {
@@ -67,7 +67,7 @@ public class GetDataFirebase : MonoBehaviour
     public string winner;
     public string selectChar;
 
-    FirebaseMain firebaseMain;
+    public FirebaseMain firebaseMain;
 
     #region dataSearch
     /// <summary>
@@ -75,7 +75,7 @@ public class GetDataFirebase : MonoBehaviour
     /// </summary>
     public void GetData()
     {
-        GetDataToUserCollection();
+        GetDataToUserCollection().Wait();
     }
 
     /// <summary>
@@ -87,19 +87,19 @@ public class GetDataFirebase : MonoBehaviour
     /// </param>
     public void GetGameData(int day, int gameNum)
     {
-        GetDataToGameDataCollection(day, gameNum);
+        GetDataToGameDataCollection(day, gameNum).Wait();
     }
 
     /// <summary>
     /// Init property and you can use userdata property
     /// </summary>
-    private void GetDataToUserCollection()
+    private System.Threading.Tasks.Task GetDataToUserCollection()
     {
         FirebaseFirestore db = FirebaseFirestore.DefaultInstance;
         DocumentReference docRef = db.Collection("users").Document(firebaseMain.auth.CurrentUser.UserId);
 
         //pull your Email to DB.
-        docRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>
+        return docRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>
         {
             DocumentSnapshot snap = task.Result;
             if ((snap.Exists))
@@ -127,13 +127,13 @@ public class GetDataFirebase : MonoBehaviour
     /// </param>
     /// <param name="gameNum">Doccument Name. Is that a first game of day? or second? or more?
     /// </param>
-    private void GetDataToGameDataCollection(int day, int gameNum)
+    private System.Threading.Tasks.Task GetDataToGameDataCollection(int day, int gameNum)
     {
         FirebaseFirestore db = FirebaseFirestore.DefaultInstance;
-        DocumentReference docRef = db.Collection("gameData").Document(firebaseMain.auth.CurrentUser.UserId).Collection(day.ToString()).Document("game"+gameNum);
+        DocumentReference docRef = db.Collection("gameData").Document(firebaseMain.auth.CurrentUser.UserId).Collection(day.ToString()).Document("game" + gameNum);
 
         //pull your Email to DB.
-        docRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>
+        return docRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>
         {
             DocumentSnapshot snap = task.Result;
             if ((snap.Exists))
@@ -160,4 +160,20 @@ public class GetDataFirebase : MonoBehaviour
     }
 
     #endregion
+
+    private void Awake()
+    {
+        DontDestroy();
+    }
+    private void DontDestroy()
+    {
+        if (GameObject.Find(gameObject.name))
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            DontDestroyOnLoad(gameObject);
+        }
+    }
 }
