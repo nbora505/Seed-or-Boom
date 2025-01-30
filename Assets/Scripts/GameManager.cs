@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> deadList;
     public GameObject startBtn;
     public GameObject leaderPlayer;
+    public GameObject centerCardDeck;
 
     public Text noticeturnText;
     public Text LogText;
@@ -92,6 +93,8 @@ public class GameManager : MonoBehaviour
         Debug.Log("=========Round " + curRound + " =========");
 
         //플레이어들에게 카드 나눠주기
+        centerCardDeck.SetActive(true);
+        yield return new WaitForSeconds(1f);
         cardManager.DoCardShuffle();
         cardManager.TestUserCard(playerList.Count);
 
