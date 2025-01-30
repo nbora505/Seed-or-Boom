@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
     Animator anim;
 
     public GameObject cardDeckObject;
+    public GameObject quads;
 
     public int expectedWins = 0;
     public int nowTotalWins = 0;

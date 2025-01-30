@@ -218,17 +218,22 @@ public class GameManager : MonoBehaviour
             List<int> curCardList = playerList[curTurn].GetComponent<PlayerController>().cardList;
             string playerName = playerList[curTurn].name;
 
-            
-            yield return new WaitForSeconds(2f);
+            playerList[curTurn].GetComponent<PlayerController>().cardDeckObject.GetComponent<Animator>().SetBool("Appear", false);
+            yield return new WaitForSeconds(1f);
+
             // 현재 플레이어의 카드만 표시
             LogText.text = "";
             LogText.text = playerName + " 카드 선택 하세요";
             buttonManager.ShowCard(curCardList);
+            playerList[curTurn].GetComponent<PlayerController>().quads.SetActive(true);
             
             // 플레이어가 카드를 제출할 때까지 대기
             yield return new WaitUntil(() => checkSubmitCard == 0);
             
             checkSubmitCard = -1;
+            playerList[curTurn].GetComponent<PlayerController>().quads.SetActive(false);
+            playerList[curTurn].GetComponent<PlayerController>().cardDeckObject.GetComponent<Animator>().SetBool("Appear", true);
+            yield return new WaitForSeconds(0.5f);
         }
 
         // 턴 이동
