@@ -39,7 +39,10 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     public ButtonManager buttonManager;
     public CameraManager cameraManager;
 
+    [Tooltip("Character's Prefabs")]
     public GameObject[] characterPrefabs;
+
+    [Tooltip("Empty Gameobj of SpawnPoints")]
     public Transform[] spawnPoints;
 
 
@@ -73,12 +76,21 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void CheckPlayerReady(int playerID)
     {
-        playerList[playerID].GetComponent<PlayerController>().isReady = true;
-        CheckAllPlayerReady();
-        //if(playerList.All(player => player.GetComponent<PlayerController>().isReady))
-        //{
-        //    photonView.RPC("StartGame", RpcTarget.All);
-        //}
+        //playerList[playerID].GetComponent<PlayerController>().isReady = true;
+
+        //if(PhotonNetwork.IsMasterClient)
+        //    CheckAllPlayerReady();
+        ////if(playerList.All(player => player.GetComponent<PlayerController>().isReady))
+        ////{
+        ////    photonView.RPC("StartGame", RpcTarget.All);
+        ////}
+        ///
+       
+        GameObject player = playerList.Find(player => player.GetComponent<PhotonView>().Owner.ActorNumber == playerID);
+
+        if(player != null) player.GetComponent<PlayerController>().isReady = true;
+
+        if (PhotonNetwork.IsMasterClient) CheckAllPlayerReady();
     }
     #endregion
 
@@ -97,23 +109,197 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
 
     public void OnClickStartGameEventListener()
     {
-        if(PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsMasterClient)
+        { 
             photonView.RPC("StartGame", RpcTarget.All);
+            isGameReady = true;
+        }
     }
     #endregion
 
     void CheckAllPlayerReady()
     {
+        if (playerList.All(player => 
+        player.GetComponent<PlayerController>().isReady))
+            startBtn.SetActive(true);
+    }
+
+    #region GameStartWithRoundProgress
+    [PunRPC]
+    void StartGame()
+    {
+        startBtn.SetActive(false);
+        Debug.LogWarning("Start*****************************");
+
+        if (PhotonNetwork.IsMasterClient)
+            StartCoroutine(StartRoundCoroutine());
+        //Invoke(nameof(StartRound), 3f);
+    }
+
+    [PunRPC]
+    void StartRound()
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        Debug.Log($"*********************{curRound} - Round Start");
+
         if (PhotonNetwork.IsMasterClient)
         {
-            bool isPlayerAllReady = playerList.All(
-                player => player.GetComponent<PlayerController>().isReady);
-            startBtn.SetActive(true);
+            photonView.RPC("ResetLists", RpcTarget.All);
+            photonView.RPC("DistributeCards", RpcTarget.All);
+            StartCoroutine(StartTurnCoroutine());
         }
     }
 
+    [PunRPC]
+    void StartDecideWinCount()
+    {
+        if(!PhotonNetwork.IsMasterClient) return;
+
+        Debug.Log("***************Win Decide");
+        photonView.RPC("ProcessDecideWinCount",RpcTarget.All, 0);
+    }
+
+    [PunRPC]
+    void ProcessDecideWinCount(int playerID)
+    {
+        if(playerID >= playerList.Count)
+        {
+            if(PhotonNetwork.IsMasterClient)
+            {
+                StartCoroutine(StartTurnCoroutine());
+            }
+            return;
+        }
+
+        string playerName = playerList[playerID].name;
+        Debug.LogWarning($"{playerID + 1}번 째 순서 {playerName}입니다.");
+        noticeturnText.text += $"{playerID + 1}번 째 순서 : {playerName}\n";
+
+        if (playerList[playerID].GetComponent<PhotonView>().IsMine)
+        {
+            if (playerList[playerID].GetComponent<AIPlayer>().isAIPlayer)
+            {
+                int aiWinCount = playerList[playerID].GetComponent<AIPlayer>().CalculateOddsOfWinning(0.69f, 0.29f);
+
+            }
+            else
+            {
+            
+            }
+        }
+    }
+
+    IEnumerator WaitForPlayerWinCountSubmit(int playerID)
+    {
+        LogText.text = "";
+        LogText.DOText($"{playerList[playerID].name}님이 승수를 선택할 차례입니다.", 1);
+
+    }
+
+    [PunRPC]
+    void ResetLists()
+    {
+        predictedWinCnt = new int[playerList.Count];
+        winCntOfEachTurn = new int[playerList.Count];
+
+        cardManager.GetComponent<CardManager>().ResetCardSet();
+        for (int i = 0; i < playerList.Count; i++)
+        {
+            playerList[i].GetComponent<PlayerController>().cardList.Clear();
+        }
+    }
+    [PunRPC]
+    void DistributeCards()
+    {
+        cardManager.DoCardShuffle();
+        cardManager.TestUserCard(playerList.Count);
+    }
+    void StartTurn()
+    {
+        if(!PhotonNetwork.IsMasterClient) return;
+
+        Debug.LogWarning("*******************turn Start");
+        photonView.RPC("ProcessTurn", RpcTarget.All, 0);
+    }
+
+    [PunRPC]
+    void ProcessTurn(int playerID)
+    {
+        if(playerID >= playerList.Count)
+        {
+            if(PhotonNetwork.IsMasterClient)
+                photonView.RPC("CheckTurnResult", RpcTarget.All);
+            return;
+        }
+
+        Debug.Log($"{playerList[playerID]}'s turn");
+
+        if (playerList[playerID].GetComponent<PhotonView>().IsMine)
+        {
+            if (playerList[playerID].GetComponent<AIPlayer>().isAIPlayer)
+            {
+                StartCoroutine(SubmitCard(playerID));
+            }
+            else
+            {
+                StartCoroutine(SubmitCard(playerID));
+            }
+        }
+    }
+
+    [PunRPC]
+    IEnumerator SubmitCard(int playerID)
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            if (playerList[playerID].GetComponent<PlayerController>().isAIPlayer || playerList[playerID].GetComponent<AIPlayer>().isAIPlayer)
+            {
+                StartCoroutine(playerList[playerID].GetComponent<AIPlayer>().AITurn());
+            }
+            else
+            {
+                // 현재 플레이어의 카드 리스트 가져오기
+                List<int> curCardList = playerList[playerID].GetComponent<PlayerController>().cardList;
+                string playerName = playerList[playerID].name;
+
+
+                // 현재 플레이어의 카드만 표시
+                LogText.text = "";
+                LogText.text = playerName + " 카드 선택 하세요";
+                buttonManager.ShowCard(curCardList);
+
+                //// 플레이어가 카드를 제출할 때까지 대기
+                yield return new WaitUntil(() => checkSubmitCard == 0);
+
+                checkSubmitCard = -1;
+            }
+
+            //// 턴 이동
+            if(PhotonNetwork.IsMasterClient &&  submitCardList.Count >= playerList.Count)
+            {
+                photonView.RPC("ProcessTurn", RpcTarget.All, playerID + 1);
+            }
+        }
+    }
+    #endregion
     #endregion
 
+    #region CoroutineLines
+    IEnumerator StartRoundCoroutine()
+    {
+        yield return new WaitForSeconds(3f);
+
+        photonView.RPC("StartRound", RpcTarget.All);
+    }
+
+    IEnumerator StartTurnCoroutine()
+    {
+        yield return new WaitForSeconds(2f);
+        StartTurn();
+    }
+    #endregion
+/*
     void Start()
     {
         //플레이어 객체들 리스트에 추가
@@ -402,4 +588,5 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
             playerList[i].GetComponent<PlayerController>().cardList.Clear();
         }
     }
+*/
 }
