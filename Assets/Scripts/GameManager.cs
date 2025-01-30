@@ -5,6 +5,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using Photon.Pun.Demo.PunBasics;
+
 public class GameManager : MonoBehaviour
 {
     public List<GameObject> playerList;
@@ -163,7 +165,7 @@ public class GameManager : MonoBehaviour
         {
             string playerName = playerList[curTurn].name;
             Debug.LogWarning( i+1 + "번째 순서" + playerName + "입니다.");
-            noticeturnText.text += (i + 1 + "번째 순서 " + playerName + "입니다.\n");
+            noticeturnText.text += (i + 1 + "번째 순서 : " + playerName + "\n");
 
             //ai일 경우
             if (playerList[curTurn].GetComponent<PlayerController>().isAIPlayer || playerList[curTurn].GetComponent<AIPlayer>().isAIPlayer)
@@ -176,10 +178,15 @@ public class GameManager : MonoBehaviour
                 //여기에서 플레이어 리스트[현재 차례]의 승수 선언 UI 활성화
                 yield return new WaitForSeconds(2f);
                 LogText.text = "";
-                LogText.DOText(playerName + " 승 수 선택하세요",1);
+                LogText.DOText(playerName + "님이 승수를 선택할 차례입니다.", 1);
                 buttonManager.showWinBtn();
                 buttonManager.ShowPlayerPanel(true);
                 yield return new WaitUntil(() => selectedWin == 0);
+
+                Transform PlayerPanelPos = playerList[curTurn].transform.Find("Player_Canvas/Panel/P1_LogMain");
+                Text playerText = PlayerPanelPos.GetComponent<Text>();
+                playerText.text = "0";
+
                 buttonManager.ShowPlayerPanel(false);
                 buttonManager.hideWinBtn();                
                 selectedWin = -1;
