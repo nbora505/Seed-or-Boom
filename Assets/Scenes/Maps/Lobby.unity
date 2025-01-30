@@ -30997,7 +30997,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uBC29 \uC774\uB984..."
+  m_Text: "\uC544\uC774\uB514..."
 --- !u!222 &1014982357
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -33550,7 +33550,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1115474001}
   m_LocalRotation: {x: -0, y: 1, z: -0, w: -0}
-  m_LocalPosition: {x: 0, y: 0, z: 113}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -59844,15 +59844,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2120940075}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.0348211, y: -0.7121506, z: 0.035586413, w: 0.70025903}
-  m_LocalPosition: {x: -2.2194786, y: 2.7187407, z: 3.9131312}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -1.071, y: 0.555, z: -10.873}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 11635962}
   - {fileID: 1217804938}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 270, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &2120940081
 MonoBehaviour:
   m_ObjectHideFlags: 0
