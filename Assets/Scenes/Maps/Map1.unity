@@ -22469,6 +22469,10 @@ PrefabInstance:
       objectReference: {fileID: 1598734125}
     - target: {fileID: 6314968972130105043, guid: 4b9751947473d5441821a72b841d092b, type: 3}
       propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6314968972130105043, guid: 4b9751947473d5441821a72b841d092b, type: 3}
+      propertyPath: isAIPlayer
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6314968972130105043, guid: 4b9751947473d5441821a72b841d092b, type: 3}
@@ -22553,12 +22557,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 299537825}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c9f609df25b91204bbcd6e86688ccdc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isAIPlayer: 1
+  isAIPlayer: 0
   isReady: 0
   cardList: 
   bombList: 000001
@@ -22578,7 +22582,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 770429784}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 299537825}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5afac2e4ab60e0f42b885dc0b8fac6d5, type: 3}
   m_Name: 

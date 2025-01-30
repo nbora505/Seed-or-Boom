@@ -122,6 +122,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
                     GameObject roomPrefab = Instantiate(roomItemPrefab, scrollContent);
 
                     roomPrefab.GetComponent<RoomData>().RoomInfo = roomInfo;
+                    roomPrefab.GetComponent<RoomData>().RoomInfo = roomInfo;
 
                     rooms.Add(roomInfo.Name,roomPrefab); 
                 }
