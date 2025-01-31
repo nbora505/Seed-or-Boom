@@ -56,6 +56,8 @@ MonoBehaviour:
   - SubmitCard
   - SubmitWinCount
   - UpdateTurnWinner
+  - DisconnectedUserDeadAnimation
+  - RemoveDisconnectUserFromList
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

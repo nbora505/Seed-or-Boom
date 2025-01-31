@@ -20,14 +20,21 @@ public class FirebaseManager : MonoBehaviour
         
     }
 
-    public void GetPlayerInfo()
+
+    public IEnumerator GetPlayerInfo()
     {
         getDataFirebase.GetData();
+        yield return new WaitForSeconds(1);
         userUID.text = $"UID : {getDataFirebase.userUID}";
         userEmail.text = $"Email : {getDataFirebase.userEmail}";
         userNick.text = $"NickName : {getDataFirebase.userNick}";
         userWin.text = $"Win : {getDataFirebase.userWin}";
         userLose.text = $"Lose : {getDataFirebase.userLose}";
+
+    }
+    public void GetPlayerInfo2()
+    {
+        StartCoroutine( GetPlayerInfo() );
 
     }
 }
