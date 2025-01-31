@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using Photon.Pun;
 using Photon.Realtime;
+using Photon.Pun.Demo.PunBasics;
 
 public class MultiplayGameManager : MonoBehaviourPunCallbacks
 {
@@ -45,6 +46,25 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     [Tooltip("Empty Gameobj of SpawnPoints")]
     public Transform[] spawnPoints;
 
+    #region UnityCallBacks
+    private void Awake()
+    {
+        PhotonNetwork.AutomaticallySyncScene = false; // 방 터짐 방지
+    }
+    #endregion
+
+    [PunRPC]
+    void DisconnectedUserDeadAnimation(int playerID)
+    {
+        playerList[playerID - 1].GetComponent<Animator>().Play("Death");
+        Invoke("RemoveDisconnectUserFromList", 2f);
+    }
+
+    [PunRPC]
+    void RemoveDisconnectUserFromList(int playerID)
+    {
+        playerList.Remove(playerList[playerID - 1]);
+    }
 
     #region PunCallBacksLines
     public override void OnJoinedRoom()
@@ -53,6 +73,30 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         {
             photonView.RPC("SpwanPlayer", RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber);
         }
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        //deadList.Add(playerList[otherPlayer.ActorNumber - 1]);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("DisconnectedUserDeadAnimation", RpcTarget.All, otherPlayer.ActorNumber);
+            //playerList.Remove(playerList[otherPlayer.ActorNumber - 1]); // dead anim 1.4f
+            LogText.text = $"현재 플레이어 {otherPlayer}가 방을 떠났습니다.";
+        }
+    }
+
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        Debug.LogWarning($"크래쉬 사유 {cause}입니다.");
+    }
+
+    // AutomaticallySyncScene false로 설정해서 방 안 터짐.
+    public override void OnMasterClientSwitched(Player newMasterClient)
+    {
+        LogText.text = $"현재 방장은 {newMasterClient}입니다.";
+
+        Debug.LogWarning($"현재 방장은 {newMasterClient}입니다.");
     }
     #endregion
 
@@ -126,10 +170,21 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
              *          -> PrepareNextRound(RPC)                                                                    *
              *  ->                                                                                                  *
              *  *Game End check                                                                                     *
-             *  if(player count is 1 OR current turn bigger then max round) EndGame(RPC)                            *
-             *  else Turn back StartRound(RPC)                                                                      *
+             *      if(player count is 1 OR current turn bigger then max round) EndGame(RPC)                        *
+             *      else Turn back StartRound(RPC)                                                                  *
              *                                                                                                      *
              ********************************************************************************************************
+     */
+
+
+    /*
+        rest operating list
+
+        1. switch masterclient => alert <- Done
+        2. if player disconnected, that player dead. <- Done
+        3. Show Player Nickname
+        4. Send Winning or losing data to databass table
+     
      */
     #region MultiPlayFuncLines
     /// <summary>
@@ -461,6 +516,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         if(playerList.Count == 1)
         {
             LogText.text = $"최후의 승자는 {playerList[0].gameObject.name}";
+            
         }
     }
     #endregion
