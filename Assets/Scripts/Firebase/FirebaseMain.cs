@@ -6,11 +6,15 @@ using Firebase.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
 using Firebase.Firestore;
+using Meta.XR.MRUtilityKit.SceneDecorator;
+using TMPro;
 
 public class FirebaseMain : MonoBehaviour
 {
-    public InputField emailField;
-    public InputField pwField;
+    public TMP_InputField emailField;
+    public TMP_InputField pwField;
+    public GameObject emailCheckBtn;
+    public GameObject signUpBtn;
 
     //private readonly string appID = "854253330667-u7tjog2gp15n2e2h1kc17uohtgv9bpvn.apps.googleusercontent.com";
 
@@ -27,6 +31,7 @@ public class FirebaseMain : MonoBehaviour
     private bool checkedPassword = false;
     private void Awake()
     {
+        //DontDestroy();
         InitKeyword();
         InitFirebase();
     }
@@ -65,6 +70,14 @@ public class FirebaseMain : MonoBehaviour
                 //이후 처리를 코드에 추가해야 한다
             }
         });
+    }
+
+    public void InitFindObject()
+    {
+        emailField = GameObject.Find("EmailField").GetComponent<TMP_InputField>();
+        pwField = GameObject.Find("PWField").GetComponent<TMP_InputField>();
+        emailCheckBtn = GameObject.Find("EmailCheckBtn");
+        signUpBtn = GameObject.Find("SignUpBtn");
     }
     #endregion
 
@@ -207,7 +220,7 @@ public class FirebaseMain : MonoBehaviour
         }
         else if (pwField.text == "@JOH123")
         {
-             Debug.Log("You can't select your PW by \"JOH\"");
+            Debug.Log("You can't select your PW by \"JOH\"");
         }
     }
 
@@ -243,7 +256,7 @@ public class FirebaseMain : MonoBehaviour
     {
         if (emailField.text != ""
             && pwField.text != "@JOH123"
-            && !checkedEmail) 
+            && !checkedEmail)
         {
             Debug.Log("Ready to SignUp");
             SignUpEmailFake();
@@ -319,7 +332,7 @@ public class FirebaseMain : MonoBehaviour
     {
         //LogIn fake ID again. If we check CurrentUser's State, we need to init account every time;
         auth.SignInWithEmailAndPasswordAsync(emailField.text, "@JOH123").
-            ContinueWithOnMainThread(task => 
+            ContinueWithOnMainThread(task =>
             {
                 if (task.IsCompleted)
                 {
@@ -329,6 +342,8 @@ public class FirebaseMain : MonoBehaviour
                         checkedEmail = true;  // It means "you are already to SignUp.".
                         Debug.Log("checking success");
                         CancelInvoke(); //Cancel this Invoke.
+                        emailCheckBtn.GetComponent<Image>().color = Color.gray;
+                        signUpBtn.GetComponent<Image>().color = Color.white;
                     }
                     else
                     {
@@ -472,7 +487,7 @@ public class FirebaseMain : MonoBehaviour
                     }
                 });
             }
-            else 
+            else
             {
                 Debug.Log("search db data error");
             }
@@ -494,7 +509,7 @@ public class FirebaseMain : MonoBehaviour
             ChangePW(newPW);
             checkedPassword = false;
         }
-        else 
+        else
         {
             Debug.Log("Check your PW first");
         }
@@ -609,7 +624,15 @@ public class FirebaseMain : MonoBehaviour
     }
     #endregion
 
-    public void Update()
+    private void DontDestroy()
     {
+        if (GameObject.Find(gameObject.name))
+        {
+            Destroy(gameObject);
+        }
+        else 
+        {
+            DontDestroyOnLoad(gameObject);
+        }
     }
 }
