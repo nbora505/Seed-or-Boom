@@ -29,6 +29,7 @@ public class LogInKeyBoard : MonoBehaviour
     }
     public void SetKeyBoardEmail()
     {
+        Debug.Log("select");
         keyBoard.gameObject.SetActive(true);
         emailKey = true;
     }
