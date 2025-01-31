@@ -71,6 +71,14 @@ public class FirebaseMain : MonoBehaviour
             }
         });
     }
+
+    public void InitFindObject()
+    {
+        emailField = GameObject.Find("EmailField").GetComponent<TMP_InputField>();
+        pwField = GameObject.Find("PWField").GetComponent<TMP_InputField>();
+        emailCheckBtn = GameObject.Find("EmailCheckBtn");
+        signUpBtn = GameObject.Find("SignUpBtn");
+    }
     #endregion
 
     #region LogIn

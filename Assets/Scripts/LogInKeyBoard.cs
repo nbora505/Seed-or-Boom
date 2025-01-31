@@ -17,6 +17,7 @@ public class LogInKeyBoard : MonoBehaviour
 
     private void Start()
     {
+        SetKeyBoardEmail();
     }
     public void SetKeyBoardEmail()
     {
@@ -43,15 +44,22 @@ public class LogInKeyBoard : MonoBehaviour
     private void Update()
     {
     }
-    public void ChangeString(string str)
+    public void ChangeString()
     {
         if (emailKey)
         {
-            emailInput.text = str;
+            emailInput.text = keyBoard.TextHandler.Text;
         }
         else if (passwordKey)
         {
-            passwordInput.text = str;
+            passwordInput.text = keyBoard.TextHandler.Text;
         }
+    }
+
+    public void KeyboardEnd()
+    {
+        keyBoard.gameObject.SetActive(false);
+        emailKey = false;
+        passwordKey = false;
     }
 }
