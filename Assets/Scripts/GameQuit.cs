@@ -1,14 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 public class GameQuit : MonoBehaviour
 {
-    // Start is called before the first frame update
+    
+    public OVRVirtualKeyboard virtualKeyboard; // Virtual Keyboard 오브젝트
+    public InputField inputField; // TMP_InputField 연결 (TextMeshPro)
+                                      // Start is called before the first frame update
     void Start()
     {
-
+        
+            virtualKeyboard.CommitTextEvent.AddListener(OnKeyboardCommit);
+        
     }
+
+    void OnKeyboardCommit(string text)
+    {
+        
+            inputField.text += text; // 키보드에서 입력한 텍스트를 InputField에 반영
+        
+    }
+
+    void OnDestroy()
+    {
+        
+            virtualKeyboard.CommitTextEvent.RemoveListener(OnKeyboardCommit);
+        
+    }
+
 
     // Update is called once per frame
     void Update()

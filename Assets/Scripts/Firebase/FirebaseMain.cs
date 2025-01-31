@@ -31,7 +31,7 @@ public class FirebaseMain : MonoBehaviour
     private bool checkedPassword = false;
     private void Awake()
     {
-        DontDestroy();
+        //DontDestroy();
         InitKeyword();
         InitFirebase();
     }

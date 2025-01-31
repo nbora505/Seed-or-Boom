@@ -163,7 +163,7 @@ public class GetDataFirebase : MonoBehaviour
 
     private void Awake()
     {
-        DontDestroy();
+        //DontDestroy();
     }
     private void DontDestroy()
     {

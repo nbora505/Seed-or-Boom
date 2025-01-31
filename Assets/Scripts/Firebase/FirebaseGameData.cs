@@ -193,7 +193,7 @@ public class FirebaseGameData : MonoBehaviour
 
     private void Awake()
     {
-        DontDestroy();
+        //DontDestroy();
     }
     private void DontDestroy()
     {
