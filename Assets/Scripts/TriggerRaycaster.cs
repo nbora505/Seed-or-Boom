@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using TMPro;
 
 public class TriggerRaycaster : MonoBehaviour
 {
@@ -52,6 +53,14 @@ public class TriggerRaycaster : MonoBehaviour
             {
                 Debug.Log("UI 버튼 클릭: " + button.name);
                 button.onClick.Invoke(); 
+                return;
+            }
+
+            TMP_InputField inputs = hit.collider.GetComponent<TMP_InputField>();
+            if (inputs != null)
+            {
+                Debug.Log("UI 버튼 클릭: " + inputs.name);
+                inputs.onSelect.Invoke(inputs.text);
                 return;
             }
 
