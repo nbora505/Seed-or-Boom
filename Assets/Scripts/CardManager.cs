@@ -113,6 +113,8 @@ public class CardManager : MonoBehaviour
         for (int i = 0; i < totalPlayers; i++)
         {
             Debug.Log($"Player{i}의 카드 패");
+            //카드 덱 오브젝트 활성화시키기
+            gameManager.playerList[i].GetComponent<PlayerController>().cardDeckObject.SetActive(true);
 
             // 이쪽 아래 포문이, 유저 한 명에게 카드를 주는 코드라인.
             for (int j = 0; j < 4; j++)

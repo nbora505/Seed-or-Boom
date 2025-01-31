@@ -248,7 +248,7 @@ public class ButtonManager : MonoBehaviour
         {
             gameManager.predictedWinCnt[gameManager.curTurn] = expectedWin;
             gameManager.selectedWin = 0;
-            logText.text = "";
+            logText.text = "0";
             logText.DOText("승리횟수 :" + expectedWin.ToString() + "번 제출완료", 1.2f);
             playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번 제출완료";
             expectedWin = 0;
