@@ -24,22 +24,10 @@ public class FirebaseGameData : MonoBehaviour
         public string mode { get; set; }
 
         [FirestoreProperty]
-        public string where { get; set; }
-
-        [FirestoreProperty]
-        public string result { get; set; }
-
-        [FirestoreProperty]
         public string winner { get; set; }
 
         [FirestoreProperty]
-        public string selectChar { get; set; }
-
-        [FirestoreProperty]
         public Timestamp startTime { get; set; }
-
-        [FirestoreProperty]
-        public Timestamp endTime { get; set; }
     }
 
     public FirebaseMain firebaseMain;
@@ -67,7 +55,7 @@ public class FirebaseGameData : MonoBehaviour
         FirebaseFirestore db = FirebaseFirestore.DefaultInstance;
         string day = DateTime.Today.ToString("MMdd");
 
-        QueryCheck(day).Wait();
+        StartCoroutine(QueryCheck(day));
 
         DocumentReference docRef = db.Collection("gameData").Document(firebaseMain.auth.CurrentUser.UserId)
             .Collection(day).Document("game" + daysGameCnt);
@@ -80,6 +68,7 @@ public class FirebaseGameData : MonoBehaviour
             startTime = startTime,
             winner = winner
         };
+
         //upadte new data to user's doc.
         docRef.SetAsync(updateDic).ContinueWithOnMainThread(task =>
         {
@@ -92,6 +81,7 @@ public class FirebaseGameData : MonoBehaviour
                 Debug.Log("Plese Update One More");
             }
         });
+
         if (daysGameCnt == 0)
         {
             DocumentReference docRefUser = db.Collection("gameData")
@@ -123,17 +113,17 @@ public class FirebaseGameData : MonoBehaviour
     /// <param name="day"></param>
     public void SearchDaysGameCnt(int day)
     {
-        QueryCheck(day.ToString()).Wait();
+        StartCoroutine(QueryCheck(day.ToString()));
     }
 
-    private System.Threading.Tasks.Task QueryCheck(string dayCollection)
+    private IEnumerator QueryCheck(string dayCollection)
     {
         FirebaseFirestore db = FirebaseFirestore.DefaultInstance;
 
         Query dayCollectionQuery = db.Collection("gameData")
             .Document(firebaseMain.auth.CurrentUser.UserId).Collection(dayCollection);
 
-        return dayCollectionQuery.GetSnapshotAsync().ContinueWithOnMainThread(task =>
+        yield return dayCollectionQuery.GetSnapshotAsync().ContinueWithOnMainThread(task =>
         {
             if (task.IsCompletedSuccessfully)
             {
@@ -193,7 +183,7 @@ public class FirebaseGameData : MonoBehaviour
 
     private void Awake()
     {
-        DontDestroy();
+        //DontDestroy();
     }
     private void DontDestroy()
     {

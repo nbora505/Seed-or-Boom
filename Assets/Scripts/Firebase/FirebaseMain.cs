@@ -6,7 +6,7 @@ using Firebase.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
 using Firebase.Firestore;
-using Meta.XR.MRUtilityKit.SceneDecorator;
+//using Meta.XR.MRUtilityKit.SceneDecorator;
 using TMPro;
 
 public class FirebaseMain : MonoBehaviour
@@ -31,7 +31,7 @@ public class FirebaseMain : MonoBehaviour
     private bool checkedPassword = false;
     private void Awake()
     {
-        DontDestroy();
+        //DontDestroy();
         InitKeyword();
         InitFirebase();
     }
@@ -88,6 +88,7 @@ public class FirebaseMain : MonoBehaviour
     /// </summary>
     public void LogIn()
     {
+        Debug.Log("gfdbfdz");
         if (emailField.text != ""
             && pwField.text != ""
             && pwField.text != "@JOH123") //'@JOH123' is using FireStore Fake SignUp's pw

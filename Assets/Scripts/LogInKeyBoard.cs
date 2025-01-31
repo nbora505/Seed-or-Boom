@@ -17,6 +17,10 @@ public class LogInKeyBoard : MonoBehaviour
 
     private void Start()
     {
+        keyBoard.CommitTextEvent.AddListener(ChangeString);
+        keyBoard.EnterEvent.AddListener(KeyboardEnd);
+        keyBoard.BackspaceEvent.AddListener(BackSpaceKeyBoard);
+
         SetKeyBoardEmail();
     }
     public void SetKeyBoardEmail()
@@ -30,29 +34,27 @@ public class LogInKeyBoard : MonoBehaviour
         passwordKey = true;
     }
 
-    public void LeaveEmailKeyboard()
-    {
-        keyBoard.gameObject.SetActive(false);
-        emailKey = false;
-    }
-    public void LeavePWKeyboard()
-    {
-        keyBoard.gameObject.SetActive(false);
-        passwordKey = false;
-    }
-
-    private void Update()
-    {
-    }
-    public void ChangeString()
+    public void ChangeString(string str)
     {
         if (emailKey)
         {
-            emailInput.text = keyBoard.TextHandler.Text;
+            emailInput.text += str;
         }
         else if (passwordKey)
         {
-            passwordInput.text = keyBoard.TextHandler.Text;
+            passwordInput.text += str;
+        }
+    }
+
+    public void BackSpaceKeyBoard()
+    {
+        if (emailKey)
+        {
+            emailInput.text.Remove(emailInput.text.Length -1);
+        }
+        else if (passwordKey)
+        {
+            passwordInput.text.Remove(passwordInput.text.Length - 1);
         }
     }
 
