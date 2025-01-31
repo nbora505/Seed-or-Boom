@@ -183,17 +183,10 @@ public class FirebaseGameData : MonoBehaviour
 
     private void Awake()
     {
-        //DontDestroy();
+        DontDestroy();
     }
     private void DontDestroy()
     {
-        if (GameObject.Find(gameObject.name))
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            DontDestroyOnLoad(gameObject);
-        }
+        DontDestroyOnLoad(gameObject);
     }
 }

@@ -97,7 +97,6 @@ public class GetDataFirebase : MonoBehaviour
                 userNick = snapDic["nickName"].ToString();
                 userWin = (int)snapDic["win"];
                 userLose = (int)snapDic["lose"];
-                userChar = snapDic["char"].ToString();
                 Debug.Log("data search success");
             }
             else
@@ -105,6 +104,7 @@ public class GetDataFirebase : MonoBehaviour
                 Debug.Log("search db data error");
             }
         });
+        yield return new WaitForSeconds(0.25f);
     }
 
     /// <summary>
@@ -157,17 +157,10 @@ public class GetDataFirebase : MonoBehaviour
 
     private void Awake()
     {
-        //DontDestroy();
+        DontDestroy();
     }
     private void DontDestroy()
     {
-        if (GameObject.Find(gameObject.name))
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            DontDestroyOnLoad(gameObject);
-        }
+        DontDestroyOnLoad(gameObject);
     }
 }

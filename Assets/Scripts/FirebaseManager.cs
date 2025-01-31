@@ -16,7 +16,7 @@ public class FirebaseManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        getDataFirebase = GameObject.Find("FirebaseManager").GetComponent<GetDataFirebase>();
+        getDataFirebase = GameObject.Find("GetDataFirebase").GetComponent<GetDataFirebase>();
         
     }
 
@@ -24,11 +24,10 @@ public class FirebaseManager : MonoBehaviour
     {
         getDataFirebase.GetData();
         userUID.text = $"UID : {getDataFirebase.userUID}";
-        userEmail.text = $"UID : {getDataFirebase.userEmail}";
-        userNick.text = $"UID : {getDataFirebase.userNick}";
-        userWin.text = $"UID : {getDataFirebase.userWin}";
-        userLose.text = $"UID : {getDataFirebase.userLose}";
-        userChar.text = $"UID : {getDataFirebase.userChar}";
+        userEmail.text = $"Email : {getDataFirebase.userEmail}";
+        userNick.text = $"NickName : {getDataFirebase.userNick}";
+        userWin.text = $"Win : {getDataFirebase.userWin}";
+        userLose.text = $"Lose : {getDataFirebase.userLose}";
 
     }
 }

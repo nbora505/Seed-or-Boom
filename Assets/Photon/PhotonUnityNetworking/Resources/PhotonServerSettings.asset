@@ -39,6 +39,23 @@ MonoBehaviour:
   - DestroySpaceship
   - Fire
   - RespawnSpaceship
+  - CheckPlayerReady
+  - CheckTurnResult
+  - DistributeCards
+  - EndGame
+  - PlayerDead
+  - PrepareNextRound
+  - ProcessDecideWinCount
+  - ProcessTurn
+  - ResetLists
+  - SpwanPlayer
+  - StartDecideWinCount
+  - StartGame
+  - StartRound
+  - StartRoundEnd
+  - SubmitCard
+  - SubmitWinCount
+  - UpdateTurnWinner
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

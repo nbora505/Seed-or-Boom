@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using Firebase.Firestore;
 //using Meta.XR.MRUtilityKit.SceneDecorator;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class FirebaseMain : MonoBehaviour
 {
@@ -29,9 +30,12 @@ public class FirebaseMain : MonoBehaviour
     /// </summary>
     private bool checkedEmail = false;
     private bool checkedPassword = false;
+
+    public GameObject getDataFirebase;
+    public GameObject firebaseGameData;
     private void Awake()
     {
-        //DontDestroy();
+        DontDestroy();
         InitKeyword();
         InitFirebase();
     }
@@ -88,7 +92,6 @@ public class FirebaseMain : MonoBehaviour
     /// </summary>
     public void LogIn()
     {
-        Debug.Log("gfdbfdz");
         if (emailField.text != ""
             && pwField.text != ""
             && pwField.text != "@JOH123") //'@JOH123' is using FireStore Fake SignUp's pw
@@ -180,7 +183,8 @@ public class FirebaseMain : MonoBehaviour
             if (task.Result.Exists) //SignIn to FireStore
             {
                 Debug.Log("Login database success");
-                //after goto main Scene
+
+                SceneManager.LoadScene(0);
             }
             else //IF new Account. You SignUp to FireStore
             {
@@ -621,19 +625,15 @@ public class FirebaseMain : MonoBehaviour
     private void LogOutGotoLoginScene()
     {
         auth.SignOut();
-        //Goto Login Scene
+        Destroy(getDataFirebase);
+        Destroy(firebaseGameData);
+        SceneManager.LoadScene(2);
+        Destroy(gameObject);
     }
     #endregion
 
     private void DontDestroy()
     {
-        if (GameObject.Find(gameObject.name))
-        {
-            Destroy(gameObject);
-        }
-        else 
-        {
-            DontDestroyOnLoad(gameObject);
-        }
+        DontDestroyOnLoad(gameObject);
     }
 }

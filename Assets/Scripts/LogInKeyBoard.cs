@@ -11,12 +11,16 @@ public class LogInKeyBoard : MonoBehaviour
     public OVRVirtualKeyboard keyBoard;
     public TMP_InputField emailInput;
     public TMP_InputField passwordInput;
+    public GameObject p1;
 
     bool emailKey = false;
     bool passwordKey = false;
 
     private void Start()
     {
+        p1.transform.position = Vector3.zero;
+        p1.transform.rotation = Quaternion.Euler(0, 0, 0);
+
         keyBoard.CommitTextEvent.AddListener(ChangeString);
         keyBoard.EnterEvent.AddListener(KeyboardEnd);
         keyBoard.BackspaceEvent.AddListener(BackSpaceKeyBoard);
