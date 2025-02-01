@@ -46,10 +46,17 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     [Tooltip("Empty Gameobj of SpawnPoints")]
     public Transform[] spawnPoints;
 
+    
     #region UnityCallBacks
     private void Awake()
     {
-        PhotonNetwork.AutomaticallySyncScene = false; // 방 터짐 방지
+        PhotonNetwork.AutomaticallySyncScene = true; // 방 터짐 방지
+        
+
+    }
+    public void Start()
+    {
+        
     }
     #endregion
 
@@ -67,13 +74,13 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     }
 
     #region PunCallBacksLines
-    public override void OnJoinedRoom()
-    {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            photonView.RPC("SpwanPlayer", RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber);
-        }
-    }
+    //public override void OnJoinedRoom()
+    //{
+    //    if (PhotonNetwork.IsMasterClient)
+    //    {
+    //        photonView.RPC("SpwanPlayer", RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber);
+    //    }
+    //}
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
@@ -99,22 +106,61 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         Debug.LogWarning($"현재 방장은 {newMasterClient}입니다.");
     }
     #endregion
+    public IEnumerator WaitForPlayerListAndSpawn(int actorNumberID)
+    {
+        Debug.Log("플레이어 리스트 동기화 대기 중...");
+        yield return new WaitUntil(() => PhotonNetwork.PlayerList.Length > 0);
 
+        Debug.Log($"현재 플레이어 리스트 수: {PhotonNetwork.PlayerList.Length}");
+
+        SpwanPlayer(actorNumberID-1);
+        
+    }
     #region PunRPCLines
+
     [PunRPC]
-    void SpwanPlayer(int actorNumberID)
+    public void SpwanPlayer(int actorNumberID)
     {
         Photon.Realtime.Player newPlayer = PhotonNetwork.PlayerList.FirstOrDefault(
             player => player.ActorNumber == actorNumberID);
 
-        int characterSelectIndex = (int)newPlayer.CustomProperties["CharacterIndex"];
-        GameObject selectedCharacter = characterPrefabs[characterSelectIndex];
+        int characterSelectIndex = newPlayer.CustomProperties.ContainsKey("CharacterIndex")
+       ? (int)newPlayer.CustomProperties["CharacterIndex"]
+        : 1;
 
+        Debug.Log($"플레이어 {actorNumberID}의 캐릭터 인덱스: {characterSelectIndex}");
+
+
+        GameObject selectedCharacter = characterPrefabs[characterSelectIndex];
         GameObject player = PhotonNetwork.Instantiate(selectedCharacter.name,
             spawnPoints[(actorNumberID - 1) % spawnPoints.Length].position,
             Quaternion.identity);
 
         playerList.Add(player);
+
+        if (actorNumberID <= 0)
+        {
+            Debug.LogError($"[SpwanPlayer] actorNumberID가 {actorNumberID} 입니다. LocalPlayer.ActorNumber로 변경.");
+            actorNumberID = PhotonNetwork.LocalPlayer.ActorNumber;
+        }
+
+        
+        //if (PhotonNetwork.IsMasterClient)
+        //{
+        //   photonView.RPC("SpwanPlayer", RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber);
+        //}
+        if (newPlayer == null)
+        {
+            Debug.LogError($"[SpwanPlayer] 플레이어 {actorNumberID}를 찾을 수 없습니다!");
+            return;
+        }
+
+        if (!newPlayer.CustomProperties.ContainsKey("CharacterIndex"))
+        {
+            Debug.LogError($"[SpwanPlayer] 플레이어 {actorNumberID}의 CharacterIndex가 설정되지 않았습니다!");
+            return;
+        }
+                
     }
 
     [PunRPC]

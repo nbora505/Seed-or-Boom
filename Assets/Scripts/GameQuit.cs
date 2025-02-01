@@ -13,21 +13,21 @@ public class GameQuit : MonoBehaviour
     void Start()
     {
         
-            virtualKeyboard.CommitTextEvent.AddListener(OnKeyboardCommit);
+            //virtualKeyboard.CommitTextEvent.AddListener(OnKeyboardCommit);
         
     }
 
     void OnKeyboardCommit(string text)
     {
         
-            inputField.text += text; // 키보드에서 입력한 텍스트를 InputField에 반영
+            //inputField.text += text; // 키보드에서 입력한 텍스트를 InputField에 반영
         
     }
 
     void OnDestroy()
     {
         
-            virtualKeyboard.CommitTextEvent.RemoveListener(OnKeyboardCommit);
+            //virtualKeyboard.CommitTextEvent.RemoveListener(OnKeyboardCommit);
         
     }
 

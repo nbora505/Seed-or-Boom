@@ -903,13 +903,14 @@ GameObject:
   - component: {fileID: 8181887474402841039}
   - component: {fileID: 2590871021212204315}
   - component: {fileID: 5812972859203716727}
+  - component: {fileID: 7894544597738790442}
   m_Layer: 0
   m_Name: GoblinMale
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &7914830495005822499
 Transform:
   m_ObjectHideFlags: 0
@@ -977,6 +978,8 @@ MonoBehaviour:
   bombVisible: 0
   isDead: 0
   gm: {fileID: 0}
+  cardDeckObject: {fileID: 0}
+  quads: {fileID: 0}
   expectedWins: 0
   nowTotalWins: 0
   expectedWin: 
@@ -1002,6 +1005,8 @@ MonoBehaviour:
   bombVisible: 0
   isDead: 0
   gm: {fileID: 0}
+  cardDeckObject: {fileID: 0}
+  quads: {fileID: 0}
   expectedWins: 0
   nowTotalWins: 0
   expectedWin: 
@@ -1029,7 +1034,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3592104378036740888}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9da3ea90af2636f4eb523ff312f7f552, type: 3}
   m_Name: 
@@ -1052,6 +1057,28 @@ MonoBehaviour:
   headConstraint: {fileID: 5586012688256095242}
   turnFactor: 1
   forwardAxis: 1
+--- !u!114 &7894544597738790442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3592104378036740888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &3884177542335096336
 GameObject:
   m_ObjectHideFlags: 0

@@ -41,10 +41,11 @@ public class RoomData : MonoBehaviour
             IsVisible = true
         };
 
-        // 방의 기본 설정을 CustomProperties에 저장하는거임
+        // 방 설정 CustomProperties에 저장
         Hashtable roomProperties = new Hashtable
         {
-            { "Map1","Map2"},   // 맵 이름
+            { "Map","Map1"},   // 맵 이름
+            
             { "MaxPlayers", 4 }    // 최대 플레이어 수
         };
 

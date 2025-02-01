@@ -658,6 +658,10 @@ PrefabInstance:
       propertyPath: rightHand.VRTarget
       value: 
       objectReference: {fileID: 1981549402}
+    - target: {fileID: 7894544597738790442, guid: 6a405d6dfe3b94e428ab5c1d896d6dcd, type: 3}
+      propertyPath: sceneViewId
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 7914830495005822499, guid: 6a405d6dfe3b94e428ab5c1d896d6dcd, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -711,6 +715,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1122269703039224243, guid: 4c7dda4a99958444b81b17b73c419d86, type: 3}
+      propertyPath: sceneViewId
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1779661921678235484, guid: 4c7dda4a99958444b81b17b73c419d86, type: 3}
       propertyPath: m_LocalPosition.x
       value: -4.21
@@ -829,6 +837,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: King
       objectReference: {fileID: 0}
+    - target: {fileID: 4998512275358871716, guid: 53609712b7ed4124aab8928c8bcab366, type: 3}
+      propertyPath: sceneViewId
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8056544369785467615, guid: 53609712b7ed4124aab8928c8bcab366, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.23000002
@@ -934,6 +946,10 @@ PrefabInstance:
       propertyPath: rightHand.VRTarget
       value: 
       objectReference: {fileID: 1981549402}
+    - target: {fileID: 7715271724070341415, guid: 223eab12e43bac04781dc479416bc63e, type: 3}
+      propertyPath: sceneViewId
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8849390686682753043, guid: 223eab12e43bac04781dc479416bc63e, type: 3}
       propertyPath: m_Name
       value: Cowboy

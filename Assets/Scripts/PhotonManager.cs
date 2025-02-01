@@ -4,7 +4,9 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.UI;
-
+using Hashtable = ExitGames.Client.Photon.Hashtable;
+using UnityEngine.SceneManagement;
+using System.Linq;
 public class PhotonManager : MonoBehaviourPunCallbacks
 {
     private readonly string version = "1.0";
@@ -17,8 +19,18 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     private Dictionary<string,GameObject> rooms = new Dictionary<string,GameObject>();
     private GameObject roomItemPrefab;
     public Transform scrollContent;
-     void Awake()
+
+    public MultiplayGameManager multiplayGameManager;
+
+    [Tooltip("Character's Prefabs")]
+    public GameObject[] characterPrefabs;
+
+    [Tooltip("Empty Gameobj of SpawnPoints")]
+    public Transform[] spawnPoints;
+
+    void Awake()
     {
+        DontDestroyOnLoad(gameObject);
         PhotonNetwork.AutomaticallySyncScene = true; 
 
         PhotonNetwork.GameVersion = version;
@@ -45,7 +57,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     {
         if(string.IsNullOrEmpty(userIF.text))
         {
-            userId = $"USER_{Random.Range(1, 21):00}";
+            userId = $"USER_{Random.Range(1, 4 ):00}";
         }
         else
         {
@@ -89,19 +101,105 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        Debug.Log($"photonNetwork.inroom = {PhotonNetwork.InRoom}");
+        Debug.Log($"photonNetwork.룸 = {PhotonNetwork.InRoom}");
         Debug.Log($"player count = {PhotonNetwork.CurrentRoom.PlayerCount} ");
-
+        
         foreach(var player in PhotonNetwork.CurrentRoom.Players)
         {
             Debug.Log($"{player.Value.NickName},{player.Value.ActorNumber}");
-        }
 
-        if(PhotonNetwork.IsMasterClient)
-        {
-            PhotonNetwork.LoadLevel("Map1");
+            if (player.Value.CustomProperties.ContainsKey("CharacterIndex"))
+            {
+                int charIndex = (int)player.Value.CustomProperties["CharacterIndex"];
+                Debug.Log($"{player.Value.NickName} 선택한 캐릭터 인덱스: {charIndex}");
+            }
         }
+        
+        PhotonNetwork.LoadLevel("Map1");
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "Map1")
+        {
+            var multiplayGameManager = GameObject.Find("MultiplayGameManager").GetComponent<MultiplayGameManager>();
+            if (multiplayGameManager != null)
+            {
+                spawnPoints = multiplayGameManager.spawnPoints;
+                StartCoroutine(WaitForPlayerListAndSpawn(PhotonNetwork.LocalPlayer.ActorNumber));
+                
+            }
+            else
+            {
+                Debug.LogError("MultiplayGameManager를 찾을 수 없습니다!");
+            }
+        }
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    public IEnumerator WaitForPlayerListAndSpawn(int actorNumberID)
+    {
+        Debug.Log("플레이어 리스트 동기화 대기 중...");
+        yield return new WaitUntil(() => PhotonNetwork.PlayerList.Length > 0);
+        yield return new WaitForSeconds(1f);
+        Photon.Realtime.Player newPlayer = PhotonNetwork.PlayerList.FirstOrDefault(
+       player => player.ActorNumber == actorNumberID);
+
+        if (newPlayer == null)
+        {
+            Debug.LogError($"[WaitForPlayerListAndSpawn] 플레이어 {actorNumberID}를 찾을 수 없습니다! 다시 시도...");
+            yield return new WaitForSeconds(1f);
+            StartCoroutine(WaitForPlayerListAndSpawn(actorNumberID)); // 재시도
+            yield break;
+        }
+        Debug.Log($"현재 플레이어 리스트 수: {PhotonNetwork.PlayerList.Length}");
+
+        SpwanPlayer(actorNumberID);
+
+    }
+   
+
+    [PunRPC]
+    public void SpwanPlayer(int actorNumberID)
+    {
+        var multiplayGameManager = GameObject.Find("MultiplayGameManager").GetComponent<MultiplayGameManager>();
+        if (actorNumberID <= 0)
+        {
+            Debug.LogWarning($"[SpwanPlayer] actorNumberID가 {actorNumberID} 입니다. LocalPlayer.ActorNumber로 변경.");
+            actorNumberID = PhotonNetwork.LocalPlayer.ActorNumber;
+        }
+        Photon.Realtime.Player newPlayer = PhotonNetwork.PlayerList.FirstOrDefault(
+            player => player.ActorNumber == actorNumberID);
+
+        int characterSelectIndex = newPlayer.CustomProperties.ContainsKey("CharacterIndex")
+       ? (int)newPlayer.CustomProperties["CharacterIndex"]
+        : 1;
+
+        Debug.Log($"플레이어 {actorNumberID}의 캐릭터 인덱스: {characterSelectIndex}");
+
+
+        GameObject selectedCharacter = characterPrefabs[characterSelectIndex];
+        GameObject player = PhotonNetwork.Instantiate(selectedCharacter.name,
+            spawnPoints[(actorNumberID ) % spawnPoints.Length].position,
+            Quaternion.identity);
+
+        multiplayGameManager.playerList.Add(player);
+
+     
+        //if (PhotonNetwork.IsMasterClient)
+        //{
+        //   photonView.RPC("SpwanPlayer", RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber);
+        //}
+       
+
+    }
+    public void SetCharacterIndex(int index)
+    {
+        Hashtable playerProperties = new Hashtable { { "CharacterIndex", index } };
+        PhotonNetwork.LocalPlayer.SetCustomProperties(playerProperties);
+    }
+
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
@@ -139,6 +237,9 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             Debug.Log($"Room = {room.Name} ({room.PlayerCount}/{room.MaxPlayers})");
         }
     }
+
+    
+
     #region UI_BUTTON_EVENT
     public void OnLoginClick()
     {
