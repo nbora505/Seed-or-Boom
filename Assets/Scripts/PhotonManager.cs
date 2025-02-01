@@ -150,12 +150,12 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         {
             Debug.LogError($"[WaitForPlayerListAndSpawn] 플레이어 {actorNumberID}를 찾을 수 없습니다! 다시 시도...");
             yield return new WaitForSeconds(1f);
-            StartCoroutine(WaitForPlayerListAndSpawn(actorNumberID)); // 재시도
+            StartCoroutine(WaitForPlayerListAndSpawn(actorNumberID-1)); // 재시도
             yield break;
         }
         Debug.Log($"현재 플레이어 리스트 수: {PhotonNetwork.PlayerList.Length}");
 
-        SpwanPlayer(actorNumberID);
+        SpwanPlayer(actorNumberID-1);
 
     }
    
@@ -181,7 +181,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 
         GameObject selectedCharacter = characterPrefabs[characterSelectIndex];
         GameObject player = PhotonNetwork.Instantiate(selectedCharacter.name,
-            spawnPoints[(actorNumberID ) % spawnPoints.Length].position,
+            spawnPoints[(actorNumberID-1 ) % spawnPoints.Length].position,
             Quaternion.identity);
 
         multiplayGameManager.playerList.Add(player);

@@ -119,16 +119,16 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     #region PunRPCLines
 
     [PunRPC]
-    public void SpwanPlayer(int actorNumberID)
+    void SpwanPlayer(int actorNumberID)
     {
         Photon.Realtime.Player newPlayer = PhotonNetwork.PlayerList.FirstOrDefault(
             player => player.ActorNumber == actorNumberID);
 
-        int characterSelectIndex = newPlayer.CustomProperties.ContainsKey("CharacterIndex")
-       ? (int)newPlayer.CustomProperties["CharacterIndex"]
-        : 1;
+        if (newPlayer == null) return;
 
-        Debug.Log($"플레이어 {actorNumberID}의 캐릭터 인덱스: {characterSelectIndex}");
+
+        int characterSelectIndex = (int)newPlayer.CustomProperties["CharacterIndex"];
+
 
 
         GameObject selectedCharacter = characterPrefabs[characterSelectIndex];
@@ -137,30 +137,6 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
             Quaternion.identity);
 
         playerList.Add(player);
-
-        if (actorNumberID <= 0)
-        {
-            Debug.LogError($"[SpwanPlayer] actorNumberID가 {actorNumberID} 입니다. LocalPlayer.ActorNumber로 변경.");
-            actorNumberID = PhotonNetwork.LocalPlayer.ActorNumber;
-        }
-
-        
-        //if (PhotonNetwork.IsMasterClient)
-        //{
-        //   photonView.RPC("SpwanPlayer", RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber);
-        //}
-        if (newPlayer == null)
-        {
-            Debug.LogError($"[SpwanPlayer] 플레이어 {actorNumberID}를 찾을 수 없습니다!");
-            return;
-        }
-
-        if (!newPlayer.CustomProperties.ContainsKey("CharacterIndex"))
-        {
-            Debug.LogError($"[SpwanPlayer] 플레이어 {actorNumberID}의 CharacterIndex가 설정되지 않았습니다!");
-            return;
-        }
-                
     }
 
     [PunRPC]
