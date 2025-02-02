@@ -26,7 +26,7 @@ public class RoomData : MonoBehaviour
 
     private void Awake()
     {
-        roomInfoText = GetComponent<Text>();
+        roomInfoText = GetComponentInChildren<Text>();
         photonManager = GameObject.Find("PhotonManager").GetComponent<PhotonManager>();
     }
 
