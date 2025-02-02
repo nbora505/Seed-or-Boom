@@ -21,9 +21,6 @@ using UnityEngine;
 
 namespace Photon.Pun
 {
-    using Realtime;
-
-
     public class PunWizardText
     {
         public string WindowTitle = "PUN Wizard";
@@ -45,7 +42,7 @@ namespace Photon.Pun
         public string PUNWizardLabel = "PUN Wizard";
         public string SettingsButton = "Settings:";
         public string SetupServerCloudLabel = "Setup wizard for setting up your own server or the cloud.";
-        public string WarningPhotonDisconnect = "Disconnecting PUN due to recompile. Exit PlayMode.";
+        public string WarningPhotonDisconnect = "Disconnecting PUN due to recompile.";
         public string StartButton = "Start";
         public string LocateSettingsButton = "Locate PhotonServerSettings";
         public string SettingsHighlightLabel = "Highlights the used photon settings file in the project.";
@@ -56,9 +53,8 @@ namespace Photon.Pun
         public string OpenDevNetTooltip = "Online documentation for Photon.";
         public string OpenCloudDashboardText = "Cloud Dashboard Login";
         public string OpenCloudDashboardTooltip = "Review Cloud App information and statistics.";
-        public string CommunityLabel = "Developer Community:";
-        public string JoinDiscordText = "Join our Discord";
-        public string JoinDiscordTooltip = "Online support for Photon.";
+        public string OpenForumText = "Open Forum";
+        public string OpenForumTooltip = "Online support for Photon.";
         public string OkButton = "Ok";
         public string OwnHostCloudCompareLabel = "How 'my own host' compares to 'cloud'.";
         public string ComparisonPageButton = "Cloud versus OnPremise";
@@ -103,9 +99,15 @@ namespace Photon.Pun
 
         protected static string DocumentationLocation = "Assets/Photon/PhotonNetworking-Documentation.pdf";
 
+        protected static string UrlFreeLicense = "https://dashboard.photonengine.com/en-US/SelfHosted";
+
         public const string UrlDevNet = "https://doc.photonengine.com/en-us/pun/v2";
 
-        protected static string UrlJoinDiscord = "https://dashboard.photonengine.com/account/profile";
+        protected static string UrlForum = "https://forum.photonengine.com";
+
+        protected static string UrlCompare = "https://doc.photonengine.com/en-us/realtime/current/getting-started/onpremise-or-saas";
+
+        protected static string UrlHowToSetup = "https://doc.photonengine.com/en-us/onpremise/current/getting-started/photon-server-in-5min";
 
         protected static string UrlAppIDExplained = "https://doc.photonengine.com/en-us/realtime/current/getting-started/obtain-your-app-id";
 
@@ -143,7 +145,7 @@ namespace Photon.Pun
         private static double lastWarning = 0;
         private static bool postInspectorUpdate;
 
-
+        
 
         [MenuItem("Window/Photon Unity Networking/PUN Wizard &p", false, 0)]
         protected static void MenuItemOpenWizard()
@@ -168,7 +170,8 @@ namespace Photon.Pun
         [UnityEditor.InitializeOnLoadMethod]
         public static void InitializeOnLoadMethod()
         {
-            //Debug.Log("InitializeOnLoadMethod()");
+            //Debug.Log("InitializeOnLoadMethod()"); // DEBUG
+
             EditorApplication.delayCall += OnDelayCall;
         }
 
@@ -176,20 +179,15 @@ namespace Photon.Pun
         // used to register for various events (post-load)
         private static void OnDelayCall()
         {
-            //Debug.Log("OnDelayCall()");
+            //Debug.Log("OnDelayCall()");// DEBUG
 
             postInspectorUpdate = true;
-
-            EditorApplication.playModeStateChanged -= PlayModeStateChanged;
+   
             EditorApplication.playModeStateChanged += PlayModeStateChanged;
 
-            #if UNITY_2021_1_OR_NEWER
-            CompilationPipeline.compilationStarted -= OnCompileStarted21;
-            CompilationPipeline.compilationStarted += OnCompileStarted21;
-            #else
             CompilationPipeline.assemblyCompilationStarted -= OnCompileStarted;
             CompilationPipeline.assemblyCompilationStarted += OnCompileStarted;
-            #endif
+
 
             #if (UNITY_2018 || UNITY_2018_1_OR_NEWER)
             EditorApplication.projectChanged -= OnProjectChanged;
@@ -199,24 +197,20 @@ namespace Photon.Pun
             EditorApplication.projectWindowChanged += OnProjectChanged;
             #endif
 
-
-            if (!EditorApplication.isPlaying && !EditorApplication.isPlayingOrWillChangePlaymode)
-            {
-                OnProjectChanged(); // call this initially from here, as the project change events happened earlier (on start of the Editor)
-                PhotonEditor.UpdateRpcList();
-            }
+            OnProjectChanged(); // call this initially from here, as the project change events happened earlier (on start of the Editor)
         }
-
 
 
         // called in editor, opens wizard for initial setup, keeps scene PhotonViews up to date and closes connections when compiling (to avoid issues)
         private static void OnProjectChanged()
         {
+            //Debug.Log("OnProjectChanged()"); // DEBUG
+
             // Prevent issues with Unity Cloud Builds where ServerSettings are not found.
             // Also, within the context of a Unity Cloud Build, ServerSettings is already present anyway.
             #if UNITY_CLOUD_BUILD
             return;
-            #else
+            #endif
 
             if (PhotonNetwork.PhotonServerSettings == null)
             {
@@ -234,16 +228,7 @@ namespace Photon.Pun
                 PhotonNetwork.PhotonServerSettings.DisableAutoOpenWizard = true;
                 PhotonEditor.SaveSettings();
             }
-            #endif
         }
-
-
-        #if UNITY_2021_1_OR_NEWER
-        private static void OnCompileStarted21(object obj)
-        {
-            OnCompileStarted(obj as string);
-        }
-        #endif
 
         private static void OnCompileStarted(string obj)
         {
@@ -258,18 +243,13 @@ namespace Photon.Pun
 
                 PhotonNetwork.Disconnect();
                 PhotonNetwork.NetworkingClient.LoadBalancingPeer.DispatchIncomingCommands();
-                #if UNITY_2019_4_OR_NEWER && UNITY_EDITOR
-                EditorApplication.ExitPlaymode();
-                #endif
             }
         }
-
 
         [DidReloadScripts]
         private static void OnDidReloadScripts()
         {
-            //Debug.Log("OnDidReloadScripts() postInspectorUpdate: "+postInspectorUpdate + " isPlayingOrWillChangePlaymode: "+EditorApplication.isPlayingOrWillChangePlaymode);
-            if (postInspectorUpdate && !EditorApplication.isPlayingOrWillChangePlaymode)
+            if (postInspectorUpdate)
             {
                 PhotonEditor.UpdateRpcList(); // could be called when compilation finished (instead of when reload / compile starts)
             }
@@ -277,7 +257,6 @@ namespace Photon.Pun
 
         private static void PlayModeStateChanged(PlayModeStateChange state)
         {
-            //Debug.Log("PlayModeStateChanged");
             if (EditorApplication.isPlaying || !EditorApplication.isPlayingOrWillChangePlaymode)
             {
                 return;
@@ -300,7 +279,7 @@ namespace Photon.Pun
         }
 
         protected void Awake()
-        {
+        {  
             // check if some appid is set. if so, we can avoid registration calls.
             if (PhotonNetwork.PhotonServerSettings != null && PhotonNetwork.PhotonServerSettings.AppSettings != null && !string.IsNullOrEmpty(PhotonNetwork.PhotonServerSettings.AppSettings.AppIdRealtime))
             {
@@ -408,7 +387,7 @@ namespace Photon.Pun
                 {
                     // input should be a mail address
                     this.useMail = true;
-
+                    
                     // check if the current input equals earlier input, which is known to be registered already
                     this.minimumInput = !this.mailOrAppId.Equals(this.emailSentToAccount) || !this.emailSentToAccountIsRegistered;
                 }
@@ -566,10 +545,10 @@ namespace Photon.Pun
                 this.photonSetupState = PhotonSetupStates.RegisterForPhotonCloud;
             }
 
+            GUILayout.Space(15);
 
 
             // documentation
-            GUILayout.Space(15);
             GUILayout.Label(CurrentLang.DocumentationLabel, EditorStyles.boldLabel);
 
             if (GUILayout.Button(new GUIContent(CurrentLang.OpenPDFText, CurrentLang.OpenPDFTooltip)))
@@ -582,21 +561,17 @@ namespace Photon.Pun
                 Application.OpenURL(UrlDevNet);
             }
 
-            //GUI.skin.label.wordWrap = true;
-            //GUILayout.Label(CurrentLang.OwnHostCloudCompareLabel);
-            //if (GUILayout.Button(CurrentLang.ComparisonPageButton))
-            //{
-            //    Application.OpenURL(UrlCompare);
-            //}
-
-
-            // community
-            GUILayout.Space(15);
-            GUILayout.Label(CurrentLang.CommunityLabel, EditorStyles.boldLabel);
-
-            if (GUILayout.Button(new GUIContent(CurrentLang.JoinDiscordText, CurrentLang.JoinDiscordTooltip)))
+            GUI.skin.label.wordWrap = true;
+            GUILayout.Label(CurrentLang.OwnHostCloudCompareLabel);
+            if (GUILayout.Button(CurrentLang.ComparisonPageButton))
             {
-                Application.OpenURL(UrlJoinDiscord);
+                Application.OpenURL(UrlCompare);
+            }
+
+
+            if (GUILayout.Button(new GUIContent(CurrentLang.OpenForumText, CurrentLang.OpenForumTooltip)))
+            {
+                Application.OpenURL(UrlForum);
             }
 
             GUILayout.EndVertical();
@@ -636,11 +611,11 @@ namespace Photon.Pun
                     return;
                 }
             }
-
+            
             this.emailSentToAccount = email;
             this.emailSentToAccountIsRegistered = false;
 
-            if (this.serviceClient.RegisterByEmail(email, types, RegisterWithEmailSuccessCallback, RegisterWithEmailErrorCallback, "PUN"+PhotonNetwork.PunVersion))
+            if (this.serviceClient.RegisterByEmail(email, types, RegisterWithEmailSuccessCallback, RegisterWithEmailErrorCallback))
             {
                 this.photonSetupState = PhotonSetupStates.EmailRegistrationPending;
                 EditorUtility.DisplayProgressBar(CurrentLang.ConnectionTitle, CurrentLang.ConnectionInfo, 0.5f);
@@ -737,11 +712,9 @@ namespace Photon.Pun
 
         public static void UpdateRpcList()
         {
-            //Debug.Log("UpdateRpcList()");
-
             if (PhotonNetwork.PhotonServerSettings == null)
             {
-                Debug.LogWarning("UpdateRpcList() wasn not able to access the PhotonServerSettings. Not updating the RPCs.");
+                Debug.LogWarning("UpdateRpcList() wasn't able to access the PhotonServerSettings");
                 return;
             }
 

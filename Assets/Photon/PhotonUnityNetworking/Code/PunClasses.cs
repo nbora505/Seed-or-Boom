@@ -366,7 +366,7 @@ namespace Photon.Pun
         ///
         /// Example: void OnCustomAuthenticationResponse(Dictionary&lt;string, object&gt; data) { ... }
         /// </remarks>
-        /// <see href="https://doc.photonengine.com/en-us/realtime/current/reference/custom-authentication"/>
+        /// <see cref="https://doc.photonengine.com/en-us/realtime/current/reference/custom-authentication"/>
         public virtual void OnCustomAuthenticationResponse(Dictionary<string, object> data)
         {
         }
@@ -685,28 +685,8 @@ namespace Photon.Pun
 
         /// <summary>
         /// Will read or write the value, depending on the stream's IsWriting value.
-        /// Char values are cast to short before being sent (receivers will simply get a short but can cast accordingly).
         /// </summary>
         public void Serialize(ref char value)
-        {
-            if (this.IsWriting)
-            {
-                this.writeData.Add((short)value);
-            }
-            else
-            {
-                if (this.readData.Length > this.currentItem)
-                {
-                    value = (char)((short)this.readData[this.currentItem]);
-                    this.currentItem++;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Will read or write the value, depending on the stream's IsWriting value.
-        /// </summary>
-        public void Serialize(ref byte value)
         {
             if (this.IsWriting)
             {
@@ -716,7 +696,7 @@ namespace Photon.Pun
             {
                 if (this.readData.Length > this.currentItem)
                 {
-                    value = (byte)this.readData[this.currentItem];
+                    value = (char) this.readData[this.currentItem];
                     this.currentItem++;
                 }
             }
@@ -890,7 +870,7 @@ namespace Photon.Pun
             bool cached = this.ResourceCache.TryGetValue(prefabId, out res);
             if (!cached)
             {
-                res = Resources.Load<GameObject>(prefabId);
+                res = (GameObject)Resources.Load(prefabId, typeof(GameObject));
                 if (res == null)
                 {
                     Debug.LogError("DefaultPool failed to load \"" + prefabId + "\". Make sure it's in a \"Resources\" folder. Or use a custom IPunPrefabPool.");

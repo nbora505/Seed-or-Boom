@@ -51,6 +51,8 @@ public class RoomData : MonoBehaviour
 
         ro.CustomRoomProperties = roomProperties;
 
+        if (!PhotonNetwork.InLobby) return;
+            
         PhotonNetwork.JoinOrCreateRoom(roomName, ro, TypedLobby.Default);
     }
 }

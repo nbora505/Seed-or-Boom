@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using Photon.Pun;
 using Photon.Realtime;
-using Photon.Pun.Demo.PunBasics;
+
 
 public class MultiplayGameManager : MonoBehaviourPunCallbacks
 {
