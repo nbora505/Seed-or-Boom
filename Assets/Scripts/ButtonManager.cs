@@ -180,7 +180,7 @@ public class ButtonManager : MonoBehaviour
     {
         Transform PlayerPanel = gameManager.playerList[gameManager.curTurn].transform.Find("Player_Canvas/Panel");
         GameObject playerPanel = PlayerPanel.gameObject;
-    
+
         if (onoff)
         {
             playerPanel.SetActive(true);
@@ -194,8 +194,12 @@ public class ButtonManager : MonoBehaviour
     {
         Transform WinBtnParent = gameManager.playerList[gameManager.curTurn].transform.Find("winBtn");
         GameObject winBtnParent = WinBtnParent.gameObject;
+        GameObject appearEffect = Resources.Load<GameObject>("AppearEffect");
+
         winBtnParent.SetActive(true);
-        
+
+        //이펙트 생성
+        Instantiate(appearEffect, WinBtnParent);
     }
     public void hideWinBtn()
     {
