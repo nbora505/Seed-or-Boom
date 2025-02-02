@@ -232,7 +232,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void ReportSpawn(int actorNumber, int viewID)
     {
-        // 이 코드는 마스터 클라이언트에서 실행됩니다.
+        // 이 코드는 마스터 클라이언트에서 실행
         GameObject spawnedPlayer = PhotonView.Find(viewID).gameObject;
         var masterManager = GameObject.Find("MultiplayGameManager").GetComponent<MultiplayGameManager>();
 
@@ -258,7 +258,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 
     IEnumerator SpawnLocalPlayerWithDelay()
     {
-        // 필요한 경우 충분한 대기시간을 줍니다.
+        
         yield return new WaitForSeconds(1f);
         SpawnLocalPlayer();
     }

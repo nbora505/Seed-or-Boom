@@ -39,7 +39,8 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     public ScoreManager scoreManager;
     public ButtonManager buttonManager;
     public CameraManager cameraManager;
-
+    public FirebaseManager firebaseManager;
+    
     [Tooltip("Character's Prefabs")]
     public GameObject[] characterPrefabs;
 
@@ -50,14 +51,10 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     #region UnityCallBacks
     private void Awake()
     {
-        PhotonNetwork.AutomaticallySyncScene = true; // 방 터짐 방지
-        
-
-    }
-    public void Start()
-    {
+        PhotonNetwork.AutomaticallySyncScene = false; // 방 터짐 방지
         
     }
+    
     #endregion
 
     [PunRPC]
@@ -106,38 +103,38 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         Debug.LogWarning($"현재 방장은 {newMasterClient}입니다.");
     }
     #endregion
-    public IEnumerator WaitForPlayerListAndSpawn(int actorNumberID)
-    {
-        Debug.Log("플레이어 리스트 동기화 대기 중...");
-        yield return new WaitUntil(() => PhotonNetwork.PlayerList.Length > 0);
+    //public IEnumerator WaitForPlayerListAndSpawn(int actorNumberID)
+    //{
+    //    Debug.Log("플레이어 리스트 동기화 대기 중...");
+    //    yield return new WaitUntil(() => PhotonNetwork.PlayerList.Length > 0);
 
-        Debug.Log($"현재 플레이어 리스트 수: {PhotonNetwork.PlayerList.Length}");
+    //    Debug.Log($"현재 플레이어 리스트 수: {PhotonNetwork.PlayerList.Length}");
 
-        SpwanPlayer(actorNumberID-1);
+    //    SpwanPlayer(actorNumberID-1);
         
-    }
+    //}
     #region PunRPCLines
 
-    [PunRPC]
-    void SpwanPlayer(int actorNumberID)
-    {
-        Photon.Realtime.Player newPlayer = PhotonNetwork.PlayerList.FirstOrDefault(
-            player => player.ActorNumber == actorNumberID);
+    //[PunRPC]
+    //void SpwanPlayer(int actorNumberID)
+    //{
+    //    Photon.Realtime.Player newPlayer = PhotonNetwork.PlayerList.FirstOrDefault(
+    //        player => player.ActorNumber == actorNumberID);
 
-        if (newPlayer == null) return;
-
-
-        int characterSelectIndex = (int)newPlayer.CustomProperties["CharacterIndex"];
+    //    if (newPlayer == null) return;
 
 
+    //    int characterSelectIndex = (int)newPlayer.CustomProperties["CharacterIndex"];
 
-        GameObject selectedCharacter = characterPrefabs[characterSelectIndex];
-        GameObject player = PhotonNetwork.Instantiate(selectedCharacter.name,
-            spawnPoints[(actorNumberID - 1) % spawnPoints.Length].position,
-            Quaternion.identity);
 
-        playerList.Add(player);
-    }
+
+    //    GameObject selectedCharacter = characterPrefabs[characterSelectIndex];
+    //    GameObject player = PhotonNetwork.Instantiate(selectedCharacter.name,
+    //        spawnPoints[(actorNumberID - 1) % spawnPoints.Length].position,
+    //        Quaternion.identity);
+
+    //    playerList.Add(player);
+    //}
 
     [PunRPC]
     public void CheckPlayerReady(int playerID)
@@ -538,7 +535,21 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         if(playerList.Count == 1)
         {
             LogText.text = $"최후의 승자는 {playerList[0].gameObject.name}";
-            
+            string winnerName = playerList[0].GetComponent<PhotonView>().Owner.NickName;
+            // 모든 참여 플레이어 리스트 만들기
+            List<string> playerNames = new List<string>();
+            foreach (var player in playerList)
+            {
+                playerNames.Add(player.GetComponent<PhotonView>().Owner.NickName);
+            }
+
+            // Firebase에 게임 결과 저장
+            firebaseManager.SaveGameResult(winnerName, playerNames);
+
+            // 현재 유저가 승자인지 확인하고 승패 업데이트
+            string currentUserNick = PhotonNetwork.LocalPlayer.NickName;
+            bool isWinner = (currentUserNick == winnerName);
+            firebaseManager.UpdateUserWin(isWinner);
         }
     }
     #endregion
