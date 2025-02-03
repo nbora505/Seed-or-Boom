@@ -9,12 +9,11 @@ public class OVRPlayerControllerPhotonSync : MonoBehaviourPunCallbacks
 {
     public GameObject cardObj;
     public GameObject ovrCamera;
-    //GameObject tempOVR;
-    HeadBodyRig hbr; // 모든 클라이언트에서 접근해야 하므로 할당이 필요함.
+    GameObject tempOVR;
+    HeadBodyRig hbr;
 
     void Awake()
     {
-        // 모든 클라이언트에서 HeadBodyRig 컴포넌트를 가져옵니다.
         hbr = GetComponent<HeadBodyRig>();
     }
 
@@ -24,33 +23,67 @@ public class OVRPlayerControllerPhotonSync : MonoBehaviourPunCallbacks
         {
             GameObject ovr = Instantiate(ovrCamera);
             ovr.transform.SetParent(this.gameObject.transform, false);
-            //tempOVR = ovr;
+            tempOVR = ovr;
 
-            photonView.RPC("SyncOVRObject", RpcTarget.AllBuffered, photonView.ViewID);
+            SetupVRTargets();
+
+            photonView.RPC("SyncVRSetup", RpcTarget.Others);
+        }
+    }
+
+    void FixedUpdate()
+    {
+        if (photonView.IsMine)
+        {
+            photonView.RPC("UpdateRemotePlayerTransform", RpcTarget.Others,
+                hbr.head.VRTarget.position, hbr.head.VRTarget.rotation,
+                hbr.rightHand.VRTarget.position, hbr.rightHand.VRTarget.rotation,
+                hbr.leftHand.VRTarget.position, hbr.leftHand.VRTarget.rotation);
+        }
+    }
+
+    void SetupVRTargets()
+    {
+        var trackingComponent = tempOVR.GetComponent<GetVRTrackingPosition>();
+        if (trackingComponent != null)
+        {
+            hbr.head.VRTarget = trackingComponent.ReturnCenterEyeAnchor();
+            hbr.rightHand.VRTarget = trackingComponent.ReturnRightHandAnchor();
+            hbr.leftHand.VRTarget = trackingComponent.ReturnLeftHandAnchor();
         }
     }
 
     [PunRPC]
-    void SyncOVRObject(int viewID)
+    void UpdateRemotePlayerTransform(Vector3 headPos, Quaternion headRot,
+                                     Vector3 rightHandPos, Quaternion rightHandRot,
+                                     Vector3 leftHandPos, Quaternion leftHandRot)
     {
-        StartCoroutine(SetupVRTargets(viewID));
+        if (hbr.head.VRTarget != null)
+        {
+            hbr.head.VRTarget.position = headPos;
+            hbr.head.VRTarget.rotation = headRot;
+        }
+        if (hbr.rightHand.VRTarget != null)
+        {
+            hbr.rightHand.VRTarget.position = rightHandPos;
+            hbr.rightHand.VRTarget.rotation = rightHandRot;
+        }
+        if (hbr.leftHand.VRTarget != null)
+        {
+            hbr.leftHand.VRTarget.position = leftHandPos;
+            hbr.leftHand.VRTarget.rotation = leftHandRot;
+        }
     }
 
-    IEnumerator SetupVRTargets(int viewID)
+    [PunRPC]
+    void SyncVRSetup()
     {
-        // OVR 객체가 완전히 생성될 때까지 대기
-        yield return new WaitForEndOfFrame();
-
-        PhotonView ownerPV = PhotonView.Find(viewID);
-        if (ownerPV != null)
+        var trackingComponent = GetComponentInChildren<GetVRTrackingPosition>();
+        if (trackingComponent != null)
         {
-            var ovrObject = ownerPV.gameObject.GetComponentInChildren<GetVRTrackingPosition>();
-            if (ovrObject != null)
-            {
-                hbr.head.VRTarget = ovrObject.ReturnCenterEyeAnchor();
-                hbr.rightHand.VRTarget = ovrObject.ReturnRightHandAnchor();
-                hbr.leftHand.VRTarget = ovrObject.ReturnLeftHandAnchor();
-            }
+            hbr.head.VRTarget = trackingComponent.ReturnCenterEyeAnchor();
+            hbr.rightHand.VRTarget = trackingComponent.ReturnRightHandAnchor();
+            hbr.leftHand.VRTarget = trackingComponent.ReturnLeftHandAnchor();
         }
     }
 
