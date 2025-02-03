@@ -22824,9 +22824,6 @@ PrefabInstance:
       addedObject: {fileID: 931370357}
     - targetCorrespondingSourceObject: {fileID: 772560577621019479, guid: 4b9751947473d5441821a72b841d092b, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 94362509}
-    - targetCorrespondingSourceObject: {fileID: 772560577621019479, guid: 4b9751947473d5441821a72b841d092b, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 469492970}
     - targetCorrespondingSourceObject: {fileID: 2171075271210042451, guid: 4b9751947473d5441821a72b841d092b, type: 3}
       insertIndex: -1
@@ -31543,6 +31540,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerController: {fileID: 1616553795}
   readyText: {fileID: 416266863}
+  readyButton: {fileID: 0}
+  readyButtonEffect: {fileID: 0}
 --- !u!1001 &1048375594
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32786,10 +32785,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerList: []
   deadList: []
-  startBtn: {fileID: 0}
+  startBtn: {fileID: 504262833}
   leaderPlayer: {fileID: 0}
-  noticeturnText: {fileID: 0}
-  LogText: {fileID: 0}
+  noticeturnText: {fileID: 1538823220}
+  LogText: {fileID: 1057223484}
   isGameReady: 0
   maxPlayerCnt: 4
   curRound: 1
@@ -43598,6 +43597,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerController: {fileID: 770429790}
   readyText: {fileID: 329601135}
+  readyButton: {fileID: 0}
+  readyButtonEffect: {fileID: 0}
 --- !u!1001 &1468013784
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -46662,6 +46663,7 @@ MonoBehaviour:
   playerList: []
   deadList: []
   startBtn: {fileID: 504262833}
+  startBtnEffect: {fileID: 0}
   leaderPlayer: {fileID: 0}
   centerCardDeck: {fileID: 0}
   noticeturnText: {fileID: 1538823220}
@@ -58744,6 +58746,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerController: {fileID: 1993169696}
   readyText: {fileID: 1241262556}
+  readyButton: {fileID: 0}
+  readyButtonEffect: {fileID: 0}
 --- !u!1001 &1969112438
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -64460,6 +64464,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerController: {fileID: 1235556056}
   readyText: {fileID: 692876553}
+  readyButton: {fileID: 0}
+  readyButtonEffect: {fileID: 0}
 --- !u!1001 &2136157808
 PrefabInstance:
   m_ObjectHideFlags: 0
