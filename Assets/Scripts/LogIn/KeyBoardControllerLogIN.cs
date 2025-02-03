@@ -7,18 +7,14 @@ using UnityEngine.UI;
 public class KeyBoardControllerLogIN: MonoBehaviour
 {
     public GameObject keyBoardPanel;
-    public GameObject nickPanel;
     public Button capsLockBtn;
 
     public TMP_InputField emailField;
     public TMP_InputField pwField;
-    public TMP_InputField nickField;
 
-    public bool emailOn = true;
+    public bool emailOn = false;
     public bool pwOn = false;
     public bool capsLockOn = true;
-
-    public FirebaseMain firebaseMain;
     // Start is called before the first frame update
     void Start()
     {
@@ -45,14 +41,6 @@ public class KeyBoardControllerLogIN: MonoBehaviour
             }
             pwField.text += str;
         }
-        else if (!emailOn && !pwOn && nickField)
-        {
-            if (capsLockOn)
-            {
-                str = str.Replace(str, str.ToUpper());
-            }
-            nickField.text += str;
-        }
     }
     public void EraseChar()
     {
@@ -70,13 +58,6 @@ public class KeyBoardControllerLogIN: MonoBehaviour
                 pwField.text = pwField.text.Substring(0, pwField.text.Length - 1);
             }
         }
-        else if (!emailOn && !pwOn && nickField)
-        {
-            if (nickField.text.Length > 0)
-            {
-                nickField.text = nickField.text.Substring(0, nickField.text.Length - 1);
-            }
-        }
     }
 
     public void ClickCloseOrEnter()
@@ -84,17 +65,6 @@ public class KeyBoardControllerLogIN: MonoBehaviour
         emailOn = false;
         pwOn = false;
         keyBoardPanel.SetActive(false);
-    }
-
-    public void EnterNick()
-    {
-        firebaseMain.UpdateNickInLogin();
-    }
-
-    public void CloseNick()
-    {
-        nickField.text = "";
-        nickPanel.SetActive(false);
     }
 
     public void ClickCapsLockBtn()

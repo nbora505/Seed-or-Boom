@@ -14,14 +14,9 @@ public class FirebaseMain : MonoBehaviour
 {
     public TMP_InputField emailField;
     public TMP_InputField pwField;
-    public TMP_InputField nickField;
-
     public GameObject emailCheckBtn;
     public GameObject signUpBtn;
-
     public Image loadingImg;
-
-    public GameObject setNickPanel;
 
     //private readonly string appID = "854253330667-u7tjog2gp15n2e2h1kc17uohtgv9bpvn.apps.googleusercontent.com";
 
@@ -197,31 +192,15 @@ public class FirebaseMain : MonoBehaviour
             }
             else //IF new Account. You SignUp to FireStore
             {
-                Dictionary<string, object> user = new Dictionary<string, object>();
-                if (nickField && nickField.text != "")
+                Dictionary<string, object> user = new Dictionary<string, object>
                 {
-                    user = new Dictionary<string, object>
-                    {
-                        {"uid", uid},
-                        {"email", email},
-                        {"nickName", nickField.text},
-                        {"win", 0},
-                        {"lose", 0},
-                        {"char", "GoblinMale"}
-                    };
-                }
-                else
-                {
-                    user = new Dictionary<string, object>
-                    {
-                        {"uid", uid},
-                        {"email", email},
-                        {"nickName", "default"},
-                        {"win", 0},
-                        {"lose", 0},
-                        {"char", "GoblinMale"}
-                    };
-                }
+                    {"uid", uid},
+                    {"email", email},
+                    {"nickName", default},
+                    {"win", 0},
+                    {"lose", 0},
+                    {"char", "GoblinMale"}
+                };
                 docRef.SetAsync(user).ContinueWithOnMainThread(task =>
                 {
                     Debug.Log("Make user data to database");
@@ -265,7 +244,8 @@ public class FirebaseMain : MonoBehaviour
             {
                 if (task.IsCompleted)
                 {
-                   setNickPanel.SetActive(true);
+                    SignInEmail(emailField.text, pwField.text);
+                    //do LogIn with your account that you made
                 }
                 else
                 {
@@ -398,12 +378,6 @@ public class FirebaseMain : MonoBehaviour
     public void UpdateNick(string nick)
     {
         UpdateNickName(nick);
-    }
-
-    public void UpdateNickInLogin()
-    {
-        UpdateNickName(nickField.text);
-        LogIn();
     }
 
     /// <summary>
