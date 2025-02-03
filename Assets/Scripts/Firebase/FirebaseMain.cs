@@ -16,6 +16,7 @@ public class FirebaseMain : MonoBehaviour
     public TMP_InputField pwField;
     public GameObject emailCheckBtn;
     public GameObject signUpBtn;
+    public Image loadingImg;
 
     //private readonly string appID = "854253330667-u7tjog2gp15n2e2h1kc17uohtgv9bpvn.apps.googleusercontent.com";
 
@@ -96,6 +97,7 @@ public class FirebaseMain : MonoBehaviour
             && pwField.text != ""
             && pwField.text != "@JOH123") //'@JOH123' is using FireStore Fake SignUp's pw
         {
+            loadingImg.gameObject.SetActive(true);
             Debug.Log("Ready to SignIn");
             SignInEmail(emailField.text, pwField.text);
         }
@@ -139,6 +141,7 @@ public class FirebaseMain : MonoBehaviour
             {
                 if (task.IsFaulted)
                 {
+                    loadingImg.gameObject.SetActive(false);
                     Debug.Log("SingIn Falut");
                 }
                 else if (task.IsCompleted)
@@ -149,6 +152,7 @@ public class FirebaseMain : MonoBehaviour
                 }
                 else
                 {
+                    loadingImg.gameObject.SetActive(false);
                     Debug.Log("Canceld to Login");
                 }
             });
