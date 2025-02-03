@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     public GameObject leaderPlayer;
     public GameObject centerCardDeck;
     public GameObject winEffect;
+    public GameObject centerCanvas;
 
     public Text noticeturnText;
     public Text LogText;
@@ -325,6 +326,8 @@ public class GameManager : MonoBehaviour
         if(deadList.Count == maxPlayerCnt - 1)
         {
             RemovePlayerList();
+            centerCanvas.SetActive(true);
+
             Debug.Log("::::: 게임 종료! :::::");
             Debug.Log("::::: 승자는 " + playerList[0] + "! :::::");
         }
