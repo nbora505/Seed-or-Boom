@@ -9,7 +9,7 @@ public class OVRPlayerControllerPhotonSync : MonoBehaviourPunCallbacks
 {
     public GameObject cardObj;
     public GameObject ovrCamera;
-    GameObject tempOVR;
+    //GameObject tempOVR;
     HeadBodyRig hbr; // 모든 클라이언트에서 접근해야 하므로 할당이 필요함.
 
     void Awake()
@@ -24,36 +24,33 @@ public class OVRPlayerControllerPhotonSync : MonoBehaviourPunCallbacks
         {
             GameObject ovr = Instantiate(ovrCamera);
             ovr.transform.SetParent(this.gameObject.transform, false);
-            tempOVR = ovr;
+            //tempOVR = ovr;
 
-            SetupVRTargets();
-
-            // 로컬 플레이어는 다른 클라이언트에 VR 설정 정보를 보내줍니다.
-            photonView.RPC("SyncVRSetup", RpcTarget.Others);
-        }
-    }
-
-    void SetupVRTargets()
-    {
-        var trackingComponent = tempOVR.GetComponent<GetVRTrackingPosition>();
-        if (trackingComponent != null)
-        {
-            hbr.head.VRTarget = trackingComponent.ReturnCenterEyeAnchor();
-            hbr.rightHand.VRTarget = trackingComponent.ReturnRightHandAnchor();
-            hbr.leftHand.VRTarget = trackingComponent.ReturnLeftHandAnchor();
+            photonView.RPC("SyncOVRObject", RpcTarget.AllBuffered, photonView.ViewID);
         }
     }
 
     [PunRPC]
-    void SyncVRSetup()
+    void SyncOVRObject(int viewID)
     {
-        // 원격 클라이언트에서는 자식 오브젝트에서 GetVRTrackingPosition 컴포넌트를 찾아서 설정합니다.
-        var trackingComponent = GetComponentInChildren<GetVRTrackingPosition>();
-        if (trackingComponent != null)
+        StartCoroutine(SetupVRTargets(viewID));
+    }
+
+    IEnumerator SetupVRTargets(int viewID)
+    {
+        // OVR 객체가 완전히 생성될 때까지 대기
+        yield return new WaitForEndOfFrame();
+
+        PhotonView ownerPV = PhotonView.Find(viewID);
+        if (ownerPV != null)
         {
-            hbr.head.VRTarget = trackingComponent.ReturnCenterEyeAnchor();
-            hbr.rightHand.VRTarget = trackingComponent.ReturnRightHandAnchor();
-            hbr.leftHand.VRTarget = trackingComponent.ReturnLeftHandAnchor();
+            var ovrObject = ownerPV.gameObject.GetComponentInChildren<GetVRTrackingPosition>();
+            if (ovrObject != null)
+            {
+                hbr.head.VRTarget = ovrObject.ReturnCenterEyeAnchor();
+                hbr.rightHand.VRTarget = ovrObject.ReturnRightHandAnchor();
+                hbr.leftHand.VRTarget = ovrObject.ReturnLeftHandAnchor();
+            }
         }
     }
 
