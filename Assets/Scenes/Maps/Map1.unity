@@ -50510,6 +50510,7 @@ MonoBehaviour:
   startBtnEffect: {fileID: 1062042137}
   leaderPlayer: {fileID: 0}
   centerCardDeck: {fileID: 187036417}
+  winEffect: {fileID: 4760255938751766969, guid: e61aeb2a2908adc43a388eba4809750c, type: 3}
   noticeturnText: {fileID: 1538823220}
   LogText: {fileID: 1057223484}
   isGameReady: 0

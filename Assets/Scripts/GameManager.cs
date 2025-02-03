@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     public GameObject startBtnEffect;
     public GameObject leaderPlayer;
     public GameObject centerCardDeck;
+    public GameObject winEffect;
 
     public Text noticeturnText;
     public Text LogText;
@@ -149,6 +150,7 @@ public class GameManager : MonoBehaviour
         if (playerList.Count <= 1)
         {
             LogText.text = $"최후의 승자는 {playerList[0].gameObject.name}";
+
         }
         else
         {
@@ -261,6 +263,7 @@ public class GameManager : MonoBehaviour
             {
                 //playerList[curTurn]이 이번 턴 승자라는 뜻!
                 winCntOfEachTurn[curTurn]++;
+                Instantiate(winEffect, playerList[curTurn].transform);
                 Debug.Log("이번 턴의 승자는 " + playerList[curTurn] + "! (현재 " + winCntOfEachTurn[curTurn] + "승)");
                 LogText.text = "";
                 LogText.DOText("이번 턴의 승자는 : " + playerName + "! (현재 " + winCntOfEachTurn[curTurn] + "승",1f);
