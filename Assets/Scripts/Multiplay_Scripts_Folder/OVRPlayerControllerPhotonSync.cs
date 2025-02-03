@@ -8,8 +8,11 @@ using UnityEngine.SpatialTracking;
 using DG.Tweening;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 using Unity.VisualScripting;
 using UnityEngine.Animations.Rigging;
+=======
+>>>>>>> parent of 41a190a (test tracking)
 =======
 >>>>>>> parent of 41a190a (test tracking)
 =======
@@ -24,6 +27,7 @@ public class OVRPlayerControllerPhotonSync : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
         if (photonView.IsMine)
@@ -43,6 +47,9 @@ public class OVRPlayerControllerPhotonSync : MonoBehaviourPunCallbacks
             GetComponent<BoneRenderer>().enabled = false;
             GetComponent<HeadBodyRig>().enabled = false;
         }
+=======
+        ovrCameraRig = GetComponent<OVRCameraRig>();
+>>>>>>> parent of 41a190a (test tracking)
 =======
         ovrCameraRig = GetComponent<OVRCameraRig>();
 >>>>>>> parent of 41a190a (test tracking)
