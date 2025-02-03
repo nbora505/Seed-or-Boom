@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AppSettings:
     AppIdRealtime: cc47cbd2-c85b-48a3-9726-564c484500a1
-    AppIdFusion: 
     AppIdChat: 
     AppIdVoice: 
     AppVersion: 
@@ -28,36 +27,12 @@ MonoBehaviour:
     AuthMode: 0
     EnableLobbyStatistics: 0
     NetworkLogging: 1
-  DevRegion: rue
-  PunLogging: 0
+  DevRegion: eu
+  PunLogging: 2
   EnableSupportLogger: 0
   RunInBackground: 1
   StartInOfflineMode: 0
-  RpcList:
-  - ClickRpc
-  - DestroyRpc
-  - DestroySpaceship
-  - Fire
-  - RespawnSpaceship
-  - CheckPlayerReady
-  - CheckTurnResult
-  - DistributeCards
-  - EndGame
-  - PlayerDead
-  - PrepareNextRound
-  - ProcessDecideWinCount
-  - ProcessTurn
-  - ResetLists
-  - SpwanPlayer
-  - StartDecideWinCount
-  - StartGame
-  - StartRound
-  - StartRoundEnd
-  - SubmitCard
-  - SubmitWinCount
-  - UpdateTurnWinner
-  - DisconnectedUserDeadAnimation
-  - RemoveDisconnectUserFromList
+  RpcList: []
   DisableAutoOpenWizard: 1
-  ShowSettings: 0
+  ShowSettings: 1
   DevRegionSetOnce: 1
