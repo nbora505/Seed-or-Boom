@@ -18,7 +18,7 @@ public class KeyBoardControllerLogIN: MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        emailOn = false;
+        emailOn = true;
         pwOn = false;
         capsLockOn = true;
     }

@@ -8,7 +8,6 @@ using UnityEngine.UI;
 
 public class LogInKeyBoard : MonoBehaviour
 {
-    public OVRVirtualKeyboard keyBoard;
     public TMP_InputField emailInput;
     public TMP_InputField passwordInput;
     public GameObject p1;
@@ -21,22 +20,15 @@ public class LogInKeyBoard : MonoBehaviour
         p1.transform.position = Vector3.zero;
         p1.transform.rotation = Quaternion.Euler(0, 0, 0);
 
-        keyBoard.CommitTextEvent.AddListener(ChangeString);
-        keyBoard.EnterEvent.AddListener(KeyboardEnd);
-        keyBoard.BackspaceEvent.AddListener(BackSpaceKeyBoard);
-
         SetKeyBoardEmail();
     }
     public void SetKeyBoardEmail()
     {
-        Debug.Log("select");
-        keyBoard.gameObject.SetActive(true);
         keyboadrdLogin.SetActive(true);
         keyBoardScript.GetComponent<KeyBoardControllerLogIN>().emailOn = true;
     }
     public void SetKeyBoardPassWord()
     {
-        keyBoard.gameObject.SetActive(true);
         keyboadrdLogin.SetActive(true);
         keyBoardScript.pwOn = true;
     }
@@ -67,7 +59,6 @@ public class LogInKeyBoard : MonoBehaviour
 
     public void KeyboardEnd()
     {
-        keyBoard.gameObject.SetActive(false);
         keyBoardScript.emailOn = false;
         keyBoardScript.pwOn = false;
     }
