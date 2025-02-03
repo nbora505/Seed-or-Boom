@@ -7171,6 +7171,10 @@ PrefabInstance:
       propertyPath: rightHand.VRTarget
       value: 
       objectReference: {fileID: 1675711885}
+    - target: {fileID: 7715271724070341415, guid: 223eab12e43bac04781dc479416bc63e, type: 3}
+      propertyPath: viewIdField
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8343694763768723426, guid: 223eab12e43bac04781dc479416bc63e, type: 3}
       propertyPath: m_IsActive
       value: 0
