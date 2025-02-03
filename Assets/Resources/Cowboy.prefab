@@ -1953,7 +1953,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardObj: {fileID: 0}
-  ovrCamera: {fileID: 0}
+  ovrCamera: {fileID: 8159531724087476487, guid: 5f28c061245c20942b5b098371711be1, type: 3}
 --- !u!1 &8933534740838337089
 GameObject:
   m_ObjectHideFlags: 0
