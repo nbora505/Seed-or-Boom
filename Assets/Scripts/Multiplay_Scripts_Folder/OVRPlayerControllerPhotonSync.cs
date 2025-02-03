@@ -12,6 +12,7 @@ public class OVRPlayerControllerPhotonSync : MonoBehaviourPunCallbacks
 {
     public GameObject cardObj;
     public GameObject ovrCamera;
+    GameObject tempOVR;
     HeadBodyRig hbr;
 
     // Start is called before the first frame update
@@ -21,18 +22,28 @@ public class OVRPlayerControllerPhotonSync : MonoBehaviourPunCallbacks
         {
             GameObject ovr = Instantiate(ovrCamera);
             ovr.transform.SetParent(this.gameObject.transform, false);
-            
+
+            tempOVR = ovr;
+
             hbr = GetComponent<HeadBodyRig>();
 
-            photonView.RPC("ovr.GetComponent<GetVRTrackingPosition>().ReturnCenterEyeAnchor()", RpcTarget.All);
-            photonView.RPC("ovr.GetComponent<GetVRTrackingPosition>().ReturnRightHandAnchor()", RpcTarget.All);
-            photonView.RPC("ovr.GetComponent<GetVRTrackingPosition>().ReturnLeftHandAnchor()", RpcTarget.All);
+            //photonView.RPC("SetHBRTransform()", RpcTarget.All);
+            //photonView.RPC("SetHBRTransform()", RpcTarget.All);
+            //photonView.RPC("SetHBRTransform()", RpcTarget.All);
 
-            //hbr.head.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnCenterEyeAnchor();
-            //hbr.rightHand.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnRightHandAnchor();
-            //hbr.leftHand.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnLeftHandAnchor();
+            hbr.head.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnCenterEyeAnchor();
+            hbr.rightHand.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnRightHandAnchor();
+            hbr.leftHand.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnLeftHandAnchor();
         }
     }
+
+    //[PunRPC]
+    //void SetHBRTransform()
+    //{
+    //    hbr.head.VRTarget = tempOVR.GetComponent<GetVRTrackingPosition>().ReturnCenterEyeAnchor();
+    //    hbr.rightHand.VRTarget = tempOVR.GetComponent<GetVRTrackingPosition>().ReturnRightHandAnchor();
+    //    hbr.leftHand.VRTarget = tempOVR.GetComponent<GetVRTrackingPosition>().ReturnLeftHandAnchor();
+    //}
     // Update is called once per frame
     void Update()
     {
