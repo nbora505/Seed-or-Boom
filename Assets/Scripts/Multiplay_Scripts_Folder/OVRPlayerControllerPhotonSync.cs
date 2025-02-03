@@ -7,7 +7,6 @@ using UnityEngine;
 using UnityEngine.SpatialTracking;
 using DG.Tweening;
 using Unity.VisualScripting;
-using UnityEngine.Animations.Rigging;
 
 public class OVRPlayerControllerPhotonSync : MonoBehaviourPunCallbacks
 {
@@ -27,12 +26,6 @@ public class OVRPlayerControllerPhotonSync : MonoBehaviourPunCallbacks
             hbr.head.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnCenterEyeAnchor();
             hbr.rightHand.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnRightHandAnchor();
             hbr.leftHand.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnLeftHandAnchor();
-        }
-        else
-        {
-            GetComponent<RigBuilder>().enabled = false;
-            GetComponent<BoneRenderer>().enabled = false;
-            GetComponent<HeadBodyRig>().enabled = false;
         }
     }
     // Update is called once per frame
