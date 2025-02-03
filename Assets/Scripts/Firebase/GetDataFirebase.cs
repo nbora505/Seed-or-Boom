@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Firebase.Extensions;
+using System;
+using Unity.VisualScripting;
 
 public class GetDataFirebase : MonoBehaviour
-{   
+{
     /// <summary>
-     /// GameData Dicionary class.
-     /// </summary>
+    /// GameData Dicionary class.
+    /// </summary>
     [FirestoreData]
     class GameDataProperty
     {
@@ -23,22 +25,10 @@ public class GetDataFirebase : MonoBehaviour
         public string mode { get; set; }
 
         [FirestoreProperty]
-        public string where { get; set; }
-
-        [FirestoreProperty]
-        public string result { get; set; }
-
-        [FirestoreProperty]
         public string winner { get; set; }
 
         [FirestoreProperty]
-        public string selectChar { get; set; }
-
-        [FirestoreProperty]
         public Timestamp startTime { get; set; }
-
-        [FirestoreProperty]
-        public Timestamp endTime { get; set; }
     }
 
     /// <summary>
@@ -61,13 +51,9 @@ public class GetDataFirebase : MonoBehaviour
     public string member3;
     public string mode;
     public Timestamp startTime;
-    public Timestamp endTime;
-    public string where;
-    public string result;
     public string winner;
-    public string selectChar;
 
-    FirebaseMain firebaseMain;
+    public FirebaseMain firebaseMain;
 
     #region dataSearch
     /// <summary>
@@ -75,7 +61,7 @@ public class GetDataFirebase : MonoBehaviour
     /// </summary>
     public void GetData()
     {
-        GetDataToUserCollection();
+        StartCoroutine(GetDataToUserCollection());
     }
 
     /// <summary>
@@ -87,19 +73,20 @@ public class GetDataFirebase : MonoBehaviour
     /// </param>
     public void GetGameData(int day, int gameNum)
     {
-        GetDataToGameDataCollection(day, gameNum);
+        StartCoroutine(GetDataToGameDataCollection(day, gameNum));
     }
 
     /// <summary>
     /// Init property and you can use userdata property
     /// </summary>
-    private void GetDataToUserCollection()
+    private IEnumerator GetDataToUserCollection()
     {
         FirebaseFirestore db = FirebaseFirestore.DefaultInstance;
+
         DocumentReference docRef = db.Collection("users").Document(firebaseMain.auth.CurrentUser.UserId);
 
         //pull your Email to DB.
-        docRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>
+        yield return docRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>
         {
             DocumentSnapshot snap = task.Result;
             if ((snap.Exists))
@@ -110,7 +97,6 @@ public class GetDataFirebase : MonoBehaviour
                 userNick = snapDic["nickName"].ToString();
                 userWin = (int)snapDic["win"];
                 userLose = (int)snapDic["lose"];
-                userChar = snapDic["char"].ToString();
                 Debug.Log("data search success");
             }
             else
@@ -118,6 +104,7 @@ public class GetDataFirebase : MonoBehaviour
                 Debug.Log("search db data error");
             }
         });
+        yield return new WaitForSeconds(1f);
     }
 
     /// <summary>
@@ -127,13 +114,24 @@ public class GetDataFirebase : MonoBehaviour
     /// </param>
     /// <param name="gameNum">Doccument Name. Is that a first game of day? or second? or more?
     /// </param>
-    private void GetDataToGameDataCollection(int day, int gameNum)
+    private IEnumerator GetDataToGameDataCollection(int day, int gameNum)
     {
         FirebaseFirestore db = FirebaseFirestore.DefaultInstance;
-        DocumentReference docRef = db.Collection("gameData").Document(firebaseMain.auth.CurrentUser.UserId).Collection(day.ToString()).Document("game"+gameNum);
+
+        string daySt;
+        if (day < 999)
+        {
+            daySt = "0" + day.ToString();
+        }
+        else
+        {
+            daySt = day.ToString();
+        }
+
+        DocumentReference docRef = db.Collection("gameData").Document(firebaseMain.auth.CurrentUser.UserId).Collection(daySt).Document("game" + gameNum.ToString());
 
         //pull your Email to DB.
-        docRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>
+        yield return docRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>
         {
             DocumentSnapshot snap = task.Result;
             if ((snap.Exists))
@@ -145,11 +143,7 @@ public class GetDataFirebase : MonoBehaviour
                 member3 = snapGameData.member3;
                 mode = snapGameData.mode;
                 startTime = snapGameData.startTime;
-                endTime = snapGameData.endTime;
-                where = snapGameData.where;
-                result = snapGameData.result;
                 winner = snapGameData.winner;
-                selectChar = snapGameData.selectChar;
                 Debug.Log("data search success");
             }
             else
@@ -157,7 +151,17 @@ public class GetDataFirebase : MonoBehaviour
                 Debug.Log("check Day or GameNum");
             }
         });
+        yield return new WaitForSeconds(0.25f);
     }
 
     #endregion
+
+    private void Awake()
+    {
+        DontDestroy();
+    }
+    private void DontDestroy()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
 }

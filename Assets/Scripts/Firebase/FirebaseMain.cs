@@ -6,11 +6,17 @@ using Firebase.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
 using Firebase.Firestore;
+//using Meta.XR.MRUtilityKit.SceneDecorator;
+using TMPro;
+using UnityEngine.SceneManagement;
 
 public class FirebaseMain : MonoBehaviour
 {
-    public InputField emailField;
-    public InputField pwField;
+    public TMP_InputField emailField;
+    public TMP_InputField pwField;
+    public GameObject emailCheckBtn;
+    public GameObject signUpBtn;
+    public Image loadingImg;
 
     //private readonly string appID = "854253330667-u7tjog2gp15n2e2h1kc17uohtgv9bpvn.apps.googleusercontent.com";
 
@@ -25,8 +31,12 @@ public class FirebaseMain : MonoBehaviour
     /// </summary>
     private bool checkedEmail = false;
     private bool checkedPassword = false;
+
+    public GameObject getDataFirebase;
+    public GameObject firebaseGameData;
     private void Awake()
     {
+        DontDestroy();
         InitKeyword();
         InitFirebase();
     }
@@ -66,6 +76,14 @@ public class FirebaseMain : MonoBehaviour
             }
         });
     }
+
+    public void InitFindObject()
+    {
+        emailField = GameObject.Find("EmailField").GetComponent<TMP_InputField>();
+        pwField = GameObject.Find("PWField").GetComponent<TMP_InputField>();
+        emailCheckBtn = GameObject.Find("EmailCheckBtn");
+        signUpBtn = GameObject.Find("SignUpBtn");
+    }
     #endregion
 
     #region LogIn
@@ -79,6 +97,7 @@ public class FirebaseMain : MonoBehaviour
             && pwField.text != ""
             && pwField.text != "@JOH123") //'@JOH123' is using FireStore Fake SignUp's pw
         {
+            loadingImg.gameObject.SetActive(true);
             Debug.Log("Ready to SignIn");
             SignInEmail(emailField.text, pwField.text);
         }
@@ -122,6 +141,7 @@ public class FirebaseMain : MonoBehaviour
             {
                 if (task.IsFaulted)
                 {
+                    loadingImg.gameObject.SetActive(false);
                     Debug.Log("SingIn Falut");
                 }
                 else if (task.IsCompleted)
@@ -132,6 +152,7 @@ public class FirebaseMain : MonoBehaviour
                 }
                 else
                 {
+                    loadingImg.gameObject.SetActive(false);
                     Debug.Log("Canceld to Login");
                 }
             });
@@ -166,7 +187,8 @@ public class FirebaseMain : MonoBehaviour
             if (task.Result.Exists) //SignIn to FireStore
             {
                 Debug.Log("Login database success");
-                //after goto main Scene
+
+                SceneManager.LoadScene(0);
             }
             else //IF new Account. You SignUp to FireStore
             {
@@ -207,7 +229,7 @@ public class FirebaseMain : MonoBehaviour
         }
         else if (pwField.text == "@JOH123")
         {
-             Debug.Log("You can't select your PW by \"JOH\"");
+            Debug.Log("You can't select your PW by \"JOH\"");
         }
     }
 
@@ -243,7 +265,7 @@ public class FirebaseMain : MonoBehaviour
     {
         if (emailField.text != ""
             && pwField.text != "@JOH123"
-            && !checkedEmail) 
+            && !checkedEmail)
         {
             Debug.Log("Ready to SignUp");
             SignUpEmailFake();
@@ -319,7 +341,7 @@ public class FirebaseMain : MonoBehaviour
     {
         //LogIn fake ID again. If we check CurrentUser's State, we need to init account every time;
         auth.SignInWithEmailAndPasswordAsync(emailField.text, "@JOH123").
-            ContinueWithOnMainThread(task => 
+            ContinueWithOnMainThread(task =>
             {
                 if (task.IsCompleted)
                 {
@@ -329,6 +351,8 @@ public class FirebaseMain : MonoBehaviour
                         checkedEmail = true;  // It means "you are already to SignUp.".
                         Debug.Log("checking success");
                         CancelInvoke(); //Cancel this Invoke.
+                        emailCheckBtn.GetComponent<Image>().color = Color.gray;
+                        signUpBtn.GetComponent<Image>().color = Color.white;
                     }
                     else
                     {
@@ -472,7 +496,7 @@ public class FirebaseMain : MonoBehaviour
                     }
                 });
             }
-            else 
+            else
             {
                 Debug.Log("search db data error");
             }
@@ -494,7 +518,7 @@ public class FirebaseMain : MonoBehaviour
             ChangePW(newPW);
             checkedPassword = false;
         }
-        else 
+        else
         {
             Debug.Log("Check your PW first");
         }
@@ -605,11 +629,15 @@ public class FirebaseMain : MonoBehaviour
     private void LogOutGotoLoginScene()
     {
         auth.SignOut();
-        //Goto Login Scene
+        Destroy(getDataFirebase);
+        Destroy(firebaseGameData);
+        SceneManager.LoadScene(2);
+        Destroy(gameObject);
     }
     #endregion
 
-    public void Update()
+    private void DontDestroy()
     {
+        DontDestroyOnLoad(gameObject);
     }
 }

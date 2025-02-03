@@ -5,13 +5,14 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
-using Photon.Pun.Demo.PunBasics;
+
 
 public class GameManager : MonoBehaviour
 {
     public List<GameObject> playerList;
     public List<GameObject> deadList;
     public GameObject startBtn;
+    public GameObject startBtnEffect;
     public GameObject leaderPlayer;
     public GameObject centerCardDeck;
 
@@ -79,9 +80,12 @@ public class GameManager : MonoBehaviour
         yield return new WaitUntil(() => isGameReady);
 
         //버튼이 눌리면 게임 시작
-        startBtn.SetActive(false);
+        startBtn.transform.Find("ButtonModel").gameObject.SetActive(false);//버튼 모델링 제거
+        startBtnEffect.SetActive(true); //버튼 이펙트 생성
+
         Debug.Log("::::::::: 게임 시작!!! ::::::::");
         yield return new WaitForSeconds(3f);
+        startBtn.SetActive(false); //버튼 제거
         StartCoroutine(StartRound());
     }
 
@@ -184,6 +188,7 @@ public class GameManager : MonoBehaviour
                 LogText.DOText(playerName + "님이 승수를 선택할 차례입니다.", 1);
                 buttonManager.showWinBtn();
                 buttonManager.ShowPlayerPanel(true);
+
                 yield return new WaitUntil(() => selectedWin == 0);
 
                 Transform PlayerPanelPos = playerList[curTurn].transform.Find("Player_Canvas/Panel/P1_LogMain");

@@ -44,6 +44,7 @@ public class HeadBodyRig : MonoBehaviour
     void FixedUpdate()
     {
         transform.position = headConstraint.position + offset;
+
         Vector3 projectionVector = headConstraint.up;
         switch (forwardAxis)
         {
@@ -58,6 +59,9 @@ public class HeadBodyRig : MonoBehaviour
                 break;
         }
         transform.forward = Vector3.Lerp(transform.forward, Vector3.ProjectOnPlane(projectionVector, Vector3.up).normalized, Time.deltaTime * turnFactor);
+
+        Debug.Log(transform.position);
+        transform.position = new Vector3(transform.position.x, 0, transform.position.z);
 
         head.Map();
         rightHand.Map();

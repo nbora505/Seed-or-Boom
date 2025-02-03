@@ -84,6 +84,7 @@ public class PlayerController : MonoBehaviour
                 bombPrefab[i].SetActive(false);
             }
 
+            Instantiate(Resources.Load<GameObject>("Explosion"), this.gameObject.transform);
             anim.SetBool("isDead", true);
             gm.LogText.text = playerName + "»ç¸Á";
         }
