@@ -33,6 +33,8 @@ public class OVRPlayerControllerPhotonSync : MonoBehaviourPunCallbacks
             var trackedPoseDriver = ovrCameraRig.GetComponent<TrackedPoseDriver>();
             if (trackedPoseDriver != null)
                 trackedPoseDriver.enabled = false;
+
+            return;
         }
 
         if(OVRInput.Get(OVRInput.RawButton.LIndexTrigger))

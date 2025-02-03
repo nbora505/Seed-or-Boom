@@ -1985,7 +1985,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7de57d43543f2c44dbefefb9cd7e1d0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameras: []
+  cameras:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   cardObj: {fileID: 0}
 --- !u!1 &8933534740838337089
 GameObject:
