@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -43,28 +44,28 @@ public class HeadBodyRig : MonoBehaviour
 
     void FixedUpdate()
     {
-        transform.position = headConstraint.position + offset;
-
-        Vector3 projectionVector = headConstraint.up;
-        switch (forwardAxis)
+        if (headConstraint == null)
         {
-            case ForwardAxis.green:
-                projectionVector = headConstraint.up;
-                break;
-            case ForwardAxis.blue:
-                projectionVector = headConstraint.forward;
-                break;
-            case ForwardAxis.red:
-                projectionVector = headConstraint.right;
-                break;
+            Debug.LogError("headConstraint가 설정되지 않았습니다!");
+            return;
         }
-        transform.forward = Vector3.Lerp(transform.forward, Vector3.ProjectOnPlane(projectionVector, Vector3.up).normalized, Time.deltaTime * turnFactor);
 
-        Debug.Log(transform.position);
+        if (!GetComponent<PhotonView>().IsMine) // 내 캐릭터만 변경
+        {
+            return;
+        }
+
+        // VR 장치가 없을 경우 움직임 방지
+        if (headConstraint.position.magnitude < 0.1f)
+        {
+            return;
+        }
+
+        transform.position = headConstraint.position + offset;
         transform.position = new Vector3(transform.position.x, 0, transform.position.z);
 
-        head.Map();
-        rightHand.Map();
-        leftHand.Map();
+        // head.Map();
+        // rightHand.Map();
+        // leftHand.Map();
     }
 }
