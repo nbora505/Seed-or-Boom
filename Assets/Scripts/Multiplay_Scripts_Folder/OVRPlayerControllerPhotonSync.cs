@@ -23,9 +23,14 @@ public class OVRPlayerControllerPhotonSync : MonoBehaviourPunCallbacks
             ovr.transform.SetParent(this.gameObject.transform, false);
             
             hbr = GetComponent<HeadBodyRig>();
-            hbr.head.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnCenterEyeAnchor();
-            hbr.rightHand.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnRightHandAnchor();
-            hbr.leftHand.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnLeftHandAnchor();
+
+            photonView.RPC("ovr.GetComponent<GetVRTrackingPosition>().ReturnCenterEyeAnchor()", RpcTarget.All);
+            photonView.RPC("ovr.GetComponent<GetVRTrackingPosition>().ReturnRightHandAnchor()", RpcTarget.All);
+            photonView.RPC("ovr.GetComponent<GetVRTrackingPosition>().ReturnLeftHandAnchor()", RpcTarget.All);
+
+            //hbr.head.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnCenterEyeAnchor();
+            //hbr.rightHand.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnRightHandAnchor();
+            //hbr.leftHand.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnLeftHandAnchor();
         }
     }
     // Update is called once per frame
