@@ -2493,7 +2493,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &91520323
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10495,7 +10495,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 754562059}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PhotonManager, Assembly-CSharp
         m_MethodName: OnLoginClick
         m_Mode: 1
@@ -25271,8 +25271,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 754562058}
-  - component: {fileID: 754562059}
   - component: {fileID: 754562060}
+  - component: {fileID: 754562061}
   m_Layer: 0
   m_Name: PhotonManager
   m_TagString: Untagged
@@ -25295,32 +25295,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &754562059
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 754562057}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9796e0f5c4639a4a962886b34caa473, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  roomNameIF: {fileID: 1773747965}
-  userIF: {fileID: 229739024}
-  scrollContent: {fileID: 1274385118}
-  multiplayGameManager: {fileID: 0}
-  characterPrefabs:
-  - {fileID: 3592104378036740888, guid: 6a405d6dfe3b94e428ab5c1d896d6dcd, type: 3}
-  - {fileID: 8849390686682753043, guid: 223eab12e43bac04781dc479416bc63e, type: 3}
-  - {fileID: 4009410105364558561, guid: 53609712b7ed4124aab8928c8bcab366, type: 3}
-  - {fileID: 7651345814765315915, guid: 4c7dda4a99958444b81b17b73c419d86, type: 3}
-  spawnPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!114 &754562060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25336,13 +25310,35 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  observableSearch: 2
   Synchronization: 3
   OwnershipTransfer: 0
+  observableSearch: 2
   ObservedComponents: []
-  viewIdField: 1
+  sceneViewId: 1
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &754562061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 754562057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9796e0f5c4639a4a962886b34caa473, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomNameIF: {fileID: 1773747965}
+  userIF: {fileID: 229739024}
+  scrollContent: {fileID: 0}
+  multiplayGameManager: {fileID: 0}
+  characterPrefabs:
+  - {fileID: 3592104378036740888, guid: 6a405d6dfe3b94e428ab5c1d896d6dcd, type: 3}
+  - {fileID: 8849390686682753043, guid: 223eab12e43bac04781dc479416bc63e, type: 3}
+  - {fileID: 4009410105364558561, guid: 53609712b7ed4124aab8928c8bcab366, type: 3}
+  - {fileID: 7651345814765315915, guid: 4c7dda4a99958444b81b17b73c419d86, type: 3}
+  spawnPoints: []
 --- !u!1 &759994068
 GameObject:
   m_ObjectHideFlags: 0
@@ -41082,7 +41078,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 754562059}
+      - m_Target: {fileID: 754562061}
         m_TargetAssemblyTypeName: PhotonManager, Assembly-CSharp
         m_MethodName: OnMakeRoomClick
         m_Mode: 1
