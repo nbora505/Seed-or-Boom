@@ -33,33 +33,8 @@ public class LogInKeyBoard : MonoBehaviour
         keyBoardScript.pwOn = true;
     }
 
-    public void ChangeString(string str)
+    public void SetKeyBoardNick()
     {
-        if (keyBoardScript.emailOn)
-        {
-            emailInput.text += str;
-        }
-        else if (keyBoardScript.pwOn)
-        {
-            passwordInput.text += str;
-        }
-    }
-
-    public void BackSpaceKeyBoard()
-    {
-        if (keyBoardScript.emailOn)
-        {
-            emailInput.text.Remove(emailInput.text.Length -1);
-        }
-        else if (keyBoardScript.pwOn)
-        {
-            passwordInput.text.Remove(passwordInput.text.Length - 1);
-        }
-    }
-
-    public void KeyboardEnd()
-    {
-        keyBoardScript.emailOn = false;
-        keyBoardScript.pwOn = false;
+        keyboadrdLogin.SetActive(true);
     }
 }
