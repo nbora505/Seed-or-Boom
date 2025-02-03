@@ -8,7 +8,7 @@ using System.Reflection;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
+
 
 
 
@@ -171,6 +171,7 @@ public class ButtonManager : MonoBehaviour
     public void StartBtn()
     {
         gameManager.isGameReady = true;
+        logText.text = "GAME START";
     }
     #endregion
 
@@ -179,7 +180,7 @@ public class ButtonManager : MonoBehaviour
     {
         Transform PlayerPanel = gameManager.playerList[gameManager.curTurn].transform.Find("Player_Canvas/Panel");
         GameObject playerPanel = PlayerPanel.gameObject;
-    
+
         if (onoff)
         {
             playerPanel.SetActive(true);
@@ -193,8 +194,12 @@ public class ButtonManager : MonoBehaviour
     {
         Transform WinBtnParent = gameManager.playerList[gameManager.curTurn].transform.Find("winBtn");
         GameObject winBtnParent = WinBtnParent.gameObject;
+        GameObject appearEffect = Resources.Load<GameObject>("AppearEffect");
+
         winBtnParent.SetActive(true);
-        
+
+        //이펙트 생성
+        Instantiate(appearEffect, WinBtnParent);
     }
     public void hideWinBtn()
     {
@@ -211,8 +216,8 @@ public class ButtonManager : MonoBehaviour
         buttonTransform = gameManager.playerList[gameManager.curTurn].transform.Find("winBtn/WinIncreaseBtn");
         
         expectedWin++;
-        logText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번";
-        playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번";
+        logText.text = expectedWin.ToString();
+        playerText.text = expectedWin.ToString();
 
         buttonTransform.DOPunchScale(new Vector3(0.2f, 0.2f, 0), 2.5f, 5, 2);
     }
@@ -225,8 +230,8 @@ public class ButtonManager : MonoBehaviour
         buttonTransform = gameManager.playerList[gameManager.curTurn].transform.Find("winBtn/WinDecreaseBtn");
 
         expectedWin--;
-        logText.text = "예상 승리횟수 " + expectedWin.ToString() + "번";
-        playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번";
+        logText.text = expectedWin.ToString();
+        playerText.text = expectedWin.ToString();
 
         buttonTransform.DOPunchScale(new Vector3(0.2f, 0.2f, 0), 2.5f, 5, 2);
     }
@@ -247,9 +252,10 @@ public class ButtonManager : MonoBehaviour
         {
             gameManager.predictedWinCnt[gameManager.curTurn] = expectedWin;
             gameManager.selectedWin = 0;
-            logText.text = "";
+            logText.text = "0";
             logText.DOText("승리횟수 :" + expectedWin.ToString() + "번 제출완료", 1.2f);
             playerText.text = "예상 승리횟수 : " + expectedWin.ToString() + "번 제출완료";
+            expectedWin = 0;
         }
         else
         {

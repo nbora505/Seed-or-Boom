@@ -25,12 +25,21 @@ public class PlayerController : MonoBehaviour
     public GameManager gm;
     Animator anim;
 
+    public GameObject cardDeckObject;
+    public GameObject quads;
+
     public int expectedWins = 0;
     public int nowTotalWins = 0;
 
     // 요거를 게임메니저에서 받아와가지고 초기화할 수 있도록.
     // 플레이어 콘트롤러 쪽에서 게임메니저의 예상 승수를 받아오고, 자신의 턴이랑 비교해서 넣으면 되겠죠?
     public List<int> expectedWin = new List<int>();
+
+    private void Start()
+    {
+        anim = gameObject.GetComponent<Animator>();
+    }
+
     private void Update()
     {
         if(isDead) return;
@@ -49,17 +58,6 @@ public class PlayerController : MonoBehaviour
         // 왼손 트리거를 눌렀을 땐, 내 패를 볼 수 있어야 겠죠?
     }
     // 카드 제출과 카드 확인이 필요하다.
-
-    //[함수]
-    public void DeclareWins() //함수 승수 선언()
-    {
-        //    0~4 승수 선택용 숫자 등장();
-        Invoke("TimeOut", 10f);
-        //타임아웃 함수는 여기 캔슬은 버튼매니저에서
-
-        // 버튼에서 vr object 찍을 수 있는 상태로 만들어 준 카드를 선택 only
-
-    }//함수 끝
 
     // Must to called at GameManager
     public void InitsubmitTime(int submitTime)
@@ -86,7 +84,7 @@ public class PlayerController : MonoBehaviour
                 bombPrefab[i].SetActive(false);
             }
 
-            anim = gameObject.GetComponent<Animator>();
+            Instantiate(Resources.Load<GameObject>("Explosion"), this.gameObject.transform);
             anim.SetBool("isDead", true);
             gm.LogText.text = playerName + "사망";
         }

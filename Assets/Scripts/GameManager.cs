@@ -5,12 +5,16 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+
+
 public class GameManager : MonoBehaviour
 {
     public List<GameObject> playerList;
     public List<GameObject> deadList;
     public GameObject startBtn;
+    public GameObject startBtnEffect;
     public GameObject leaderPlayer;
+    public GameObject centerCardDeck;
 
     public Text noticeturnText;
     public Text LogText;
@@ -76,8 +80,12 @@ public class GameManager : MonoBehaviour
         yield return new WaitUntil(() => isGameReady);
 
         //버튼이 눌리면 게임 시작
+        startBtn.transform.Find("ButtonModel").gameObject.SetActive(false);//버튼 모델링 제거
+        startBtnEffect.SetActive(true); //버튼 이펙트 생성
+
         Debug.Log("::::::::: 게임 시작!!! ::::::::");
         yield return new WaitForSeconds(3f);
+        startBtn.SetActive(false); //버튼 제거
         StartCoroutine(StartRound());
     }
 
@@ -89,6 +97,8 @@ public class GameManager : MonoBehaviour
         Debug.Log("=========Round " + curRound + " =========");
 
         //플레이어들에게 카드 나눠주기
+        centerCardDeck.SetActive(true);
+        yield return new WaitForSeconds(1f);
         cardManager.DoCardShuffle();
         cardManager.TestUserCard(playerList.Count);
 
@@ -162,7 +172,7 @@ public class GameManager : MonoBehaviour
         {
             string playerName = playerList[curTurn].name;
             Debug.LogWarning( i+1 + "번째 순서" + playerName + "입니다.");
-            noticeturnText.text += (i + 1 + "번째 순서 " + playerName + "입니다.\n");
+            noticeturnText.text += (i + 1 + "번째 순서 : " + playerName + "\n");
 
             //ai일 경우
             if (playerList[curTurn].GetComponent<PlayerController>().isAIPlayer || playerList[curTurn].GetComponent<AIPlayer>().isAIPlayer)
@@ -175,10 +185,16 @@ public class GameManager : MonoBehaviour
                 //여기에서 플레이어 리스트[현재 차례]의 승수 선언 UI 활성화
                 yield return new WaitForSeconds(2f);
                 LogText.text = "";
-                LogText.DOText(playerName + " 승 수 선택하세요",1);
+                LogText.DOText(playerName + "님이 승수를 선택할 차례입니다.", 1);
                 buttonManager.showWinBtn();
                 buttonManager.ShowPlayerPanel(true);
+
                 yield return new WaitUntil(() => selectedWin == 0);
+
+                Transform PlayerPanelPos = playerList[curTurn].transform.Find("Player_Canvas/Panel/P1_LogMain");
+                Text playerText = PlayerPanelPos.GetComponent<Text>();
+                playerText.text = "0";
+
                 buttonManager.ShowPlayerPanel(false);
                 buttonManager.hideWinBtn();                
                 selectedWin = -1;
@@ -207,17 +223,22 @@ public class GameManager : MonoBehaviour
             List<int> curCardList = playerList[curTurn].GetComponent<PlayerController>().cardList;
             string playerName = playerList[curTurn].name;
 
-            
-            yield return new WaitForSeconds(2f);
+            playerList[curTurn].GetComponent<PlayerController>().cardDeckObject.GetComponent<Animator>().SetBool("Appear", false);
+            yield return new WaitForSeconds(1f);
+
             // 현재 플레이어의 카드만 표시
             LogText.text = "";
             LogText.text = playerName + " 카드 선택 하세요";
             buttonManager.ShowCard(curCardList);
+            playerList[curTurn].GetComponent<PlayerController>().quads.SetActive(true);
             
             // 플레이어가 카드를 제출할 때까지 대기
             yield return new WaitUntil(() => checkSubmitCard == 0);
             
             checkSubmitCard = -1;
+            playerList[curTurn].GetComponent<PlayerController>().quads.SetActive(false);
+            playerList[curTurn].GetComponent<PlayerController>().cardDeckObject.GetComponent<Animator>().SetBool("Appear", true);
+            yield return new WaitForSeconds(0.5f);
         }
 
         // 턴 이동
