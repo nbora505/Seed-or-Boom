@@ -27,6 +27,8 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     public int curTurn;
     public int maxCardCnt = 5;
 
+    public int leaderIndex = 0;  // 현재 리더 플레이어의 인덱스
+
     public int selectedBomb = -1;
     public int selectedWin = -1;
     public int checkSubmitCard = -1;
@@ -61,15 +63,19 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     void DisconnectedUserDeadAnimation(int playerID)
     {
         playerList[playerID - 1].GetComponent<Animator>().Play("Death");
-        Invoke("RemoveDisconnectUserFromList", 2f);
+        photonView.RPC("RemoveDisconnectUserFromListRPC", RpcTarget.All, playerID);
     }
 
     [PunRPC]
     void RemoveDisconnectUserFromList(int playerID)
     {
+        Invoke("nun", 2f);
         playerList.Remove(playerList[playerID - 1]);
     }
-
+    void nun()
+    {
+        
+    }
     #region PunCallBacksLines
     //public override void OnJoinedRoom()
     //{
@@ -246,6 +252,15 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
             StartCoroutine(StartRoundCoroutine());
         //Invoke(nameof(StartRound), 3f);
     }
+    
+    [PunRPC]
+    void UpdateLeaderPlayer(int newLeaderIndex)
+    {
+        leaderIndex = newLeaderIndex;
+        // playerList는 모든 클라이언트에서 동일한 순서로 유지된다고 가정합니다.
+        leaderPlayer = playerList[newLeaderIndex];
+        // 필요하다면 UI 등에서 리더 플레이어를 표시하는 추가 로직을 넣습니다.
+    }
 
     [PunRPC]
     void StartRound()
@@ -275,29 +290,24 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void ProcessDecideWinCount(int playerID)
     {
-        if(playerID >= playerList.Count)
-        {
-            if(PhotonNetwork.IsMasterClient)
-            {
-                StartCoroutine(StartTurnCoroutine());
-            }
-            return;
-        }
+        int actualPlayerIndex = (leaderIndex + playerID) % playerList.Count;
+        GameObject currentPlayer = playerList[actualPlayerIndex];
+        Debug.Log($"{actualPlayerIndex + 1}번째 순서의 플레이어: {currentPlayer.name}");
 
-        string playerName = playerList[playerID].name;
-        Debug.LogWarning($"{playerID + 1}번 째 순서 {playerName}입니다.");
-        noticeturnText.text += $"{playerID + 1}번 째 순서 : {playerName}\n";
+        string playerName = playerList[actualPlayerIndex].name;
+        Debug.LogWarning($"{actualPlayerIndex + 1}번 째 순서 {playerName}입니다.");
+        noticeturnText.text += $"{actualPlayerIndex + 1}번 째 순서 : {playerName}\n";
 
-        if (playerList[playerID].GetComponent<PhotonView>().IsMine)
+        if (playerList[actualPlayerIndex].GetComponent<PhotonView>().IsMine)
         {
-            if (playerList[playerID].GetComponent<AIPlayer>().isAIPlayer)
+            if (playerList[actualPlayerIndex].GetComponent<AIPlayer>().isAIPlayer)
             {
-                int aiWinCount = playerList[playerID].GetComponent<AIPlayer>().CalculateOddsOfWinning(0.69f, 0.29f);
-                photonView.RPC("SubmitWinCount", RpcTarget.All, playerID, aiWinCount);
+                int aiWinCount = playerList[actualPlayerIndex].GetComponent<AIPlayer>().CalculateOddsOfWinning(0.69f, 0.29f);
+                photonView.RPC("SubmitWinCount", RpcTarget.All, actualPlayerIndex, aiWinCount);
             }
             else
             {
-                StartCoroutine(WaitForPlayerWinCountSubmit(playerID));
+                StartCoroutine(WaitForPlayerWinCountSubmit(actualPlayerIndex));
             }
         }
     }
@@ -478,7 +488,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         GameObject deadPlayer = playerList[playerID];
         deadList.Add(deadPlayer);
     }
-
+    
     [PunRPC]
     void PrepareNextRound()
     {
@@ -500,10 +510,14 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
             {
                 if(PhotonNetwork.IsMasterClient)
                 {
+                    leaderIndex = (leaderIndex + 1) % playerList.Count;
+                    photonView.RPC("UpdateLeaderPlayer", RpcTarget.All, leaderIndex);
                     StartCoroutine(StartRoundCoroutine());
                 }
             }
         }
+
+
     }
 
     void RemovePlayerList()
