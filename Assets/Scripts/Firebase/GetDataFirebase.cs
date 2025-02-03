@@ -104,7 +104,7 @@ public class GetDataFirebase : MonoBehaviour
                 Debug.Log("search db data error");
             }
         });
-        yield return new WaitForSeconds(0.25f);
+        yield return new WaitForSeconds(1f);
     }
 
     /// <summary>
@@ -151,6 +151,7 @@ public class GetDataFirebase : MonoBehaviour
                 Debug.Log("check Day or GameNum");
             }
         });
+        yield return new WaitForSeconds(0.25f);
     }
 
     #endregion

@@ -16,9 +16,6 @@ using Photon.Pun;
 
 namespace Photon.Pun.UtilityScripts
 {
-    using ExitGames.Client.Photon;
-
-
     /// <summary>
     ///     Handles the network culling.
     /// </summary>
@@ -36,13 +33,6 @@ namespace Photon.Pun.UtilityScripts
         private PhotonView pView;
 
         private Vector3 lastPosition, currentPosition;
-        
-        
-        // used to limit the number of UpdateInterestGroups calls per second (there is no use to change groups more than a few times per second, even if the Culling algorithm makes it look like that)
-        private float timeSinceUpdate;
-        // see timeSinceUpdate
-        private float timeBetweenUpdatesMin = 0.33f;
-
 
         #endregion
 
@@ -65,11 +55,7 @@ namespace Photon.Pun.UtilityScripts
 
             if (this.cullArea == null)
             {
-                #if UNITY_6000_0_OR_NEWER
-                this.cullArea = FindFirstObjectByType<CullArea>();
-                #else
                 this.cullArea = FindObjectOfType<CullArea>();
-                #endif
             }
 
             this.previousActiveCells = new List<byte>(0);
@@ -104,21 +90,12 @@ namespace Photon.Pun.UtilityScripts
             }
         }
 
-
-
         /// <summary>
         ///     Checks if the player has moved previously and updates the interest groups if necessary.
         /// </summary>
         private void Update()
         {
             if (!this.pView.IsMine)
-            {
-                return;
-            }
-
-            // we'll limit how often this update may run at all (to avoid too frequent changes and flooding the server with SetInterestGroups calls)
-            this.timeSinceUpdate += Time.deltaTime;
-            if (this.timeSinceUpdate < this.timeBetweenUpdatesMin)
             {
                 return;
             }
@@ -134,7 +111,6 @@ namespace Photon.Pun.UtilityScripts
                 if (this.HaveActiveCellsChanged())
                 {
                     this.UpdateInterestGroups();
-                    this.timeSinceUpdate = 0;
                 }
             }
         }

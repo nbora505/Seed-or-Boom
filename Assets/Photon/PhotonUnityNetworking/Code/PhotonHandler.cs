@@ -9,18 +9,17 @@
 // ----------------------------------------------------------------------------
 
 
-
 namespace Photon.Pun
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
     using ExitGames.Client.Photon;
     using Photon.Realtime;
+    using System.Collections.Generic;
     using UnityEngine;
-    using UnityEngine.Profiling;
 
-    using Debug = UnityEngine.Debug;
+#if UNITY_5_5_OR_NEWER
+    using UnityEngine.Profiling;
+#endif
+
 
     /// <summary>
     /// Internal MonoBehaviour that allows Photon to run an Update loop.
@@ -35,11 +34,7 @@ namespace Photon.Pun
             {
                 if (instance == null)
                 {
-                    #if UNITY_6000_0_OR_NEWER
-                    instance = FindFirstObjectByType<PhotonHandler>();
-                    #else
                     instance = FindObjectOfType<PhotonHandler>();
-                    #endif
                     if (instance == null)
                     {
                         GameObject obj = new GameObject();
@@ -55,7 +50,7 @@ namespace Photon.Pun
 
         /// <summary>Limits the number of datagrams that are created in each LateUpdate.</summary>
         /// <remarks>Helps spreading out sending of messages minimally.</remarks>
-        public static int MaxDatagrams = 10;
+        public static int MaxDatagrams = 3;
 
         /// <summary>Signals that outgoing messages should be sent in the next LateUpdate call.</summary>
         /// <remarks>Up to MaxDatagrams are created to send queued messages.</remarks>
@@ -69,18 +64,15 @@ namespace Photon.Pun
 
         protected internal int UpdateIntervalOnSerialize; // time [ms] between consecutive RunViewUpdate calls (sending syncs, etc)
 
+        private int nextSendTickCount;
 
-        private readonly Stopwatch swSendOutgoing = new Stopwatch();
-
-        private readonly Stopwatch swViewUpdate = new Stopwatch();
+        private int nextSendTickCountOnSerialize;
 
         private SupportLogger supportLoggerComponent;
 
 
         protected override void Awake()
         {
-            this.swSendOutgoing.Start();
-            this.swViewUpdate.Start();
 
             if (instance == null || ReferenceEquals(this, instance))
             {
@@ -95,6 +87,7 @@ namespace Photon.Pun
 
         protected virtual void OnEnable()
         {
+
             if (Instance != this)
             {
                 Debug.LogError("PhotonHandler is a singleton but there are multiple instances. this != Instance.");
@@ -173,15 +166,17 @@ namespace Photon.Pun
             }
             #endif
 
-            if (PhotonNetwork.IsMessageQueueRunning && this.swViewUpdate.ElapsedMilliseconds >= this.UpdateIntervalOnSerialize - SerializeRateFrameCorrection)
+
+            int currentMsSinceStart = (int)(Time.realtimeSinceStartup * 1000); // avoiding Environment.TickCount, which could be negative on long-running platforms
+            if (PhotonNetwork.IsMessageQueueRunning && currentMsSinceStart > this.nextSendTickCountOnSerialize)
             {
                 PhotonNetwork.RunViewUpdate();
-                this.swViewUpdate.Restart();
-                SendAsap = true; // immediately send when synchronization code was running
+                this.nextSendTickCountOnSerialize = currentMsSinceStart + this.UpdateIntervalOnSerialize - SerializeRateFrameCorrection;
+                this.nextSendTickCount = 0; // immediately send when synchronization code was running
             }
 
-            
-            if (SendAsap || this.swSendOutgoing.ElapsedMilliseconds >= this.UpdateInterval)
+            currentMsSinceStart = (int)(Time.realtimeSinceStartup * 1000);
+            if (SendAsap || currentMsSinceStart > this.nextSendTickCount)
             {
                 SendAsap = false;
                 bool doSend = true;
@@ -194,12 +189,8 @@ namespace Photon.Pun
                     sendCounter++;
                     Profiler.EndSample();
                 }
-                if (sendCounter >= MaxDatagrams)
-                {
-                    SendAsap = true;
-                }
 
-                this.swSendOutgoing.Restart();
+                this.nextSendTickCount = currentMsSinceStart + this.UpdateInterval;
             }
         }
 
@@ -225,31 +216,12 @@ namespace Photon.Pun
 
 
             bool doDispatch = true;
-            Exception ex = null;
-            int exceptionCount = 0;
             while (PhotonNetwork.IsMessageQueueRunning && doDispatch)
             {
                 // DispatchIncomingCommands() returns true of it dispatched any command (event, response or state change)
                 Profiler.BeginSample("DispatchIncomingCommands");
-                try
-                {
-                    doDispatch = PhotonNetwork.NetworkingClient.LoadBalancingPeer.DispatchIncomingCommands();
-                }
-                catch (Exception e)
-                {
-                    exceptionCount++;
-                    if (ex == null)
-                    {
-                        ex = e;
-                    }
-                }
-
+                doDispatch = PhotonNetwork.NetworkingClient.LoadBalancingPeer.DispatchIncomingCommands();
                 Profiler.EndSample();
-            }
-
-            if (ex != null)
-            {
-                throw new AggregateException("Caught " + exceptionCount + " exception(s) in methods called by DispatchIncomingCommands(). Rethrowing first only (see above).", ex);
             }
         }
 
@@ -272,11 +244,7 @@ namespace Photon.Pun
             var views = PhotonNetwork.PhotonViewCollection;
             foreach (var view in views)
             {
-                if (view.IsRoomView)
-                {
-                    view.OwnerActorNr= newMasterClient.ActorNumber;
-                    view.ControllerActorNr = newMasterClient.ActorNumber;
-                }
+                view.RebuildControllerCache();
             }
         }
 
@@ -310,7 +278,8 @@ namespace Photon.Pun
                 int viewOwnerId = view.OwnerActorNr;
                 int viewCreatorId = view.CreatorActorNr;
 
-                // on join / rejoin, assign control to either the Master Client (for room objects) or the owner (for anything else)
+                // Scene objects need to set their controller to the master.
+                if (PhotonNetwork.IsMasterClient)
                     view.RebuildControllerCache();
 
                 // Rejoining master should enforce its world view, and override any changes that happened while it was soft disconnected
@@ -330,42 +299,52 @@ namespace Photon.Pun
 
         public void OnLeftRoom()
         {
-            // destroying the objects here is not a good option. LocalCleanupAnythingInstantiated is called from another place, which checks auto cleanup properly, too.
-            //// Destroy spawned objects and reset scene objects
-            //PhotonNetwork.LocalCleanupAnythingInstantiated(true);
+            // Destroy spawned objects and reset scene objects
+            PhotonNetwork.LocalCleanupAnythingInstantiated(true);
         }
 
 
         public void OnPlayerEnteredRoom(Player newPlayer)
         {
-            // note: if the master client becomes inactive, someone else becomes master. so there is no case where the active master client reconnects
-            // what may happen is that the Master Client disconnects locally and uses ReconnectAndRejoin before anyone (including the server) notices.
 
+            bool isRejoiningMaster = newPlayer.IsMasterClient;
             bool amMasterClient = PhotonNetwork.IsMasterClient;
 
+            // Nothing to do if this isn't the master joining, nor are we the master.
+            if (!isRejoiningMaster && !amMasterClient)
+                return;
+
             var views = PhotonNetwork.PhotonViewCollection;
+
+            // Get a slice big enough for worst case - all views with no compression...extra byte per int for varint bloat.
+
             if (amMasterClient)
-            {
                 reusableIntList.Clear();
-            }
 
             foreach (var view in views)
             {
-                view.RebuildControllerCache();  // all clients will potentially have to clean up owner and controller, if someone re-joins
+                // TODO: make this only if the new actor affects this?
+                view.RebuildControllerCache();
 
-                // the master client notifies joining players of any non-creator ownership
+                //// If this is the master, and some other player joined - notify them of any non-creator ownership
                 if (amMasterClient)
                 {
                     int viewOwnerId = view.OwnerActorNr;
+                    // TODO: Ideally all of this would only be targetted at the new player.
                     if (viewOwnerId != view.CreatorActorNr)
                     {
                         reusableIntList.Add(view.ViewID);
                         reusableIntList.Add(viewOwnerId);
+                        //PhotonNetwork.TransferOwnership(view.ViewID, viewOwnerId);
                     }
+                }
+                // Master rejoined - reset all ownership. The master will be broadcasting non-creator ownership shortly
+                else if (isRejoiningMaster)
+                {
+                    view.ResetOwnership();
                 }
             }
 
-            // update the joining player of non-creator ownership in the room
             if (amMasterClient && reusableIntList.Count > 0)
             {
                 PhotonNetwork.OwnershipUpdate(reusableIntList.ToArray(), newPlayer.ActorNumber);
@@ -386,9 +365,8 @@ namespace Photon.Pun
             {
                 foreach (var view in views)
                 {
-                    // v2.27: changed from owner-check to controller-check
-                    if (view.ControllerActorNr == leavingPlayerId)
-                        view.ControllerActorNr = PhotonNetwork.MasterClient.ActorNumber;
+                    if (view.OwnerActorNr == leavingPlayerId)
+                        view.RebuildControllerCache(true);
                 }
 
             }
@@ -406,11 +384,11 @@ namespace Photon.Pun
                     // Any views owned by the leaving player, default to null owner (which will become master controlled).
                     if (view.OwnerActorNr == leavingPlayerId || view.ControllerActorNr == leavingPlayerId)
                     {
-                        view.OwnerActorNr = 0;
-                        view.ControllerActorNr = PhotonNetwork.MasterClient.ActorNumber;
+                        view.SetOwnerInternal(null, 0);
                     }
                 }
             }
+
         }
     }
 }

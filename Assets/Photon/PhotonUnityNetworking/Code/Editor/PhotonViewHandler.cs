@@ -12,7 +12,6 @@
 namespace Photon.Pun
 {
 	using System.Collections.Generic;
-    using Realtime;
     using UnityEditor;
 	using UnityEngine;
     using Debug = UnityEngine.Debug;
@@ -60,15 +59,13 @@ namespace Photon.Pun
             {
                 if (PhotonEditorUtils.IsPrefab(view.gameObject))
                 {
-                    // prefabs should use 0 as ViewID and sceneViewId
-                    if (view.ViewID != 0 || view.sceneViewId != 0)
+                    if (view.ViewID != 0)
                     {
                         view.ViewID = 0;
-                        view.sceneViewId = 0;
                         EditorUtility.SetDirty(view);
                     }
 
-                    continue;   // skip prefabs in further processing
+                    continue;   // skip prefabs
                 }
 
                 photonViewInstances.Add(view);
@@ -83,11 +80,11 @@ namespace Photon.Pun
 
 
                 // organize the viewInstances into lists per viewID, so we know duplicate usage
-                if (!viewInstancesPerViewId.ContainsKey(view.sceneViewId))
+                if (!viewInstancesPerViewId.ContainsKey(view.ViewID))
                 {
-                    viewInstancesPerViewId[view.sceneViewId] = new List<PhotonView>();
+                    viewInstancesPerViewId[view.ViewID] = new List<PhotonView>();
                 }
-                viewInstancesPerViewId[view.sceneViewId].Add(view);
+                viewInstancesPerViewId[view.ViewID].Add(view);
             }
 
             //Debug.Log("PreviousAssignments: "+PunSceneViews.Instance.Views.Count);
@@ -101,7 +98,7 @@ namespace Photon.Pun
 
 
                 PhotonView previousAssignment = null;
-                bool wasAssigned = PunSceneViews.Instance.Views.TryGetValue(list[0].sceneViewId, out previousAssignment);
+                bool wasAssigned = PunSceneViews.Instance.Views.TryGetValue(list[0].ViewID, out previousAssignment);
 
                 foreach (PhotonView view in list)
                 {
@@ -124,7 +121,7 @@ namespace Photon.Pun
                 {
                     i++;
                 }
-                view.sceneViewId = i;
+                view.ViewID = i;
                 viewInstancesPerViewId.Add(i, null);    // we don't need the lists anymore but we care about getting the viewIDs listed
                 EditorUtility.SetDirty(view);
             }
@@ -134,13 +131,13 @@ namespace Photon.Pun
             PunSceneViews.Instance.Views.Clear();
             foreach (PhotonView view in photonViewInstances)
             {
-                if (PunSceneViews.Instance.Views.ContainsKey(view.sceneViewId))
+                if (PunSceneViews.Instance.Views.ContainsKey(view.ViewID))
                 {
-                    Debug.LogError("ViewIDs should no longer have duplicates! "+view.sceneViewId, view);  
+                    Debug.LogError("ViewIDs should no longer have duplicates! "+view.ViewID, view);  
                     continue;
                 }
 
-                PunSceneViews.Instance.Views[view.sceneViewId] = view;
+                PunSceneViews.Instance.Views[view.ViewID] = view;
             }
 
             //Debug.Log("photonViewsToReassign.Count: "+photonViewsToReassign.Count + " count of viewIDs in use: "+viewInstancesPerViewId.Values.Count);
@@ -156,7 +153,7 @@ namespace Photon.Pun
 
         private static bool IsViewIdOkForScene(PhotonView view)
         {
-            return view.sceneViewId >= MinSceneViewId(view);
+            return view.ViewID >= MinSceneViewId(view);
         }
 	}
 
@@ -177,12 +174,8 @@ namespace Photon.Pun
                 {
                     return instanceField;
                 }
-                
-                #if UNITY_6000_0_OR_NEWER
-                instanceField = GameObject.FindFirstObjectByType<PunSceneViews>();
-                #else
+
                 instanceField = GameObject.FindObjectOfType<PunSceneViews>();
-                #endif
                 if (instanceField == null)
                 {
                     instanceField = ScriptableObject.CreateInstance<PunSceneViews>();
