@@ -31,30 +31,36 @@ public class OVRPlayerControllerPhotonSync : MonoBehaviourPunCallbacks
             //photonView.RPC("SetHBRTransform()", RpcTarget.All);
             //photonView.RPC("SetHBRTransform()", RpcTarget.All);
 
+            SetupVRTargets();
             //hbr.head.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnCenterEyeAnchor();
             //hbr.rightHand.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnRightHandAnchor();
             //hbr.leftHand.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnLeftHandAnchor();
 
-            photonView.RPC("InitializeRig", RpcTarget.AllBuffered, photonView.ViewID);
+            photonView.RPC("SyncVRSetup", RpcTarget.Others);
+        }
+    }
 
+    void SetupVRTargets()
+    {
+        var trackingComponent = tempOVR.GetComponent<GetVRTrackingPosition>();
+        if (trackingComponent != null)
+        {
+            hbr.head.VRTarget = trackingComponent.ReturnCenterEyeAnchor();
+            hbr.rightHand.VRTarget = trackingComponent.ReturnRightHandAnchor();
+            hbr.leftHand.VRTarget = trackingComponent.ReturnLeftHandAnchor();
         }
     }
 
     [PunRPC]
-    void InitializeRig(int viewID)
+    void SyncVRSetup()
     {
-        PhotonView ownerPV = PhotonView.Find(viewID);
-        if (ownerPV != null)
+        // 다른 클라이언트들에서는 OVR 카메라를 찾아서 설정
+        var trackingComponent = GetComponentInChildren<GetVRTrackingPosition>();
+        if (trackingComponent != null)
         {
-            Transform ovrTransform = ownerPV.transform.GetComponentInChildren<GetVRTrackingPosition>().transform;
-
-            if (ovrTransform != null)
-            {
-                var trackingComponent = ovrTransform.GetComponent<GetVRTrackingPosition>();
-                hbr.head.VRTarget = trackingComponent.ReturnCenterEyeAnchor();
-                hbr.rightHand.VRTarget = trackingComponent.ReturnRightHandAnchor();
-                hbr.leftHand.VRTarget = trackingComponent.ReturnLeftHandAnchor();
-            }
+            hbr.head.VRTarget = trackingComponent.ReturnCenterEyeAnchor();
+            hbr.rightHand.VRTarget = trackingComponent.ReturnRightHandAnchor();
+            hbr.leftHand.VRTarget = trackingComponent.ReturnLeftHandAnchor();
         }
     }
 
