@@ -6,17 +6,27 @@ using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.SpatialTracking;
 using DG.Tweening;
+using Unity.VisualScripting;
 
 public class OVRPlayerControllerPhotonSync : MonoBehaviourPunCallbacks
 {
-    OVRCameraRig ovrCameraRig;
-    public List<GameObject> cameras = new List<GameObject>();
     public GameObject cardObj;
+    public GameObject ovrCamera;
+    HeadBodyRig hbr;
 
     // Start is called before the first frame update
     void Start()
     {
-        ovrCameraRig = GetComponent<OVRCameraRig>();
+        if(photonView.IsMine)
+        {
+            GameObject ovr = Instantiate(ovrCamera);
+            ovr.transform.SetParent(this.gameObject.transform, false);
+            
+            hbr = GetComponent<HeadBodyRig>();
+            hbr.head.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnCenterEyeAnchor();
+            hbr.rightHand.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnRightHandAnchor();
+            hbr.leftHand.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnLeftHandAnchor();
+        }
     }
     // Update is called once per frame
     void Update()
@@ -24,10 +34,6 @@ public class OVRPlayerControllerPhotonSync : MonoBehaviourPunCallbacks
 
         if (!photonView.IsMine)
         {
-            //var trackedPoseDriver = ovrCameraRig.GetComponent<TrackedPoseDriver>();
-            //if (trackedPoseDriver != null)
-            //    trackedPoseDriver.enabled = false;
-
             return;
         }
 
