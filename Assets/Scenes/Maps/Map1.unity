@@ -47662,8 +47662,8 @@ MonoBehaviour:
   startBtnEffect: {fileID: 22245765}
   leaderPlayer: {fileID: 0}
   centerCardDeck: {fileID: 1661091950}
-  noticeturnText: {fileID: 1057223484}
-  LogText: {fileID: 1538823220}
+  noticeturnText: {fileID: 1538823220}
+  LogText: {fileID: 1057223484}
   isGameReady: 0
   maxPlayerCnt: 4
   curRound: 1
