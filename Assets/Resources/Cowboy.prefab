@@ -1988,12 +1988,20 @@ MonoBehaviour:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   ovrCameraPrefab: {fileID: 8159531724087476487, guid: 5f28c061245c20942b5b098371711be1, type: 3}
   cardObj: {fileID: 0}
   avatarHead: {fileID: 9169888558644405267}
   avatarLeftHand: {fileID: 8228542146536673532}
   avatarRightHand: {fileID: 7419946816161461859}
   lerpSpeed: 10
+=======
+  cameras:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  cardObj: {fileID: 0}
+>>>>>>> parent of 41a190a (test tracking)
 =======
   cameras:
   - {fileID: 0}
