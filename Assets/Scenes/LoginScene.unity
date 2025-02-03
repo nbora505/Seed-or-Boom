@@ -19468,7 +19468,7 @@ MonoBehaviour:
   capsLockBtn: {fileID: 1272929933}
   emailField: {fileID: 901265181}
   pwField: {fileID: 223564460}
-  nickField: {fileID: 0}
+  nickField: {fileID: 1743106518}
   emailOn: 0
   pwOn: 0
   capsLockOn: 1
