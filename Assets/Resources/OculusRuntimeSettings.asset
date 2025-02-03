@@ -16,10 +16,6 @@ MonoBehaviour:
   colorSpace: 7
   requestsVisualFaceTracking: 1
   requestsAudioFaceTracking: 1
-<<<<<<< HEAD
-  telemetryProjectGuid: 8dc69fa6-0de4-4bfe-be25-9d54102fec65
-=======
-  telemetryProjectGuid: b38e5b06-6b36-4e01-8d5b-b120a6b3be44
->>>>>>> parent of 024e6c7 (폭탄심지2)
+  telemetryProjectGuid: c67f3a77-d81a-42ec-bfbb-0ec0bc3525e2
   bodyTrackingFidelity: 1
   bodyTrackingJointSet: 0

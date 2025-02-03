@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AppSettings:
     AppIdRealtime: e497924d-20d4-4fd0-9cae-874610617af4
+    AppIdFusion: 
     AppIdChat: 
-    AppIdVoice: 
+    AppIdVoice: 5d286d17-2448-4330-a04c-aa6164a09e1d
     AppVersion: 
     UseNameServer: 1
     FixedRegion: 
@@ -38,6 +39,26 @@ MonoBehaviour:
   - ClickRpc
   - DestroyRpc
   - HeresWhy
+  - CheckPlayerReady
+  - CheckTurnResult
+  - DisconnectedUserDeadAnimation
+  - DistributeCards
+  - EndGame
+  - PlayerDead
+  - PrepareNextRound
+  - ProcessDecideWinCount
+  - ProcessTurn
+  - RemoveDisconnectUserFromList
+  - ReportSpawn
+  - ResetLists
+  - StartDecideWinCount
+  - StartGame
+  - StartRound
+  - StartRoundEnd
+  - SubmitCard
+  - SubmitWinCount
+  - UpdateLeaderPlayer
+  - UpdateTurnWinner
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0
