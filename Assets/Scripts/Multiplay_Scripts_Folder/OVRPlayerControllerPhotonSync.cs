@@ -18,21 +18,15 @@ public class OVRPlayerControllerPhotonSync : MonoBehaviourPunCallbacks
     {
         ovrCameraRig = GetComponent<OVRCameraRig>();
     }
-
     // Update is called once per frame
     void Update()
     {
 
         if (!photonView.IsMine)
         {
-            ovrCameraRig.enabled = false;
-            cameras[0].SetActive(false);
-            cameras[1].SetActive(false);
-            cameras[2].SetActive(false);
-
-            var trackedPoseDriver = ovrCameraRig.GetComponent<TrackedPoseDriver>();
-            if (trackedPoseDriver != null)
-                trackedPoseDriver.enabled = false;
+            //var trackedPoseDriver = ovrCameraRig.GetComponent<TrackedPoseDriver>();
+            //if (trackedPoseDriver != null)
+            //    trackedPoseDriver.enabled = false;
 
             return;
         }
