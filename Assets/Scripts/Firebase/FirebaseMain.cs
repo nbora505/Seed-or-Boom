@@ -207,7 +207,6 @@ public class FirebaseMain : MonoBehaviour
                         {"nickName", nickField.text},
                         {"win", 0},
                         {"lose", 0},
-                        {"char", "GoblinMale"}
                     };
                 }
                 else
@@ -219,7 +218,6 @@ public class FirebaseMain : MonoBehaviour
                         {"nickName", "default"},
                         {"win", 0},
                         {"lose", 0},
-                        {"char", "GoblinMale"}
                     };
                 }
                 docRef.SetAsync(user).ContinueWithOnMainThread(task =>
