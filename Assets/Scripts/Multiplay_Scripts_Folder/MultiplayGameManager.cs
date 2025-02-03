@@ -207,8 +207,8 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
 
         1. switch masterclient => alert <- Done
         2. if player disconnected, that player dead. <- Done
-        3. Show Player Nickname
-        4. Send Winning or losing data to databass table
+        3. Show Player Nickname <- yet
+        4. Send Winning or losing data to databass table <- yet need other contributes's step 
      
      */
     #region MultiPlayFuncLines
