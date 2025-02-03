@@ -223,8 +223,6 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             spawnPoints[(actorNumber - 1) % spawnPoints.Length].position,
             Quaternion.identity);
 
-
-
         // 생성된 플레이어 오브젝트의 PhotonView ID를 획득
         int viewID = spawnedPlayer.GetComponent<PhotonView>().ViewID;
         // 마스터 클라이언트에 자신의 스폰 정보를 전달
