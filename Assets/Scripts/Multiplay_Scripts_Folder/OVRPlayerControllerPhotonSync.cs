@@ -31,9 +31,30 @@ public class OVRPlayerControllerPhotonSync : MonoBehaviourPunCallbacks
             //photonView.RPC("SetHBRTransform()", RpcTarget.All);
             //photonView.RPC("SetHBRTransform()", RpcTarget.All);
 
-            hbr.head.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnCenterEyeAnchor();
-            hbr.rightHand.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnRightHandAnchor();
-            hbr.leftHand.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnLeftHandAnchor();
+            //hbr.head.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnCenterEyeAnchor();
+            //hbr.rightHand.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnRightHandAnchor();
+            //hbr.leftHand.VRTarget = ovr.GetComponent<GetVRTrackingPosition>().ReturnLeftHandAnchor();
+
+            photonView.RPC("InitializeRig", RpcTarget.AllBuffered, photonView.ViewID);
+
+        }
+    }
+
+    [PunRPC]
+    void InitializeRig(int viewID)
+    {
+        PhotonView ownerPV = PhotonView.Find(viewID);
+        if (ownerPV != null)
+        {
+            Transform ovrTransform = ownerPV.transform.GetComponentInChildren<GetVRTrackingPosition>().transform;
+
+            if (ovrTransform != null)
+            {
+                var trackingComponent = ovrTransform.GetComponent<GetVRTrackingPosition>();
+                hbr.head.VRTarget = trackingComponent.ReturnCenterEyeAnchor();
+                hbr.rightHand.VRTarget = trackingComponent.ReturnRightHandAnchor();
+                hbr.leftHand.VRTarget = trackingComponent.ReturnLeftHandAnchor();
+            }
         }
     }
 
