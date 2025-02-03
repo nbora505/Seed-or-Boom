@@ -1985,6 +1985,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7de57d43543f2c44dbefefb9cd7e1d0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cameras: []
   cardObj: {fileID: 0}
 --- !u!1 &8933534740838337089
 GameObject:
@@ -2066,6 +2067,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7045248045864486945, guid: 5f28c061245c20942b5b098371711be1, type: 3}
+      propertyPath: dynamicResolutionVersion
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8159531724087476487, guid: 5f28c061245c20942b5b098371711be1, type: 3}
       propertyPath: m_Name
       value: OVRCameraRigInteraction Variant
@@ -2073,7 +2078,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7045248045875264965, guid: 5f28c061245c20942b5b098371711be1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5499358492202417797}
   m_SourcePrefab: {fileID: 100100000, guid: 5f28c061245c20942b5b098371711be1, type: 3}
 --- !u!4 &6426399372214638966 stripped
 Transform:
@@ -2093,5 +2101,42 @@ Transform:
 --- !u!4 &6466954821587531899 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7045248045875683811, guid: 5f28c061245c20942b5b098371711be1, type: 3}
+  m_PrefabInstance: {fileID: 4069709114816993688}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6466954821587887193 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7045248045875264961, guid: 5f28c061245c20942b5b098371711be1, type: 3}
+  m_PrefabInstance: {fileID: 4069709114816993688}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6466954821587887195 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7045248045875264963, guid: 5f28c061245c20942b5b098371711be1, type: 3}
+  m_PrefabInstance: {fileID: 4069709114816993688}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6466954821587887197 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7045248045875264965, guid: 5f28c061245c20942b5b098371711be1, type: 3}
+  m_PrefabInstance: {fileID: 4069709114816993688}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5499358492202417797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6466954821587887197}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7de57d43543f2c44dbefefb9cd7e1d0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameras:
+  - {fileID: 6466954821587887199}
+  - {fileID: 6466954821587887195}
+  - {fileID: 6466954821587887193}
+  cardObj: {fileID: 0}
+--- !u!1 &6466954821587887199 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7045248045875264967, guid: 5f28c061245c20942b5b098371711be1, type: 3}
   m_PrefabInstance: {fileID: 4069709114816993688}
   m_PrefabAsset: {fileID: 0}

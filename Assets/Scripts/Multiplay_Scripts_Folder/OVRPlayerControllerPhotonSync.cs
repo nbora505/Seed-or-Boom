@@ -10,14 +10,13 @@ using DG.Tweening;
 public class OVRPlayerControllerPhotonSync : MonoBehaviourPunCallbacks
 {
     OVRCameraRig ovrCameraRig;
-    Transform centerEyeAnchor;
+    public List<GameObject> cameras = new List<GameObject>();
     public GameObject cardObj;
 
     // Start is called before the first frame update
     void Start()
     {
         ovrCameraRig = GetComponent<OVRCameraRig>();
-        centerEyeAnchor = GetComponentInChildren<Transform>();
     }
 
     // Update is called once per frame
@@ -27,6 +26,9 @@ public class OVRPlayerControllerPhotonSync : MonoBehaviourPunCallbacks
         if (!photonView.IsMine)
         {
             ovrCameraRig.enabled = false;
+            cameras[0].SetActive(false);
+            cameras[1].SetActive(false);
+            cameras[2].SetActive(false);
 
             var trackedPoseDriver = ovrCameraRig.GetComponent<TrackedPoseDriver>();
             if (trackedPoseDriver != null)
