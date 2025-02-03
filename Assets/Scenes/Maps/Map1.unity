@@ -2625,11 +2625,6 @@ PrefabInstance:
       addedObject: {fileID: 771824931}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 21fa6388a7962084b919298646e28693, type: 3}
---- !u!1 &100501311 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 198342, guid: 9bc1679fb57cb5444ab6119fd2bc5533, type: 3}
-  m_PrefabInstance: {fileID: 223722344}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &104810220
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14318,11 +14313,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6319609252498407600, guid: 3cdb5051a18c70640b2db139516dbb36, type: 3}
   m_PrefabInstance: {fileID: 506034083}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &508634085 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 198342, guid: 9bc1679fb57cb5444ab6119fd2bc5533, type: 3}
-  m_PrefabInstance: {fileID: 2065012912}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &512732084
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23248,8 +23238,8 @@ MonoBehaviour:
   submitTime: 0
   bombVisible: 0
   isDead: 0
-  gm: {fileID: 1598734125}
-  cardDeckObject: {fileID: 578193200}
+  gm: {fileID: 0}
+  cardDeckObject: {fileID: 0}
   quads: {fileID: 0}
   expectedWins: 0
   nowTotalWins: 0
@@ -28285,7 +28275,7 @@ MonoBehaviour:
   scoreManager: {fileID: 365595091}
   playerController: {fileID: 0}
   cardManager: {fileID: 1400924154}
-  playerLogText: {fileID: 0}
+  playerLogText: {fileID: 1538823220}
   expectedWin: 0
   selectCard: 0
   logText: {fileID: 1057223484}
@@ -32058,7 +32048,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerController: {fileID: 1616553795}
   readyText: {fileID: 416266863}
-  readyButton: {fileID: 100501311}
+  readyButton: {fileID: 1045576826}
   readyButtonEffect: {fileID: 164745219}
 --- !u!1001 &1048375594
 PrefabInstance:
@@ -37657,8 +37647,8 @@ MonoBehaviour:
   submitTime: 0
   bombVisible: 0
   isDead: 0
-  gm: {fileID: 1598734125}
-  cardDeckObject: {fileID: 645947604}
+  gm: {fileID: 0}
+  cardDeckObject: {fileID: 0}
   quads: {fileID: 0}
   expectedWins: 0
   nowTotalWins: 0
@@ -44487,7 +44477,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerController: {fileID: 770429790}
   readyText: {fileID: 329601135}
-  readyButton: {fileID: 1555828237}
+  readyButton: {fileID: 1462267923}
   readyButtonEffect: {fileID: 1157899336}
 --- !u!1001 &1468013784
 PrefabInstance:
@@ -46831,11 +46821,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8529970499995821782, guid: 1a165d5a0bf852347a748564a46273d4, type: 3}
   m_PrefabInstance: {fileID: 1551283887}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1555828237 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 198342, guid: 9bc1679fb57cb5444ab6119fd2bc5533, type: 3}
-  m_PrefabInstance: {fileID: 642666797}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1560038168 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8771972552311404799, guid: c1b1a8a3e72642f4bad4b3dc94e20662, type: 3}
@@ -47677,12 +47662,12 @@ MonoBehaviour:
   startBtnEffect: {fileID: 22245765}
   leaderPlayer: {fileID: 0}
   centerCardDeck: {fileID: 1661091950}
-  noticeturnText: {fileID: 1538823220}
-  LogText: {fileID: 1057223484}
+  noticeturnText: {fileID: 1057223484}
+  LogText: {fileID: 1538823220}
   isGameReady: 0
   maxPlayerCnt: 4
   curRound: 1
-  maxRound: 10
+  maxRound: 3
   curTurn: 0
   maxCardCnt: 5
   selectedBomb: -1
@@ -58558,11 +58543,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4321094490644980434, guid: 44bf5b47cd72c1c48b87427abe380268, type: 3}
   m_PrefabInstance: {fileID: 738210504}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1914710436 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 198342, guid: 9bc1679fb57cb5444ab6119fd2bc5533, type: 3}
-  m_PrefabInstance: {fileID: 747936684}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1917718274
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -60213,7 +60193,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerController: {fileID: 1993169696}
   readyText: {fileID: 1241262556}
-  readyButton: {fileID: 1914710436}
+  readyButton: {fileID: 1965338968}
   readyButtonEffect: {fileID: 1560038168}
 --- !u!1001 &1969112438
 PrefabInstance:
@@ -61170,8 +61150,8 @@ MonoBehaviour:
   submitTime: 0
   bombVisible: 0
   isDead: 0
-  gm: {fileID: 1598734125}
-  cardDeckObject: {fileID: 1881467825}
+  gm: {fileID: 0}
+  cardDeckObject: {fileID: 0}
   quads: {fileID: 0}
   expectedWins: 0
   nowTotalWins: 0
@@ -66059,7 +66039,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerController: {fileID: 1235556056}
   readyText: {fileID: 692876553}
-  readyButton: {fileID: 508634085}
+  readyButton: {fileID: 2134484209}
   readyButtonEffect: {fileID: 1839789910}
 --- !u!1001 &2136157808
 PrefabInstance:

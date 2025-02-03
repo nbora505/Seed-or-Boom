@@ -28,7 +28,7 @@ public class ReadyButton : MonoBehaviour
             Debug.Log($"{playerController.name}가 준비되었습니다!");
             
             readyText.SetActive(false); //텍스트 비활성화
-            readyButton.SetActive(false); // 버튼 모델링 비활성화
+            readyButton.transform.Find("Button2").gameObject.SetActive(false); // 버튼 모델링 비활성화
 
             StartCoroutine(removeReadyButton());
         }
