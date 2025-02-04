@@ -293,6 +293,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void StartDecideWinCount()
     {
+        Debug.LogError("Client Checker StartDecideWinCount ****************");
         if(!PhotonNetwork.IsMasterClient) return;
 
         Debug.Log("***************Win Decide");
@@ -356,6 +357,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void ResetLists()
     {
+        Debug.LogError("Client Check ResetList()**********");
         predictedWinCnt = new int[playerList.Count];
         winCntOfEachTurn = new int[playerList.Count];
 
@@ -368,6 +370,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void DistributeCards()
     {
+        Debug.LogError("Client Checker DistributeCards **********");
         cardManager.DoCardShuffle();
         cardManager.TestUserCard(playerList.Count, true);
     }
