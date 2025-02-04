@@ -20,7 +20,7 @@ public class ButtonManager : MonoBehaviour
     public ScoreManager scoreManager;
     public PlayerController playerController;
     public CardManager cardManager;
-
+    public MultiplayGameManager multiplayGameManager;
     [Header("Score,UI")]
     //public GameObject playerLogPanel;
     public Text playerLogText;

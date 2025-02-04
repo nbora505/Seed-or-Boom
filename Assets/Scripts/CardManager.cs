@@ -6,7 +6,7 @@ using UnityEngine;
 public class CardManager : MonoBehaviour
 {
     public GameManager gameManager;
-
+    public MultiplayGameManager multiplayGameManager;
     // It can be changed. this vars inited for test
     public List<int> card = new List<int>();
     public List<int> cardset = new List<int>();

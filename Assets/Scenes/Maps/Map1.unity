@@ -6531,8 +6531,7 @@ Transform:
   m_LocalPosition: {x: -1.9, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 413698428}
+  m_Children: []
   m_Father: {fileID: 1893761673}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1001 &235741907
@@ -10994,6 +10993,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e8df546da4157243a54ac19d39538fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  multiplayGameManager: {fileID: 1077264572}
 --- !u!1001 &371053787
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11717,72 +11717,6 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 1533941158263488302, guid: 9443787bc56280d4da2d6fee2efc5d26, type: 3}
   m_PrefabInstance: {fileID: 412383318}
-  m_PrefabAsset: {fileID: 0}
---- !u!1001 &413698427
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 231540114}
-    m_Modifications:
-    - target: {fileID: 1429583130121085558, guid: 223eab12e43bac04781dc479416bc63e, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1429583130121085558, guid: 223eab12e43bac04781dc479416bc63e, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1429583130121085558, guid: 223eab12e43bac04781dc479416bc63e, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1429583130121085558, guid: 223eab12e43bac04781dc479416bc63e, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1429583130121085558, guid: 223eab12e43bac04781dc479416bc63e, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1429583130121085558, guid: 223eab12e43bac04781dc479416bc63e, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1429583130121085558, guid: 223eab12e43bac04781dc479416bc63e, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1429583130121085558, guid: 223eab12e43bac04781dc479416bc63e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1429583130121085558, guid: 223eab12e43bac04781dc479416bc63e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1429583130121085558, guid: 223eab12e43bac04781dc479416bc63e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7715271724070341415, guid: 223eab12e43bac04781dc479416bc63e, type: 3}
-      propertyPath: sceneViewId
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8849390686682753043, guid: 223eab12e43bac04781dc479416bc63e, type: 3}
-      propertyPath: m_Name
-      value: Cowboy
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 223eab12e43bac04781dc479416bc63e, type: 3}
---- !u!4 &413698428 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1429583130121085558, guid: 223eab12e43bac04781dc479416bc63e, type: 3}
-  m_PrefabInstance: {fileID: 413698427}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &415669207
 PrefabInstance:
@@ -30212,6 +30146,7 @@ MonoBehaviour:
   scoreManager: {fileID: 365595091}
   playerController: {fileID: 0}
   cardManager: {fileID: 1400924154}
+  multiplayGameManager: {fileID: 1077264572}
   playerLogText: {fileID: 0}
   expectedWin: 0
   selectCard: 0
@@ -35634,7 +35569,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents: []
-  sceneViewId: 1
+  sceneViewId: 2
   InstantiationId: 0
   isRuntimeInstantiated: 0
 --- !u!4 &1077267784 stripped
@@ -44706,6 +44641,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameManager: {fileID: 1598734125}
+  multiplayGameManager: {fileID: 1077264572}
   card: 
   cardset: 
 --- !u!4 &1400924155

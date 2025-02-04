@@ -216,12 +216,13 @@ public class PhotonManager : MonoBehaviourPunCallbacks
                                     : 1;
         Debug.Log($"플레이어 {actorNumber}의 캐릭터 인덱스: {characterSelectIndex}");
 
+        Transform spawnPoint = spawnPoints[(actorNumber - 1) % spawnPoints.Length];
         // 프리팹 선택 및 스폰 위치 계산
         GameObject selectedCharacter = characterPrefabs[characterSelectIndex];
         GameObject spawnedPlayer = PhotonNetwork.Instantiate(
             selectedCharacter.name,
-            spawnPoints[(actorNumber - 1) % spawnPoints.Length].position,
-            Quaternion.identity);
+            spawnPoint.position,
+            spawnPoint.rotation);
 
 
 

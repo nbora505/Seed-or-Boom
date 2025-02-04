@@ -6,13 +6,14 @@ using UnityEngine;
 
 public class ScoreManager : MonoBehaviour
 {
+    public MultiplayGameManager multiplayGameManager;
     GameManager gm;
     PlayerController pc;
     bool isSelect = false;
     // Start is called before the first frame update
     void Start()
     {
-        gm = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+       // gm = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
     }
 
     // Update is called once per frame
@@ -36,7 +37,7 @@ public class ScoreManager : MonoBehaviour
         //int realBomb = Random.Range(0, player.remainingBomb);
 
         //심지가 골라질때까지 기다리기(기본값은 -1)
-        yield return new WaitUntil(() => gm.selectedBomb >= 0);
+        yield return new WaitUntil(() => multiplayGameManager.selectedBomb >= 0); // -> 기존은 gm
 
         // pc.DrawBomb()은 폭탄을 선택했을 때, 실행되어야 함.
         player.DrawBomb(gm.selectedBomb);
