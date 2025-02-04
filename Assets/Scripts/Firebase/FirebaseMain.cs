@@ -172,6 +172,7 @@ public class FirebaseMain : MonoBehaviour
         string email = auth.CurrentUser.Email;
         Debug.Log(authUID);
         LoginFirebase(authUID, email);
+        UpdateNickName(a);
     }
 
     /// <summary>
@@ -225,7 +226,7 @@ public class FirebaseMain : MonoBehaviour
                 docRef.SetAsync(user).ContinueWithOnMainThread(task =>
                 {
                     Debug.Log("Make user data to database");
-                    //after goto main Scene
+                    SceneManager.LoadScene(0);
                 });
             }
         });
@@ -418,7 +419,7 @@ public class FirebaseMain : MonoBehaviour
         DocumentReference docRef = db.Collection("users").Document(auth.CurrentUser.UserId);
         Dictionary<string, object> updateDic = new Dictionary<string, object>
         {
-            {"nick", nick }
+            {"nickName", nick }
         };
         //upadte new data to user's doc.
         docRef.UpdateAsync(updateDic).ContinueWithOnMainThread(task =>
