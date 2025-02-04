@@ -51,6 +51,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
+using Photon.Realtime;
 
 public class ReadyButton : MonoBehaviour
 {
@@ -64,16 +65,16 @@ public class ReadyButton : MonoBehaviour
 
     private void Start()
     {
+        PhotonView photonView = GetComponent<PhotonView>();
+        if (btn != null && photonView.IsMine)
+        {
+            btn.onClick.AddListener(OnReadyButtonClicked);
+        }
+
         // MultiplayGameManager 인스턴스 참조 (씬에 단 한 개 있다고 가정)
         gameManager = FindObjectOfType<MultiplayGameManager>();
         // 이 오브젝트에 Button 컴포넌트가 있다면 가져와서 이벤트 리스너 추가
         btn = GetComponent<Button>();
-
-
-        if (btn != null)
-        {
-            btn.onClick.AddListener(OnReadyButtonClicked);
-        }
 
         // 만약 이 버튼의 주인이 AI라면 바로 준비 상태로 전환하고 버튼 비활성화
         if (playerController != null &&
@@ -85,7 +86,6 @@ public class ReadyButton : MonoBehaviour
         }
     }
 
-    [PunRPC]
     private void OnDestroy()
     {
         Debug.Log("Destroy");
@@ -96,7 +96,6 @@ public class ReadyButton : MonoBehaviour
         }
     }
 
-    [PunRPC]
     private void OnReadyButtonClicked()
     {
         // 네트워크 상 준비 처리를 위해 MultiplayGameManager의 함수를 호출합니다.
@@ -118,7 +117,6 @@ public class ReadyButton : MonoBehaviour
         readyBtn();
     }
 
-    [PunRPC]
     public void readyBtn()
     {
         if (playerController != null)
@@ -145,7 +143,6 @@ public class ReadyButton : MonoBehaviour
         }
     }
 
-    [PunRPC]
     IEnumerator RemoveReadyButton()
     {
         readyButtonEffect.SetActive(true);
