@@ -103,15 +103,6 @@ public class MultiPlayBtnManager : MonoBehaviourPunCallbacks
         // 비슷한 방식으로 구현
     }
 
-    [PunRPC]
-    public void GetWinScore()
-    {
-        multiplayGameManager.selectedWin = 0;
-        multiplayGameManager.predictedWinCnt[playerid] = expectedWin;
-        logText.DOText("승리횟수 :" + expectedWin.ToString() + "번 제출완료", 1.2f);
-        expectedWin = 0;
-    }
-
     public void OnSubmitScoreButtonClicked()
     {
         if (!multiplayGameManager.playerList[playerid].GetComponent<PhotonView>().IsMine)
@@ -119,7 +110,9 @@ public class MultiPlayBtnManager : MonoBehaviourPunCallbacks
 
         if (expectedWin >= 0 && expectedWin <= 4)
         {
-            multiplayGameManager.GetComponent<PhotonView>().RPC("SubmitWinCount", RpcTarget.All, playerid, expectedWin);
+            multiplayGameManager.gameObject.GetPhotonView().RPC("SubmitWinCount", RpcTarget.All, playerid, expectedWin);
+            logText.DOText("승리횟수 :" + expectedWin.ToString() + "번 제출완료", 1.2f);
+            expectedWin = 0;
         }
         else
         {
