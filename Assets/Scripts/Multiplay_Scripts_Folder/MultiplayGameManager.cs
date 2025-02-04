@@ -108,6 +108,14 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
 
         Debug.LogWarning($"현재 방장은 {newMasterClient}입니다.");
     }
+
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+        if (!changedProps.ContainsKey("IsReady")) return;
+
+        CheckAllPlayerReady();
+    }
     #endregion
     //public IEnumerator WaitForPlayerListAndSpawn(int actorNumberID)
     //{
@@ -117,7 +125,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     //    Debug.Log($"현재 플레이어 리스트 수: {PhotonNetwork.PlayerList.Length}");
 
     //    SpwanPlayer(actorNumberID-1);
-        
+
     //}
     #region PunRPCLines
 
@@ -219,11 +227,11 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     /// </summary>
 
     #region ButtonFuncLines
-    public void  OnClickReadyButtonEventListener()
-    {
-        photonView.RPC("CheckPlayerReady", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber);
-        Destroy(this.gameObject);
-    }
+    //public void  OnClickReadyButtonEventListener()
+    //{
+    //    photonView.RPC("CheckPlayerReady", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber);
+    //    Destroy(this.gameObject);
+    //}
 
     public void OnClickStartGameEventListener()
     {
@@ -235,11 +243,17 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     }
     #endregion
 
-    void CheckAllPlayerReady()
+    public void CheckAllPlayerReady()
     {
-        if (playerList.All(player => 
-        player.GetComponent<PlayerController>().isReady))
+        var players = PhotonNetwork.PlayerList;
+
+        if (players.All(player => player.CustomProperties.ContainsKey("IsReady") && (bool)player.CustomProperties["IsReady"]))
+        {
             startBtn.SetActive(true);
+        }
+        //if (playerList.All(player => 
+        //player.GetComponent<PlayerController>().isReady))
+        //    startBtn.SetActive(true);
     }
 
     #region GameStartWithRoundProgress

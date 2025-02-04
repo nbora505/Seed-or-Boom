@@ -53,7 +53,7 @@ using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
 
-public class ReadyButton : MonoBehaviour
+public class ReadyButton : MonoBehaviourPun
 {
     public PlayerController playerController; // 이 버튼이 연결된 플레이어
     public GameObject readyText;
@@ -65,16 +65,19 @@ public class ReadyButton : MonoBehaviour
 
     private void Start()
     {
-        PhotonView photonView = GetComponent<PhotonView>();
         if (btn != null && photonView.IsMine)
         {
+            readyButton.SetActive(true);
+            gameManager = FindObjectOfType<MultiplayGameManager>();
+            // 이 오브젝트에 Button 컴포넌트가 있다면 가져와서 이벤트 리스너 추가
+            btn = GetComponent<Button>();
+
             btn.onClick.AddListener(OnReadyButtonClicked);
         }
-
-        // MultiplayGameManager 인스턴스 참조 (씬에 단 한 개 있다고 가정)
-        gameManager = FindObjectOfType<MultiplayGameManager>();
-        // 이 오브젝트에 Button 컴포넌트가 있다면 가져와서 이벤트 리스너 추가
-        btn = GetComponent<Button>();
+        else
+        {
+            readyButton.SetActive (false);
+        }
 
         // 만약 이 버튼의 주인이 AI라면 바로 준비 상태로 전환하고 버튼 비활성화
         if (playerController != null &&
@@ -98,23 +101,15 @@ public class ReadyButton : MonoBehaviour
 
     private void OnReadyButtonClicked()
     {
-        // 네트워크 상 준비 처리를 위해 MultiplayGameManager의 함수를 호출합니다.
-        if (gameManager != null)
-        {
-            Debug.Log("Clicked");
-
-            // 모든 클라이언트에게 플레이어 준비 상태 전파 (RPC 호출)
-            gameManager.OnClickReadyButtonEventListener();
-
-            //// 만약 현재 플레이어가 마스터 클라이언트라면 게임 시작 함수도 호출
-            //if (PhotonNetwork.IsMasterClient)
-            //{
-            //    gameManager.OnClickStartGameEventListener();
-            //}
-        }
+        var hash = PhotonNetwork.LocalPlayer.CustomProperties;
+        hash["IsReady"] = true;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
 
         // 기존 ReadyButton 기능 수행 (UI 처리 등)
         readyBtn();
+
+        if (!PhotonNetwork.IsMasterClient) return;
+        gameManager.CheckAllPlayerReady();
     }
 
     public void readyBtn()
