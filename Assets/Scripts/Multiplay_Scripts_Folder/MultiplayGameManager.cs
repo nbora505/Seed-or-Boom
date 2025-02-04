@@ -17,7 +17,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     public GameObject leaderPlayer;
     public Text noticeturnText;
     public Text LogText;
-    private int currentTurnIndex = 0;
+    public int currentTurnIndex = 0;
 
     [Header("Game Settings")]
     public bool isGameReady = false;
