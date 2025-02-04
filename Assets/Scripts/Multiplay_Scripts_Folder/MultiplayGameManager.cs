@@ -389,6 +389,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     void RPC_IncreaseTurnIndex()
     {
+        Debug.LogError("&&&&&&&&&&&&RPC_IncreaseTurnIndex");
         currentTurnIndex++;
         // 다음 턴으로 진행
         if (PhotonNetwork.IsMasterClient)
@@ -402,8 +403,12 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     void RPC_ProcessTurn(int turnOrder)
     {
+        Debug.LogError("&&&&&&&&&&&&RPC_ProcessTurn");
+
         if (turnOrder >= playerList.Count)
         {
+            Debug.LogError("&&&&&&&&&&&&turnOrder");
+
             currentTurnIndex = 0;
             photonView.RPC("RPC_CheckTurnResult", RpcTarget.All);
             return;
@@ -426,6 +431,8 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     void RPC_CheckTurnResult()
     {
+        Debug.LogError("&&&&&&&&&&&&RPC_CheckTurnResult");
+
         if (!PhotonNetwork.IsMasterClient) return;
 
         for (int i = 0; i < playerList.Count; i++)
