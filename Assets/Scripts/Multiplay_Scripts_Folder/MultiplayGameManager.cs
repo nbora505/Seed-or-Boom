@@ -222,7 +222,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     public void  OnClickReadyButtonEventListener()
     {
         photonView.RPC("CheckPlayerReady", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber);
-        Destroy(this.gameObject);
+        //Destroy(this.gameObject);
     }
 
     public void OnClickStartGameEventListener()
@@ -241,7 +241,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         player.GetComponent<PlayerController>().isReady))
         {
             startBtn.SetActive(true);
-            startBtn.GetComponent<Button>().onClick.AddListener(OnClickStartGameEventListener);
+            //startBtn.GetComponent<Button>().onClick.AddListener(OnClickStartGameEventListener);
         }
     }
 
