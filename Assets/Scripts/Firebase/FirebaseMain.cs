@@ -419,7 +419,7 @@ public class FirebaseMain : MonoBehaviour
         DocumentReference docRef = db.Collection("users").Document(auth.CurrentUser.UserId);
         Dictionary<string, object> updateDic = new Dictionary<string, object>
         {
-            {"nickName", nick }
+            {"nick", nick }
         };
         //upadte new data to user's doc.
         docRef.UpdateAsync(updateDic).ContinueWithOnMainThread(task =>
