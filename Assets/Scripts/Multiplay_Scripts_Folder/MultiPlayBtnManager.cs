@@ -103,7 +103,7 @@ public class MultiPlayBtnManager : MonoBehaviourPunCallbacks
         if (expectedWin >= 0 && expectedWin <= 4)
         {
             multiplayGameManager.gameObject.GetPhotonView()
-                .RPC("SubmitWinCount", RpcTarget.All, playerid, expectedWin);
+                .RPC("RPC_SubmitWinCount", RpcTarget.All, playerid, expectedWin);
             logText.DOText("½Â¸®È½¼ö: " + expectedWin.ToString() + " Á¦Ãâ¿Ï·á", 1.2f);
             multiplayGameManager.selectedWin = 0;
         }
