@@ -87,6 +87,7 @@ MonoBehaviour:
   - RPC_UpdateLeaderPlayer
   - RPC_UpdateStartButtonUI
   - RPC_UpdateTurnWinner
+  - RPC_UpdatePlayerList
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

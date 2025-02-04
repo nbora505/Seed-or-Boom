@@ -228,6 +228,8 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     void RPC_SubmitWinCount(int playerIndex, int winCount)
     {
+        Debug.Log($"[SubmitWinCount] Player Index: {playerIndex}, Win Count: {winCount}, Leader Index: {leaderIndex}");
+
         if (predictedWinCnt == null || playerIndex < 0 || playerIndex >= predictedWinCnt.Length)
         {
             Debug.LogError($"RPC_SubmitWinCount: playerIndex {playerIndex} out of range. Array length: {predictedWinCnt?.Length}");
@@ -245,7 +247,12 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
         // 다음 플레이어의 승수 입력 순서를 진행 (현재 순서는 playerIndex 기준이 아닌 leader 기준의 순번)
         if (PhotonNetwork.IsMasterClient)
         {
-            int nextOrder = (playerIndex - leaderIndex + playerList.Count + 1) % playerList.Count;
+            int currentOrder = (playerIndex - leaderIndex + playerList.Count) % playerList.Count;
+
+            int nextOrder = currentOrder + 1;
+
+            Debug.Log($"Current Order: {currentOrder}, Next Order: {nextOrder}");
+
 
             // 다음 순서는 현재 playerIndex + 1를 의미 (leader 기준 순서 계산)
             photonView.RPC("RPC_ProcessDecideWinCount", RpcTarget.AllBuffered, nextOrder);
@@ -256,6 +263,8 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     void RPC_ProcessDecideWinCount(int nextPlayerOrder)
     {
+        Debug.Log($"[ProcessDecideWinCount] nextPlayerOrder: {nextPlayerOrder}, playerList.Count: {playerList.Count}, leaderIndex: {leaderIndex}");
+
         if (nextPlayerOrder >= playerList.Count)
         {
             winCountSelectionComplete = true;
@@ -264,6 +273,10 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
         // leaderIndex를 기준으로 실제 플레이어 리스트 내 0 기반 인덱스 계산
         int playerIndex = (leaderIndex + nextPlayerOrder) % playerList.Count;
         GameObject currentPlayer = playerList[playerIndex];
+
+        Debug.Log($"[ProcessDecideWinCount] Processing player {playerIndex}: {currentPlayer.name}");
+        Debug.Log($"Current predictedWinCnt status: {string.Join(", ", predictedWinCnt)}");
+
         noticeturnText.text += $"{playerIndex + 1}번째: {currentPlayer.name}\n";
 
         PhotonView pv = currentPlayer.GetComponent<PhotonView>();
@@ -278,6 +291,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
             }
             else
             {
+                Debug.Log($"[ProcessDecideWinCount] Human Player {currentPlayer.name} waiting for input");
                 StartCoroutine(WaitForPlayerWinCountSubmit(playerIndex));
             }
         }
