@@ -254,7 +254,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     void RPC_ProcessDecideWinCount(int nextPlayerOrder)
     {
-        if (nextPlayerOrder >= playerList.Count)
+        if (nextPlayerOrder > playerList.Count)
         {
             winCountSelectionComplete = true;
             return;
