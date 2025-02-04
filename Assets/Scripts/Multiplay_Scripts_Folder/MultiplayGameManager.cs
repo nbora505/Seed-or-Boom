@@ -63,11 +63,6 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
-    public override void OnJoinedRoom()
-    {
-        UpdatePlayerList();
-    }
-
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         UpdatePlayerList();
