@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using Photon.Pun;
 using Photon.Realtime;
+using ExitGames.Client.Photon;
 
 
 public class MultiplayGameManager : MonoBehaviourPunCallbacks
@@ -109,13 +110,14 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         Debug.LogWarning($"현재 방장은 {newMasterClient}입니다.");
     }
 
-    public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
-    {
-        if (!PhotonNetwork.IsMasterClient) return;
-        if (!changedProps.ContainsKey("IsReady")) return;
+    //public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+    //{
+    //    if (!PhotonNetwork.IsMasterClient) return;
+    //    if (!changedProps.ContainsKey("IsReady")) return;
 
-        CheckAllPlayerReady();
-    }
+    //    CheckAllPlayerReady();
+    //} 버전이 낮아서 불가능.
+
     #endregion
     //public IEnumerator WaitForPlayerListAndSpawn(int actorNumberID)
     //{
