@@ -237,32 +237,35 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
         if (PhotonNetwork.IsMasterClient)
         {
             cardManager.DoCardShuffle();
-            // 카드 분배 결과를 저장할 리스트
-            List<List<int>> allPlayerCards = new List<List<int>>();
+            // 1차원 배열로 변환하여 전송
+            List<int> allCards = new List<int>();
 
             // 각 플레이어별로 카드 4장씩 분배
             for (int i = 0; i < playerList.Count; i++)
             {
-                List<int> playerCards = new List<int>();
                 for (int j = 0; j < 4; j++)
                 {
-                    playerCards.Add(cardManager.GiveACardToUsers());
+                    allCards.Add(cardManager.GiveACardToUsers());
                 }
-                allPlayerCards.Add(playerCards);
             }
 
             // 분배된 카드 정보를 모든 클라이언트에게 전송
-            photonView.RPC("RPC_SyncDistributedCards", RpcTarget.All, allPlayerCards.ToArray());
+            photonView.RPC("RPC_SyncDistributedCards", RpcTarget.All, allCards.ToArray());
         }
     }
 
     [PunRPC]
-    void RPC_SyncDistributedCards(List<int>[] allCards)
+    void RPC_SyncDistributedCards(int[] allCards)
     {
         for (int i = 0; i < playerList.Count; i++)
         {
             PlayerController controller = playerList[i].GetComponent<PlayerController>();
-            controller.cardList = new List<int>(allCards[i]);
+            controller.cardList = new List<int>();
+            // 각 플레이어당 4장의 카드를 할당
+            for (int j = 0; j < 4; j++)
+            {
+                controller.cardList.Add(allCards[i * 4 + j]);
+            }
             controller.cardDeckObject.SetActive(true);
         }
     }
