@@ -6,7 +6,7 @@ using UnityEngine;
 public class CardManager : MonoBehaviour
 {
     public GameManager gameManager;
-
+    public MultiplayGameManager multiplayGameManager;
     // It can be changed. this vars inited for test
     public List<int> card = new List<int>();
     public List<int> cardset = new List<int>();
@@ -106,7 +106,7 @@ public class CardManager : MonoBehaviour
         return aCard;
     }
 
-    public void TestUserCard(int totalPlayers)
+    public void TestUserCard(int totalPlayers, bool isMulti)
     {
         // 이쪽 아래 포문이 유저 한명을 지목하는 코드라인.
         // 그렇다면, 만약에 플레이어가 3명 밖에 없다면?
@@ -114,18 +114,30 @@ public class CardManager : MonoBehaviour
         {
             Debug.Log($"Player{i}의 카드 패");
             //카드 덱 오브젝트 활성화시키기
-            gameManager.playerList[i].GetComponent<PlayerController>().cardDeckObject.SetActive(true);
-
-            // 이쪽 아래 포문이, 유저 한 명에게 카드를 주는 코드라인.
-            for (int j = 0; j < 4; j++)
+            if (isMulti)
             {
-                if (gameManager.playerList[i].GetComponent<PlayerController>().isAIPlayer || gameManager.playerList[i].GetComponent<AIPlayer>().isAIPlayer)
+                multiplayGameManager.playerList[i].GetComponent<PlayerController>().cardDeckObject.SetActive(true);
+
+                for (int j = 0; j < 4; j++)
                 {
-                    gameManager.playerList[i].GetComponent<AIPlayer>().cardList.Add(GiveACardToUsers());
+                    multiplayGameManager.playerList[i].GetComponent<PlayerController>().cardList.Add(GiveACardToUsers());
                 }
-                else
-                    gameManager.playerList[i].GetComponent<PlayerController>().cardList.Add(GiveACardToUsers());
             }
+            else
+            {
+                gameManager.playerList[i].GetComponent<PlayerController>().cardDeckObject.SetActive(true);
+                for (int j = 0; j < 4; j++)
+                {
+                    if (gameManager.playerList[i].GetComponent<PlayerController>().isAIPlayer || gameManager.playerList[i].GetComponent<AIPlayer>().isAIPlayer)
+                    {
+                        gameManager.playerList[i].GetComponent<AIPlayer>().cardList.Add(GiveACardToUsers());
+                    }
+                    else
+                        gameManager.playerList[i].GetComponent<PlayerController>().cardList.Add(GiveACardToUsers());
+                }
+            }
+            // 이쪽 아래 포문이, 유저 한 명에게 카드를 주는 코드라인.
+
         }
         Debug.Log($"Remained Card :{card.Count}");
     }

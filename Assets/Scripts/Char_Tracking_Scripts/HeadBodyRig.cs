@@ -43,28 +43,32 @@ public class HeadBodyRig : MonoBehaviour
 
     void FixedUpdate()
     {
-        //transform.position = headConstraint.position + offset;
+        // 플레이어 위치 자동 이동을 막기 위해 주석 처리
+        // transform.position = headConstraint.position + offset;
 
-        //Vector3 projectionVector = headConstraint.up;
-        //switch (forwardAxis)
-        //{
-        //    case ForwardAxis.green:
-        //        projectionVector = headConstraint.up;
-        //        break;
-        //    case ForwardAxis.blue:
-        //        projectionVector = headConstraint.forward;
-        //        break;
-        //    case ForwardAxis.red:
-        //        projectionVector = headConstraint.right;
-        //        break;
-        //}
-        //transform.forward = Vector3.Lerp(transform.forward, Vector3.ProjectOnPlane(projectionVector, Vector3.up).normalized, Time.deltaTime * turnFactor);
+        // 자동 회전 기능도 비활성화
+        // Vector3 projectionVector = headConstraint.up;
+        // switch (forwardAxis)
+        // {
+        //     case ForwardAxis.green:
+        //         projectionVector = headConstraint.up;
+        //         break;
+        //     case ForwardAxis.blue:
+        //         projectionVector = headConstraint.forward;
+        //         break;
+        //     case ForwardAxis.red:
+        //         projectionVector = headConstraint.right;
+        //         break;
+        // }
+        // transform.forward = Vector3.Lerp(transform.forward, Vector3.ProjectOnPlane(projectionVector, Vector3.up).normalized, Time.deltaTime * turnFactor);
 
-        //Debug.Log(transform.position);
-        //transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+        // Debug.Log(transform.position);
+        // transform.position = new Vector3(transform.position.x, 0, transform.position.z);
 
+        // VR 헤드와 손의 위치 매핑은 유지 (VR 기기 사용 시 필요)
         head.Map();
         rightHand.Map();
         leftHand.Map();
     }
+
 }

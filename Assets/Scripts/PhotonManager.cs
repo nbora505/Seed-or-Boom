@@ -216,12 +216,15 @@ public class PhotonManager : MonoBehaviourPunCallbacks
                                     : 1;
         Debug.Log($"플레이어 {actorNumber}의 캐릭터 인덱스: {characterSelectIndex}");
 
+        Transform spawnPoint = spawnPoints[(actorNumber - 1) % spawnPoints.Length];
         // 프리팹 선택 및 스폰 위치 계산
         GameObject selectedCharacter = characterPrefabs[characterSelectIndex];
         GameObject spawnedPlayer = PhotonNetwork.Instantiate(
             selectedCharacter.name,
-            spawnPoints[(actorNumber - 1) % spawnPoints.Length].position,
-            Quaternion.identity);
+            spawnPoint.position,
+            spawnPoint.rotation);
+
+        
 
         // 생성된 플레이어 오브젝트의 PhotonView ID를 획득
         int viewID = spawnedPlayer.GetComponent<PhotonView>().ViewID;
@@ -241,15 +244,30 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         {
             masterManager.playerList.Add(spawnedPlayer);
             Debug.Log($"Master added spawned player for actor {actorNumber}");
+            // PlayerController 연결
+            PlayerController playerController = spawnedPlayer.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                if (multiplayGameManager == null)
+                {
+                    multiplayGameManager = FindObjectOfType<MultiplayGameManager>();
+                }
+                playerController.multiplayGameManager = multiplayGameManager;
+            }
         }
     }
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        if (!gameObject.activeInHierarchy)
+        {
+            gameObject.SetActive(true);
+        }
+
         if (scene.name == "Map1")
         {
             var multiplayGameManager = GameObject.Find("MultiplayGameManager").GetComponent<MultiplayGameManager>();
             spawnPoints = multiplayGameManager.spawnPoints;
-
+            multiplayGameManager.UpdatePlayerList();
             // 모든 클라이언트가 자신의 캐릭터를 로컬에서 생성하도록 함.
             StartCoroutine(SpawnLocalPlayerWithDelay());
         }

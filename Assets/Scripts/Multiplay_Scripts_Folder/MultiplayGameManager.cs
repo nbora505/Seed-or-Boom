@@ -1,309 +1,214 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using Photon.Pun;
 using Photon.Realtime;
 
-
-public class MultiplayGameManager : MonoBehaviourPunCallbacks
+public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
 {
+    [Header("Game Objects & UI")]
     public List<GameObject> playerList;
     public List<GameObject> deadList;
     public GameObject startBtn;
     public GameObject leaderPlayer;
-
     public Text noticeturnText;
     public Text LogText;
 
+    [Header("Game Settings")]
     public bool isGameReady = false;
-
     public int maxPlayerCnt = 4;
     public int curRound = 1;
     public int maxRound = 3;
     public int curTurn;
     public int maxCardCnt = 5;
+    public int leaderIndex = 0; // í˜„ì¬ ë¦¬ë” í”Œë ˆì´ì–´ì˜ ì¸ë±ìŠ¤
 
-    public int leaderIndex = 0;  // ÇöÀç ¸®´õ ÇÃ·¹ÀÌ¾îÀÇ ÀÎµ¦½º
-
+    [Header("Game State Variables")]
     public int selectedBomb = -1;
     public int selectedWin = -1;
     public int checkSubmitCard = -1;
     public int selectedCard = 0;
-    public List<int> submitCardList; //Á¦ÃâµÈ Ä«µå¸®½ºÆ®
-    public int[] predictedWinCnt; //°¢°¢ÀÇ ¶ó¿îµå¸¶´Ù ÇÃ·¹ÀÌ¾îµéÀÌ ¿¹ÃøÇÑ ½Â¸® È½¼ö
-    public int[] winCntOfEachTurn; //°¢°¢ÀÇ ÅÏ¸¶´Ù ÇÃ·¹ÀÌ¾îµéÀÌ ±â·ÏÇÑ ½Â¸® È½¼ö
+    public List<int> submitCardList = new List<int>(); // ì œì¶œëœ ì¹´ë“œ ë¦¬ìŠ¤íŠ¸
 
+    // ë™ê¸°í™”í•  ë°°ì—´ë“¤
+    public int[] predictedWinCnt;  // í”Œë ˆì´ì–´ë³„ ì˜ˆìƒ ìŠ¹ìˆ˜
+    public int[] winCntOfEachTurn; // í„´ë³„ ìŠ¹ë¦¬ íšŸìˆ˜ ê¸°ë¡
+
+    [Header("Managers")]
     public CardManager cardManager;
     public ScoreManager scoreManager;
-    public ButtonManager buttonManager;
+    public MultiPlayBtnManager buttonManager;
     public CameraManager cameraManager;
     public FirebaseManager firebaseManager;
-    
+
     [Tooltip("Character's Prefabs")]
     public GameObject[] characterPrefabs;
-
-    [Tooltip("Empty Gameobj of SpawnPoints")]
+    [Tooltip("Spawn Points")]
     public Transform[] spawnPoints;
 
-    
-    #region UnityCallBacks
+    // ìŠ¹ìˆ˜ ì„ íƒ ë‹¨ê³„ê°€ ëª¨ë‘ ëë‚¬ëŠ”ì§€ í™•ì¸í•˜ê¸° ìœ„í•œ í”Œë˜ê·¸ (ë™ê¸°í™” ëŒ€ìƒ)
+    public bool winCountSelectionComplete = false;
+
     private void Awake()
     {
-        PhotonNetwork.AutomaticallySyncScene = false; // ¹æ ÅÍÁü ¹æÁö
-        
+        PhotonNetwork.AutomaticallySyncScene = false; // ë°© ë™ê¸°í™” ë¬¸ì œ ë°©ì§€
     }
-    
+
+    public void UpdatePlayerList()
+    {
+        // "Player" íƒœê·¸ê°€ ë¶™ì€ ëª¨ë“  ì˜¤ë¸Œì íŠ¸ë¥¼ ì°¾ì•„ì„œ ActorNumber ê¸°ì¤€ìœ¼ë¡œ ì •ë ¬ í›„ ë¦¬ìŠ¤íŠ¸ë¡œ ì €ì¥í•©ë‹ˆë‹¤.
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        playerList = new List<GameObject>(players.OrderBy(p => p.GetComponent<PhotonView>().Owner.ActorNumber));
+        Debug.Log($"UpdatePlayerList: playerList Count = {playerList.Count}");
+    }
+    #region IPunObservable êµ¬í˜„
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        // MasterClientê°€ ì“°ê³ , ë‚˜ë¨¸ì§€ëŠ” ì½ìŠµë‹ˆë‹¤.
+        if (stream.IsWriting)
+        {
+            stream.SendNext(winCountSelectionComplete);
+            stream.SendNext(predictedWinCnt);
+            stream.SendNext(winCntOfEachTurn);
+        }
+        else
+        {
+            winCountSelectionComplete = (bool)stream.ReceiveNext();
+            predictedWinCnt = (int[])stream.ReceiveNext();
+            winCntOfEachTurn = (int[])stream.ReceiveNext();
+        }
+    }
     #endregion
 
+    #region Photon Callbacks
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("DisconnectedUserDeadAnimation", RpcTarget.All, otherPlayer.ActorNumber);
+            LogText.text = $"í”Œë ˆì´ì–´ {otherPlayer.NickName}ê°€ ë°©ì„ ë– ë‚¬ìŠµë‹ˆë‹¤.";
+        }
+    }
+
+    public override void OnMasterClientSwitched(Player newMasterClient)
+    {
+        LogText.text = $"í˜„ì¬ ë°©ì¥ì€ {newMasterClient.NickName}ì…ë‹ˆë‹¤.";
+    }
+    #endregion
+
+    #region RPC Methods
     [PunRPC]
     void DisconnectedUserDeadAnimation(int playerID)
     {
-        playerList[playerID - 1].GetComponent<Animator>().Play("Death");
-        photonView.RPC("RemoveDisconnectUserFromListRPC", RpcTarget.All, playerID);
+        GameObject player = playerList.Find(p => p.GetComponent<PhotonView>().Owner.ActorNumber == playerID);
+        if (player != null)
+            player.GetComponent<Animator>().Play("Death");
+        photonView.RPC("RemoveDisconnectUserFromList", RpcTarget.All, playerID);
     }
 
     [PunRPC]
     void RemoveDisconnectUserFromList(int playerID)
     {
-        Invoke("nun", 2f);
-        playerList.Remove(playerList[playerID - 1]);
+        GameObject player = playerList.Find(p => p.GetComponent<PhotonView>().Owner.ActorNumber == playerID);
+        if (player != null)
+            playerList.Remove(player);
     }
-    void nun()
-    {
-        
-    }
-    #region PunCallBacksLines
-    //public override void OnJoinedRoom()
-    //{
-    //    if (PhotonNetwork.IsMasterClient)
-    //    {
-    //        photonView.RPC("SpwanPlayer", RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber);
-    //    }
-    //}
-
-    public override void OnPlayerLeftRoom(Player otherPlayer)
-    {
-        //deadList.Add(playerList[otherPlayer.ActorNumber - 1]);
-        if (PhotonNetwork.IsMasterClient)
-        {
-            photonView.RPC("DisconnectedUserDeadAnimation", RpcTarget.All, otherPlayer.ActorNumber);
-            //playerList.Remove(playerList[otherPlayer.ActorNumber - 1]); // dead anim 1.4f
-            LogText.text = $"ÇöÀç ÇÃ·¹ÀÌ¾î {otherPlayer}°¡ ¹æÀ» ¶°³µ½À´Ï´Ù.";
-        }
-    }
-
-    public override void OnDisconnected(DisconnectCause cause)
-    {
-        Debug.LogWarning($"Å©·¡½¬ »çÀ¯ {cause}ÀÔ´Ï´Ù.");
-    }
-
-    // AutomaticallySyncScene false·Î ¼³Á¤ÇØ¼­ ¹æ ¾È ÅÍÁü.
-    public override void OnMasterClientSwitched(Player newMasterClient)
-    {
-        LogText.text = $"ÇöÀç ¹æÀåÀº {newMasterClient}ÀÔ´Ï´Ù.";
-
-        Debug.LogWarning($"ÇöÀç ¹æÀåÀº {newMasterClient}ÀÔ´Ï´Ù.");
-    }
-    #endregion
-    //public IEnumerator WaitForPlayerListAndSpawn(int actorNumberID)
-    //{
-    //    Debug.Log("ÇÃ·¹ÀÌ¾î ¸®½ºÆ® µ¿±âÈ­ ´ë±â Áß...");
-    //    yield return new WaitUntil(() => PhotonNetwork.PlayerList.Length > 0);
-
-    //    Debug.Log($"ÇöÀç ÇÃ·¹ÀÌ¾î ¸®½ºÆ® ¼ö: {PhotonNetwork.PlayerList.Length}");
-
-    //    SpwanPlayer(actorNumberID-1);
-        
-    //}
-    #region PunRPCLines
-
-    //[PunRPC]
-    //void SpwanPlayer(int actorNumberID)
-    //{
-    //    Photon.Realtime.Player newPlayer = PhotonNetwork.PlayerList.FirstOrDefault(
-    //        player => player.ActorNumber == actorNumberID);
-
-    //    if (newPlayer == null) return;
-
-
-    //    int characterSelectIndex = (int)newPlayer.CustomProperties["CharacterIndex"];
-
-
-
-    //    GameObject selectedCharacter = characterPrefabs[characterSelectIndex];
-    //    GameObject player = PhotonNetwork.Instantiate(selectedCharacter.name,
-    //        spawnPoints[(actorNumberID - 1) % spawnPoints.Length].position,
-    //        Quaternion.identity);
-
-    //    playerList.Add(player);
-    //}
 
     [PunRPC]
     public void CheckPlayerReady(int playerID)
     {
-        //playerList[playerID].GetComponent<PlayerController>().isReady = true;
+        GameObject player = playerList.Find(p => p.GetComponent<PhotonView>().Owner.ActorNumber == playerID);
+        if (player != null)
+            player.GetComponent<PlayerController>().isReady = true;
 
-        //if(PhotonNetwork.IsMasterClient)
-        //    CheckAllPlayerReady();
-        ////if(playerList.All(player => player.GetComponent<PlayerController>().isReady))
-        ////{
-        ////    photonView.RPC("StartGame", RpcTarget.All);
-        ////}
-        ///
-       
-        GameObject player = playerList.Find(player => player.GetComponent<PhotonView>().Owner.ActorNumber == playerID);
-
-        if(player != null) player.GetComponent<PlayerController>().isReady = true;
-
-        if (PhotonNetwork.IsMasterClient) CheckAllPlayerReady();
-    }
-    #endregion
-
-
-    /*
-             ***|Operating structure|********************************************************************************
-             *  % |At its core, it's an event system and doesn't require Start() or Update().| %                    *
-             *                                                                                                      *
-             *  *Joined Room                                                                                        *
-             *      OnJoinedRoom() -> SpawnPlayer(RPC)                                                              *
-             *  ->                                                                                                  *
-             *  *Press Ready Button                                                                                 *
-             *      OnClickReadyButtonEventListener() -> CheckPlayerReady(RPC) -> CheckAllPlayerReady()             *
-             *          -> startBtn Activate                                                                        *
-             *  ->                                                                                                  *
-             *  *Press Start Button                                                                                 *
-             *      OnClickStartGameEventListener() -> StartGame(RPC) -> StartRoundCoroutine() -> StartRound(RPC)   *
-             *          -> ResetList(RPC) -> DistributeCards(RPC)                                                   *
-             *  ->                                                                                                  *
-             *  *Decide Win Count                                                                                   *
-             *      StartDecideWinCount(RPC) -> ProcessDecideWinCount(RPC)                                          *
-             *          -> if (player is AI): straight SubmitWinCount(RPC)                                          *
-             *          -> if (player is non AI): WaitForPlayerWinCountSubmit() -> SubmitWinCount(RPC)              *
-             *  ->                                                                                                  *
-             *  *Circle Turn 4 time                                                                                 *
-             *      StartTurn() -> ProcessTurn(PRC) -> SubmitCard(Coroutine)                                        *
-             *          if (All Player submit card) CheckTurnResult(RPC) -> UpdateTurnWinner(RPC)                   *
-             *          -> StartNextTurn()                                                                          *
-             *  ->                                                                                                  *
-             *  *Round End                                                                                          *
-             *      StartRoundEnd(RPC) -> ProcessRoundEnd() -> CheckPlayerResuit()                                  *
-             *          if (Failed expect winning count) ProcessAIBombPenalty() OR ProcessPlayerBombPenalty()       *
-             *          -> PrepareNextRound(RPC)                                                                    *
-             *  ->                                                                                                  *
-             *  *Game End check                                                                                     *
-             *      if(player count is 1 OR current turn bigger then max round) EndGame(RPC)                        *
-             *      else Turn back StartRound(RPC)                                                                  *
-             *                                                                                                      *
-             ********************************************************************************************************
-     */
-
-
-    /*
-        rest operating list
-
-        1. switch masterclient => alert <- Done
-        2. if player disconnected, that player dead. <- Done
-        3. Show Player Nickname <- yet
-        4. Send Winning or losing data to databass table <- yet need other contributes's step 
-     
-     */
-    #region MultiPlayFuncLines
-    /// <summary>
-    /// A button function used in multiplayer. 
-    /// This function should be called instead of the existing isPlayer function that sets the Ready button to true when pressed, 
-    /// and when called, calls the CheckPlayerReady function, which sends an RPC to each player's Ready status.
-    /// </summary>
-
-    #region ButtonFuncLines
-    public void  OnClickReadyButtonEventListener()
-    {
-        photonView.RPC("CheckPlayerReady", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber);
-    }
-
-    public void OnClickStartGameEventListener()
-    {
         if (PhotonNetwork.IsMasterClient)
-        { 
-            photonView.RPC("StartGame", RpcTarget.All);
-            isGameReady = true;
-        }
-    }
-    #endregion
-
-    void CheckAllPlayerReady()
-    {
-        if (playerList.All(player => 
-        player.GetComponent<PlayerController>().isReady))
-            startBtn.SetActive(true);
+            CheckAllPlayerReady();
     }
 
-    #region GameStartWithRoundProgress
     [PunRPC]
-    void StartGame()
+    public void StartGame()
     {
         startBtn.SetActive(false);
-        Debug.LogWarning("Start*****************************");
-
+        LogText.text = "ê²Œì„ ì‹œì‘!";
         if (PhotonNetwork.IsMasterClient)
             StartCoroutine(StartRoundCoroutine());
-        //Invoke(nameof(StartRound), 3f);
     }
-    
+
     [PunRPC]
     void UpdateLeaderPlayer(int newLeaderIndex)
     {
         leaderIndex = newLeaderIndex;
-        // playerList´Â ¸ğµç Å¬¶óÀÌ¾ğÆ®¿¡¼­ µ¿ÀÏÇÑ ¼ø¼­·Î À¯ÁöµÈ´Ù°í °¡Á¤ÇÕ´Ï´Ù.
         leaderPlayer = playerList[newLeaderIndex];
-        // ÇÊ¿äÇÏ´Ù¸é UI µî¿¡¼­ ¸®´õ ÇÃ·¹ÀÌ¾î¸¦ Ç¥½ÃÇÏ´Â Ãß°¡ ·ÎÁ÷À» ³Ö½À´Ï´Ù.
     }
 
     [PunRPC]
-    void StartRound()
+    void ResetLists()
     {
-        if (!PhotonNetwork.IsMasterClient) return;
-
-        Debug.Log($"*********************{curRound} - Round Start");
-
-        if (PhotonNetwork.IsMasterClient)
+        predictedWinCnt = new int[playerList.Count];
+        winCntOfEachTurn = new int[playerList.Count];
+        winCountSelectionComplete = false;
+        cardManager.ResetCardSet();
+        foreach (var player in playerList)
         {
-            photonView.RPC("ResetLists", RpcTarget.All);
-            photonView.RPC("DistributeCards", RpcTarget.All);
-            photonView.RPC("StartDecideWinCount", RpcTarget.All);
-            StartCoroutine(StartTurnCoroutine());
+            player.GetComponent<PlayerController>().cardList.Clear();
         }
     }
 
+    // ì¹´ë“œ ë¶„ë°°ëŠ” ìŠ¹ìˆ˜ ì„ íƒì´ ì™„ë£Œëœ í›„ ì§„í–‰
     [PunRPC]
-    void StartDecideWinCount()
+    void DistributeCards()
     {
-        if(!PhotonNetwork.IsMasterClient) return;
-
-        Debug.Log("***************Win Decide");
-        photonView.RPC("ProcessDecideWinCount",RpcTarget.All, 0);
+        cardManager.DoCardShuffle();
+        cardManager.TestUserCard(playerList.Count, true);
     }
 
     [PunRPC]
+    void SubmitWinCount(int playerID, int winCount)
+    {
+        if (predictedWinCnt == null || playerID < 0 || playerID >= predictedWinCnt.Length)
+        {
+            Debug.LogError($"SubmitWinCount: playerID {playerID} out of range. Array length: {predictedWinCnt?.Length}");
+            return;
+        }
+
+        predictedWinCnt[playerID] = winCount;
+
+        if (playerID < 0 || playerID >= playerList.Count)
+        {
+            Debug.LogError($"SubmitWinCount: playerID {playerID} out of range in playerList. Count: {playerList.Count}");
+            return;
+        }
+
+        LogText.text = $"{playerList[playerID].name} ìŠ¹ìˆ˜: {winCount}";
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("ProcessDecideWinCount", RpcTarget.AllBuffered, playerID + 1);
+        }
+    }
+
+    // ìŠ¹ìˆ˜ ì„ íƒ í”„ë¡œì„¸ìŠ¤ â€“ ëª¨ë“  í”Œë ˆì´ì–´ê°€ ì°¨ë¡€ëŒ€ë¡œ ì§„í–‰
+    [PunRPC]
     void ProcessDecideWinCount(int playerID)
     {
+        if (playerID >= playerList.Count)
+        {
+            winCountSelectionComplete = true;
+            return;
+        }
         int actualPlayerIndex = (leaderIndex + playerID) % playerList.Count;
         GameObject currentPlayer = playerList[actualPlayerIndex];
-        Debug.Log($"{actualPlayerIndex + 1}¹øÂ° ¼ø¼­ÀÇ ÇÃ·¹ÀÌ¾î: {currentPlayer.name}");
+        noticeturnText.text += $"{actualPlayerIndex + 1}ë²ˆì§¸: {currentPlayer.name}\n";
 
-        string playerName = playerList[actualPlayerIndex].name;
-        Debug.LogWarning($"{actualPlayerIndex + 1}¹ø Â° ¼ø¼­ {playerName}ÀÔ´Ï´Ù.");
-        noticeturnText.text += $"{actualPlayerIndex + 1}¹ø Â° ¼ø¼­ : {playerName}\n";
-
-        if (playerList[actualPlayerIndex].GetComponent<PhotonView>().IsMine)
+        if (currentPlayer.GetComponent<PhotonView>().IsMine)
         {
-            if (playerList[actualPlayerIndex].GetComponent<AIPlayer>().isAIPlayer)
+            if (currentPlayer.GetComponent<AIPlayer>().isAIPlayer)
             {
-                int aiWinCount = playerList[actualPlayerIndex].GetComponent<AIPlayer>().CalculateOddsOfWinning(0.69f, 0.29f);
-                photonView.RPC("SubmitWinCount", RpcTarget.All, actualPlayerIndex, aiWinCount);
+                int aiWin = currentPlayer.GetComponent<AIPlayer>().CalculateOddsOfWinning(0.69f, 0.29f);
+                photonView.RPC("SubmitWinCount", RpcTarget.All, actualPlayerIndex, aiWin);
             }
             else
             {
@@ -312,117 +217,24 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         }
     }
 
-    IEnumerator WaitForPlayerWinCountSubmit(int playerID)
-    {
-        LogText.text = "";
-        LogText.DOText($"{playerList[playerID].name}´ÔÀÌ ½Â¼ö¸¦ ¼±ÅÃÇÒ Â÷·ÊÀÔ´Ï´Ù.", 1);
-        buttonManager.showWinBtn();
-        buttonManager.ShowPlayerPanel(true);
-
-        yield return new WaitUntil(() => selectedWin == 0);
-
-        photonView.RPC("SubmitWinCount", RpcTarget.All, playerID, predictedWinCnt[playerID]);
-
-        buttonManager.ShowPlayerPanel(false);
-        buttonManager.hideWinBtn();
-
-        selectedWin = -1;
-    }
-
-    [PunRPC]
-    void SubmitWinCount(int playerID, int winCount)
-    {
-        predictedWinCnt[playerID] = winCount;
-        Debug.Log($"{playerList[playerID].name}ÀÇ ½Â¼ö ¼±¾ğ : {winCount}½Â");
-
-        if (PhotonNetwork.IsMasterClient)
-        {
-            photonView.RPC("ProcessDecideWinCount", RpcTarget.All, playerID + 1);
-        }
-    }
-
-    [PunRPC]
-    void ResetLists()
-    {
-        predictedWinCnt = new int[playerList.Count];
-        winCntOfEachTurn = new int[playerList.Count];
-
-        cardManager.GetComponent<CardManager>().ResetCardSet();
-        for (int i = 0; i < playerList.Count; i++)
-        {
-            playerList[i].GetComponent<PlayerController>().cardList.Clear();
-        }
-    }
-    [PunRPC]
-    void DistributeCards()
-    {
-        cardManager.DoCardShuffle();
-        cardManager.TestUserCard(playerList.Count);
-    }
-    void StartTurn()
-    {
-        if(!PhotonNetwork.IsMasterClient) return;
-
-        Debug.LogWarning("*******************turn Start");
-        photonView.RPC("ProcessTurn", RpcTarget.All, 0);
-    }
-
+    // í„´ ì§„í–‰ (ì¹´ë“œ ë¶„ë°° í›„ ì‹œì‘)
     [PunRPC]
     void ProcessTurn(int playerID)
     {
-        if(playerID >= playerList.Count)
+        if (playerID >= playerList.Count)
         {
-            if(PhotonNetwork.IsMasterClient)
-                photonView.RPC("CheckTurnResult", RpcTarget.All);
+            photonView.RPC("CheckTurnResult", RpcTarget.All);
             return;
         }
-
-        Debug.Log($"{playerList[playerID]}'s turn");
-
         if (playerList[playerID].GetComponent<PhotonView>().IsMine)
         {
             if (playerList[playerID].GetComponent<AIPlayer>().isAIPlayer)
-            {
-                StartCoroutine(SubmitCard(playerID));
-            }
-            else
-            {
-                StartCoroutine(SubmitCard(playerID));
-            }
-        }
-    }
-
-    [PunRPC]
-    IEnumerator SubmitCard(int playerID)
-    {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            if (playerList[playerID].GetComponent<PlayerController>().isAIPlayer || playerList[playerID].GetComponent<AIPlayer>().isAIPlayer)
             {
                 StartCoroutine(playerList[playerID].GetComponent<AIPlayer>().AITurn());
             }
             else
             {
-                // ÇöÀç ÇÃ·¹ÀÌ¾îÀÇ Ä«µå ¸®½ºÆ® °¡Á®¿À±â
-                List<int> curCardList = playerList[playerID].GetComponent<PlayerController>().cardList;
-                string playerName = playerList[playerID].name;
-
-
-                // ÇöÀç ÇÃ·¹ÀÌ¾îÀÇ Ä«µå¸¸ Ç¥½Ã
-                LogText.text = "";
-                LogText.text = playerName + " Ä«µå ¼±ÅÃ ÇÏ¼¼¿ä";
-                buttonManager.ShowCard(curCardList);
-
-                //// ÇÃ·¹ÀÌ¾î°¡ Ä«µå¸¦ Á¦ÃâÇÒ ¶§±îÁö ´ë±â
-                yield return new WaitUntil(() => checkSubmitCard == 0);
-
-                checkSubmitCard = -1;
-            }
-
-            //// ÅÏ ÀÌµ¿
-            if(PhotonNetwork.IsMasterClient &&  submitCardList.Count >= playerList.Count)
-            {
-                photonView.RPC("ProcessTurn", RpcTarget.All, playerID + 1);
+                photonView.RPC("ShowCardUI", RpcTarget.All, playerID);
             }
         }
     }
@@ -432,14 +244,10 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     {
         if (!PhotonNetwork.IsMasterClient) return;
 
-        Debug.Log("************* Find Winner");
-
         for (int i = 0; i < playerList.Count; i++)
         {
-            bool checker = cardManager.CardCompare(submitCardList, i);
-            string playerName = playerList[i].name;
-
-            if (checker)
+            bool isWinner = cardManager.CardCompare(submitCardList, i);
+            if (isWinner)
             {
                 photonView.RPC("UpdateTurnWinner", RpcTarget.All, i);
             }
@@ -451,16 +259,123 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     void UpdateTurnWinner(int winnerID)
     {
         winCntOfEachTurn[winnerID]++;
-        string playerName = playerList[winnerID].name;
+        LogText.text = $"{playerList[winnerID].name} í„´ ìŠ¹ë¦¬!";
+    }
 
-        Debug.Log($"ÀÌ¹ø ÅÏÀÇ ½ÂÀÚ´Â {playerName}! (ÇöÀç {winCntOfEachTurn[winnerID]}½Â");
-        LogText.text = "";
-        LogText.DOText($"ÀÌ¹ø ÅÏÀÇ ½ÂÀÚ´Â : {playerName}! (ÇöÀç{winCntOfEachTurn[winnerID]}½Â", 1f);
+    [PunRPC]
+    void StartRoundEnd()
+    {
+        if (PhotonNetwork.IsMasterClient)
+            StartCoroutine(ProcessRoundEnd());
+    }
+
+    [PunRPC]
+    void PrepareNextRound()
+    {
+        RemovePlayerList();
+        noticeturnText.text = "";
+        curRound++;
+
+        if (playerList.Count <= 1 || curRound > maxRound)
+        {
+            photonView.RPC("EndGame", RpcTarget.All);
+        }
+        else
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                leaderIndex = (leaderIndex + 1) % playerList.Count;
+                photonView.RPC("UpdateLeaderPlayer", RpcTarget.All, leaderIndex);
+                StartCoroutine(StartRoundCoroutine());
+            }
+        }
+    }
+
+    [PunRPC]
+    void EndGame()
+    {
+        if (playerList.Count == 1)
+        {
+            LogText.text = $"ìµœí›„ì˜ ìŠ¹ì: {playerList[0].name}";
+            string winnerName = playerList[0].GetComponent<PhotonView>().Owner.NickName;
+            List<string> playerNames = playerList.Select(p => p.GetComponent<PhotonView>().Owner.NickName).ToList();
+            firebaseManager.SaveGameResult(winnerName, playerNames);
+            bool isWinner = (PhotonNetwork.LocalPlayer.NickName == winnerName);
+            firebaseManager.UpdateUserWin(isWinner);
+        }
+    }
+
+    // UIìš© RPC â€“ ê° í´ë¼ì´ì–¸íŠ¸ì—ì„œ ì¹´ë“œ ì œì¶œ UI í™œì„±í™”
+    [PunRPC]
+    void ShowCardUI(int playerID)
+    {
+        if (playerList[playerID].GetComponent<PhotonView>().IsMine)
+        {
+            List<int> curCardList = playerList[playerID].GetComponent<PlayerController>().cardList;
+            buttonManager.ShowCard(curCardList, playerID);
+        }
+    }
+
+    // RPCë¥¼ í†µí•´ ëª¨ë“  í´ë¼ì´ì–¸íŠ¸ì— ì‹œì‘ ë²„íŠ¼ í™œì„±í™” ì‹ í˜¸ ì „ë‹¬ (Buffered ì‚¬ìš©)
+    [PunRPC]
+    void UpdateStartButtonUI()
+    {
+        startBtn.SetActive(true);
+    }
+    #endregion
+
+    #region Helper Methods & Coroutines
+    void CheckAllPlayerReady()
+    {
+        if (playerList.All(p => p.GetComponent<PlayerController>().isReady))
+        {
+            startBtn.SetActive(true);
+            photonView.RPC("UpdateStartButtonUI", RpcTarget.AllBuffered);
+        }
+    }
+
+    // ìŠ¹ìˆ˜ ì„ íƒ í›„ ì¹´ë“œ ë¶„ë°° ë° í„´ ì§„í–‰ì„ ìœ„í•œ ì½”ë£¨í‹´
+    public IEnumerator StartRoundCoroutine()
+    {
+        yield return new WaitForSeconds(3f);
+        // ë²„í¼ë§ëœ RPCë¡œ ìƒíƒœ ì´ˆê¸°í™”
+        photonView.RPC("ResetLists", RpcTarget.AllBuffered);
+
+        // ìŠ¹ìˆ˜ ì„ íƒ ë‹¨ê³„ ì‹œì‘ (ë²„í¼ë§)
+        photonView.RPC("StartDecideWinCount", RpcTarget.AllBuffered);
+
+        yield return new WaitUntil(() => winCountSelectionComplete);
+
+        // ìŠ¹ìˆ˜ ì„ íƒ ì™„ë£Œ í›„ ì¹´ë“œ ë¶„ë°° ë° í„´ ì§„í–‰ (ë²„í¼ë§)
+        photonView.RPC("DistributeCards", RpcTarget.AllBuffered);
+        StartCoroutine(StartTurnCoroutine());
+    }
+
+    // ìŠ¹ìˆ˜ ì„ íƒ ì‹œì‘ RPC í˜¸ì¶œ â€“ MasterClientì—ì„œ ìˆœì°¨ ì§„í–‰
+    [PunRPC]
+    void StartDecideWinCount()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("ProcessDecideWinCount", RpcTarget.All, 0);
+        }
+    }
+
+    IEnumerator StartTurnCoroutine()
+    {
+        yield return new WaitForSeconds(2f);
+        StartTurn();
+    }
+
+    void StartTurn()
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+        photonView.RPC("ProcessTurn", RpcTarget.All, 0);
     }
 
     void StartNextTurn()
     {
-        if(submitCardList.Count >= playerList.Count * 4)
+        if (submitCardList.Count >= playerList.Count * 4)
         {
             photonView.RPC("StartRoundEnd", RpcTarget.All);
         }
@@ -471,143 +386,34 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         }
     }
 
-    [PunRPC]
-    void StartRoundEnd()
+    IEnumerator WaitForPlayerWinCountSubmit(int playerID)
     {
-        Debug.Log("*****************result round");
-        
-        if(PhotonNetwork.IsMasterClient)
-        {
-            StartCoroutine(ProcessRoundEnd());
-        }
-    }
+        LogText.text = $"{playerList[playerID].name} ìŠ¹ìˆ˜ ì„ íƒ ì¤‘...";
+        buttonManager.showWinBtn(playerID, playerList[playerID].GetComponent<PlayerController>().winBtn);
+        buttonManager.ShowPlayerPanel(true);
 
-    [PunRPC]
-    void PlayerDead(int playerID)
-    {
-        GameObject deadPlayer = playerList[playerID];
-        deadList.Add(deadPlayer);
-    }
-    
-    [PunRPC]
-    void PrepareNextRound()
-    {
-        RemovePlayerList();
-        noticeturnText.text = "";
-        curRound++;
+        yield return new WaitUntil(() => selectedWin == 0);
 
-        if(playerList.Count <= 1)
-        {
-            photonView.RPC("EndGame", RpcTarget.All);
-        }
-        else
-        {
-            if(curTurn > maxRound)
-            {
-                photonView.RPC("EndGame", RpcTarget.All);
-            }
-            else
-            {
-                if(PhotonNetwork.IsMasterClient)
-                {
-                    leaderIndex = (leaderIndex + 1) % playerList.Count;
-                    photonView.RPC("UpdateLeaderPlayer", RpcTarget.All, leaderIndex);
-                    StartCoroutine(StartRoundCoroutine());
-                }
-            }
-        }
+        photonView.RPC("SubmitWinCount", RpcTarget.All, playerID, predictedWinCnt[playerID]);
 
-
-    }
-
-    void RemovePlayerList()
-    {
-        for (int i = 0; i < deadList.Count; i++)
-        {
-            for (int j = 0; j < playerList.Count; j++)
-            {
-                if (playerList.Count <= maxPlayerCnt - deadList.Count)
-                {
-                    break;
-                }
-                else if (deadList[i] == playerList[j])
-                {
-                    playerList.Remove(playerList[j]);
-                }
-            }
-        }
-    }
-
-    bool CheckGameEnd()
-    {
-        return deadList.Count >= maxPlayerCnt - 1;
-    }
-
-    [PunRPC]
-    void EndGame()
-    {
-        if(playerList.Count == 1)
-        {
-            LogText.text = $"ÃÖÈÄÀÇ ½ÂÀÚ´Â {playerList[0].gameObject.name}";
-            string winnerName = playerList[0].GetComponent<PhotonView>().Owner.NickName;
-            // ¸ğµç Âü¿© ÇÃ·¹ÀÌ¾î ¸®½ºÆ® ¸¸µé±â
-            List<string> playerNames = new List<string>();
-            foreach (var player in playerList)
-            {
-                playerNames.Add(player.GetComponent<PhotonView>().Owner.NickName);
-            }
-
-            // Firebase¿¡ °ÔÀÓ °á°ú ÀúÀå
-            firebaseManager.SaveGameResult(winnerName, playerNames);
-
-            // ÇöÀç À¯Àú°¡ ½ÂÀÚÀÎÁö È®ÀÎÇÏ°í ½ÂÆĞ ¾÷µ¥ÀÌÆ®
-            string currentUserNick = PhotonNetwork.LocalPlayer.NickName;
-            bool isWinner = (currentUserNick == winnerName);
-            firebaseManager.UpdateUserWin(isWinner);
-        }
-    }
-    #endregion
-    #endregion
-
-    #region CoroutineLines
-    IEnumerator StartRoundCoroutine()
-    {
-        yield return new WaitForSeconds(3f);
-
-        photonView.RPC("StartRound", RpcTarget.All);
-    }
-
-    IEnumerator StartTurnCoroutine()
-    {
-        yield return new WaitForSeconds(2f);
-        StartTurn();
+        buttonManager.ShowPlayerPanel(false);
+        buttonManager.hideWinBtn(playerList[playerID].GetComponent<PlayerController>().winBtn);
+        selectedWin = -1;
     }
 
     IEnumerator ProcessRoundEnd()
     {
-        for(int i = 0; i< playerList.Count; i++) 
+        for (int i = 0; i < playerList.Count; i++)
         {
             yield return StartCoroutine(CheckPlayerResult(i));
-
-            if(CheckGameEnd())
+            if (CheckGameEnd())
             {
                 photonView.RPC("EndGame", RpcTarget.All);
                 yield break;
             }
         }
-
         yield return new WaitForSeconds(2f);
         photonView.RPC("PrepareNextRound", RpcTarget.All);
-    }
-    IEnumerator ProcessAIBombPenalty(int playerID)
-    {
-        yield return new WaitForSeconds(3f);
-        StartCoroutine(playerList[playerID].GetComponent<AIPlayer>().AIDrawBomb());
-    }
-
-    IEnumerator ProcessPlayerBombPenalty(int playerID)
-    {
-        yield return StartCoroutine(scoreManager.CheckBomb(playerList[playerID].GetComponent<PlayerController>()));
     }
 
     IEnumerator CheckPlayerResult(int playerID)
@@ -615,305 +421,25 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         if (predictedWinCnt[playerID] != winCntOfEachTurn[playerID])
         {
             if (playerList[playerID].GetComponent<AIPlayer>().isAIPlayer)
-            {
-                yield return StartCoroutine(ProcessAIBombPenalty(playerID));
-            }
+                yield return StartCoroutine(playerList[playerID].GetComponent<AIPlayer>().AIDrawBomb());
             else
-            {
-                yield return StartCoroutine(ProcessPlayerBombPenalty(playerID));
-            }
-        }
-        yield return new WaitForSeconds(1f);
-    }
-    #endregion
-/*
-    void Start()
-    {
-        //ÇÃ·¹ÀÌ¾î °´Ã¼µé ¸®½ºÆ®¿¡ Ãß°¡
-        GameObject[] tempPlayerList = GameObject.FindGameObjectsWithTag("Player");
-        for (int i = 0; i < maxPlayerCnt; i++)
-        {
-            playerList.Add(tempPlayerList[i]);
-        }
-
-        //¸®´õ ÇÃ·¹ÀÌ¾î(¸Ç Ã³À½ ½ÃÀÛÇÒ »ç¶÷) Á¤ÇÏ±â
-        curTurn = Random.Range(0, playerList.Count);
-        leaderPlayer = playerList[curTurn];
-
-        //ÁØºñ/½ÃÀÛ¹öÆ° ´ë±â
-        StartCoroutine(ReadyToStart());
-    }
-
-    //ÇÃ·¹ÀÌ¾îµéÀÌ ¸ğµÎ Ready »óÅÂÀÎÁö Ã¼Å©
-    IEnumerator ReadyToStart()
-    {
-        //ÇÃ·¹ÀÌ¾îµéÀÌ ÁØºñ¹öÆ°À» ´­·¶´ÂÁö È®ÀÎ. È®ÀÎ¸¸ ¼ø¼­´ë·Î ÇÏ´Â°ÅÁö ÁØºñ¹öÆ° ´©¸£´Â ´Ü°è°¡ ¼ø¼­´ë·Î ÁøÇàµÇ´Â °Ç ¾Æ´Ô!
-        for (int i = 0; i < playerList.Count; i++)
-        {
-            //AI ÇÃ·¹ÀÌ¾îÀÎ °æ¿ì¿¡´Â ±×³É ³Ñ¾î°¡°í...
-            if (playerList[i].GetComponent<PlayerController>().isAIPlayer || playerList[i].GetComponent<AIPlayer>().isAIPlayer) ;
-            //ÇÃ·¹ÀÌ¾îÀÎ °æ¿ì »óÅÂ°¡ isReady°¡ µÉ ¶§±îÁö ´ë±âÇÏ´Ù°¡ Ã¼Å©µÇ¸é ´ÙÀ½ ÇÃ·¹ÀÌ¾î·Î ³Ñ¾î°¡¼­ Ã¼Å©.
-            else
-            {
-                yield return new WaitUntil(() => playerList[i].GetComponent<PlayerController>().isReady);
-
-            }
-        }
-
-        //¸¶Áö¸· ÇÃ·¹ÀÌ¾î±îÁö ³Ñ¾î°¬À¸¸é °ÔÀÓ ½ÃÀÛ ¹öÆ° È°¼ºÈ­
-        startBtn.SetActive(true);
-
-        //°ÔÀÓ ½ÃÀÛ ¹öÆ° ´­¸± ¶§±îÁö ´ë±â
-        yield return new WaitUntil(() => isGameReady);
-
-        //¹öÆ°ÀÌ ´­¸®¸é °ÔÀÓ ½ÃÀÛ
-        startBtn.SetActive(false);
-        Debug.Log("::::::::: °ÔÀÓ ½ÃÀÛ!!! ::::::::");
-        yield return new WaitForSeconds(3f);
-        StartCoroutine(StartRound());
-    }
-
-    IEnumerator StartRound()
-    {
-        //¸®½ºÆ® ÃÊ±âÈ­
-        ResetLists();
-
-        Debug.Log("=========Round " + curRound + " =========");
-
-        //ÇÃ·¹ÀÌ¾îµé¿¡°Ô Ä«µå ³ª´²ÁÖ±â
-        cardManager.DoCardShuffle();
-        cardManager.TestUserCard(playerList.Count);
-
-        //½Â¼ö °áÁ¤¹Ş±â;
-        yield return StartCoroutine(DecideWinCnt());
-
-        //4¹øÀÇ ÅÏ ½ÃÀÛ
-        for (int i = 1; i <= 4; i++)
-        {
-            Debug.Log("=========Turn " + i + " =========");
-            //½Â¼ö ºñ±³ÇØ¼­ ½ÂÀÚ¸¦ °¡¸®´Â ÇÔ¼ö¿¡ ÇÊ¿äÇÑ 'Á¦Ãâ¹ŞÀº Ä«µå ¸®½ºÆ®'¸¦ ÅÏ¸¶´Ù ÃÊ±âÈ­
-            submitCardList.Clear();
-
-            //Ä«µå Á¦Ãâ¹Ş±â
-            Debug.Log("=========Ä«µå Á¦Ãâ ´Ü°è=========");
-            for (int j = 0; j < playerList.Count; j++)
-            {
-                yield return StartCoroutine(SubmitCard());
-            }
-
-            //Á¦ÃâÇÑ Ä«µå º¸°í ½ÂÀÚ °áÁ¤ÇÏ±â(Ä«µå¸Å´ÏÀú¿¡ µé¾î°¡ ÀÖ´Â ÇÔ¼ö È£Ãâ)
-            Debug.Log("=========ÀÌ¹ø ÅÏ ½ÂÀÚ °áÁ¤=========");
-            yield return StartCoroutine(CheckTurnResult());
-
-        }
-
-        //¶ó¿îµå°¡ ³¡³¯ ¶§¸¶´Ù ½Â¼ö ¸ÂÃè´ÂÁö ÆÇ´Ü, ¹úÄ¢ °áÁ¤
-        Debug.Log("=========ÀÌ¹ø ¶ó¿îµå °á°ú=========");
-        for (int i = 0; i < playerList.Count; i++)
-        {
-            //½Â¼ö ¸ÂÃè´ÂÁö ÆÇ´Ü
-            yield return StartCoroutine(CheckRoundResult());
-
-            //¹úÄ¢ ´Ü°è°¡ ³¡³¯ ¶§¸¶´Ù ÃÖÈÄÀÇ 1ÀÎÀÌ ³²¾Ò´ÂÁö È®ÀÎÇÏ±â
-            JudgeGameResult();
-
-            curTurn++;
-            if (curTurn >= playerList.Count) curTurn = 0;
-        }
-        yield return new WaitForSeconds(5f);
-
-        //¶ó¿îµå Á¾·á
-        //»ç¸Á ¸®½ºÆ®¿¡ ÀÖ´Â ÇÃ·¹ÀÌ¾î°¡ ÇÃ·¹ÀÌ¾î¸®½ºÆ®¿¡ ¾ÆÁ÷ ³²¾ÆÀÖÀ» °æ¿ì Áö¿öÁÖ±â
-        RemovePlayerList();
-        noticeturnText.text = "";
-        curRound++;
-
-        if (playerList.Count <= 1)
-        {
-            LogText.text = $"ÃÖÈÄÀÇ ½ÂÀÚ´Â {playerList[0].gameObject.name}";
-        }
-        else
-        {
-            if (curRound > maxRound)
-            {
-                Debug.Log("ÃÖ´ë ¶ó¿îµå ÃÊ°ú");
-            }
-            else
-            {
-                StartCoroutine(StartRound());
-            }
-        }
-    }
-
-    IEnumerator DecideWinCnt()
-    {
-        Debug.Log("=========½Â¼ö ¼±¾ğ ´Ü°è=========");
-
-        //¸®´õ ÇÃ·¹ÀÌ¾îºÎÅÍ Â÷·Ê·Î ½Â¼ö ¼±¾ğ
-        for (int i = 0; i < playerList.Count; i++)
-        {
-            string playerName = playerList[curTurn].name;
-            Debug.LogWarning(i + 1 + "¹øÂ° ¼ø¼­" + playerName + "ÀÔ´Ï´Ù.");
-            noticeturnText.text += (i + 1 + "¹øÂ° ¼ø¼­ " + playerName + "ÀÔ´Ï´Ù.\n");
-
-            //aiÀÏ °æ¿ì
-            if (playerList[curTurn].GetComponent<PlayerController>().isAIPlayer || playerList[curTurn].GetComponent<AIPlayer>().isAIPlayer)
-            {
-                playerList[curTurn].GetComponent<AIPlayer>().expectedWins = playerList[curTurn].GetComponent<AIPlayer>().CalculateOddsOfWinning(0.69f, 0.29f);
-                predictedWinCnt[curTurn] = playerList[curTurn].GetComponent<AIPlayer>().expectedWins;
-            }
-            else
-            {
-                //¿©±â¿¡¼­ ÇÃ·¹ÀÌ¾î ¸®½ºÆ®[ÇöÀç Â÷·Ê]ÀÇ ½Â¼ö ¼±¾ğ UI È°¼ºÈ­
-                yield return new WaitForSeconds(2f);
-                LogText.text = "";
-                LogText.DOText(playerName + " ½Â ¼ö ¼±ÅÃÇÏ¼¼¿ä", 1);
-                buttonManager.showWinBtn();
-                buttonManager.ShowPlayerPanel(true);
-                yield return new WaitUntil(() => selectedWin == 0);
-                buttonManager.ShowPlayerPanel(false);
-                buttonManager.hideWinBtn();
-                selectedWin = -1;
-            }
-
-            Debug.Log(playerName + "ÀÇ ½Â¼ö ¼±¾ğ : " + predictedWinCnt[curTurn] + "½Â");
-
-            curTurn++;
-            if (curTurn >= playerList.Count) curTurn = 0;
-
-            yield return new WaitForSeconds(1f);
-        }
-        yield return null;
-    }
-
-    IEnumerator SubmitCard()
-    {
-        // ¸¸¾à¿¡ °Ù ÄÄÆ÷³ÍÆ®¸¦ ÇßÀ» ¶§, ±×°Ô ³ÎÀÌ¸é, 
-        if (playerList[curTurn].GetComponent<PlayerController>().isAIPlayer || playerList[curTurn].GetComponent<AIPlayer>().isAIPlayer)
-        {
-            StartCoroutine(playerList[curTurn].GetComponent<AIPlayer>().AITurn());
-        }
-        else
-        {
-            // ÇöÀç ÇÃ·¹ÀÌ¾îÀÇ Ä«µå ¸®½ºÆ® °¡Á®¿À±â
-            List<int> curCardList = playerList[curTurn].GetComponent<PlayerController>().cardList;
-            string playerName = playerList[curTurn].name;
-
-
-            yield return new WaitForSeconds(2f);
-            // ÇöÀç ÇÃ·¹ÀÌ¾îÀÇ Ä«µå¸¸ Ç¥½Ã
-            LogText.text = "";
-            LogText.text = playerName + " Ä«µå ¼±ÅÃ ÇÏ¼¼¿ä";
-            buttonManager.ShowCard(curCardList);
-
-            // ÇÃ·¹ÀÌ¾î°¡ Ä«µå¸¦ Á¦ÃâÇÒ ¶§±îÁö ´ë±â
-            yield return new WaitUntil(() => checkSubmitCard == 0);
-
-            checkSubmitCard = -1;
-        }
-
-        // ÅÏ ÀÌµ¿
-        curTurn++;
-        if (curTurn >= playerList.Count)
-        {
-            curTurn = 0;
-        }
-
-    }
-
-    IEnumerator CheckTurnResult()
-    {
-        for (int i = 0; i < playerList.Count; i++)
-        {
-            bool checker = cardManager.CardCompare(submitCardList, i);
-            string playerName = playerList[curTurn].name;
-
-            if (checker) //checkerÀÇ ¹İÈ¯°ªÀÌ true¸é...
-            {
-                //playerList[curTurn]ÀÌ ÀÌ¹ø ÅÏ ½ÂÀÚ¶ó´Â ¶æ!
-                winCntOfEachTurn[curTurn]++;
-                Debug.Log("ÀÌ¹ø ÅÏÀÇ ½ÂÀÚ´Â " + playerList[curTurn] + "! (ÇöÀç " + winCntOfEachTurn[curTurn] + "½Â)");
-                LogText.text = "";
-                LogText.DOText("ÀÌ¹ø ÅÏÀÇ ½ÂÀÚ´Â : " + playerName + "! (ÇöÀç " + winCntOfEachTurn[curTurn] + "½Â", 1f);
-                yield return new WaitForSeconds(1.5f);
-            }
-            curTurn++;
-            if (curTurn >= playerList.Count) curTurn = 0;
-        }
-        yield return new WaitForSeconds(3f);
-    }
-
-    IEnumerator CheckRoundResult()
-    {
-        GameObject curPlayer = playerList[curTurn];
-
-        if (predictedWinCnt[curTurn] == winCntOfEachTurn[curTurn])
-        {
-            Debug.Log(curPlayer + " ¿¹Ãø ¼º°ø!");
-        }
-        else
-        {
-            Debug.Log(curPlayer + " ¿¹Ãø ½ÇÆĞ...");
-
-            //½ÇÆĞÇÑ ÇÃ·¹ÀÌ¾îÇÑÅ× ÆøÅº ½ÉÁö µîÀå½ÃÅ°°Ô ÇÏ±â
-            if (curPlayer.GetComponent<PlayerController>().isAIPlayer || curPlayer.GetComponent<AIPlayer>().isAIPlayer)
-            {
-                yield return StartCoroutine(curPlayer.GetComponent<AIPlayer>().AIDrawBomb());
-            }
-            else
-            {
-                yield return StartCoroutine(scoreManager.CheckBomb(curPlayer.GetComponent<PlayerController>()));
-            }
+                yield return StartCoroutine(scoreManager.CheckBomb(playerList[playerID].GetComponent<PlayerController>()));
         }
         yield return new WaitForSeconds(1f);
     }
 
-    //»ç¸Á ¸®½ºÆ®¿¡ ÀÖ´Â ÇÃ·¹ÀÌ¾î°¡ ÇÃ·¹ÀÌ¾î¸®½ºÆ®¿¡ ¾ÆÁ÷ ³²¾ÆÀÖÀ» °æ¿ì Áö¿öÁÖ´Â ÇÔ¼ö
     void RemovePlayerList()
     {
-        for (int i = 0; i < deadList.Count; i++)
+        foreach (GameObject dead in deadList)
         {
-            for (int j = 0; j < playerList.Count; j++)
-            {
-                if (playerList.Count <= maxPlayerCnt - deadList.Count)
-                {
-                    break;
-                }
-                else if (deadList[i] == playerList[j])
-                {
-                    playerList.Remove(playerList[j]);
-                }
-            }
+            if (playerList.Contains(dead))
+                playerList.Remove(dead);
         }
     }
 
-    //°ÔÀÓ¿¡ ÃÖÈÄÀÇ 1ÀÎÀÌ ³²¾Ò´ÂÁö ÆÇ´ÜÇÏ´Â ÇÔ¼ö
-    void JudgeGameResult()
+    bool CheckGameEnd()
     {
-        if (deadList.Count == maxPlayerCnt - 1)
-        {
-            RemovePlayerList();
-            Debug.Log("::::: °ÔÀÓ Á¾·á! :::::");
-            Debug.Log("::::: ½ÂÀÚ´Â " + playerList[0] + "! :::::");
-        }
+        return deadList.Count >= maxPlayerCnt - 1;
     }
-
-    //¸®½ºÆ® ÃÊ±âÈ­
-    void ResetLists()
-    {
-        if (curTurn > playerList.Count - 1)
-        {
-            curTurn = 0;
-        }
-
-        predictedWinCnt = new int[playerList.Count];
-        winCntOfEachTurn = new int[playerList.Count];
-
-        cardManager.GetComponent<CardManager>().ResetCardSet();
-        for (int i = 0; i < playerList.Count; i++)
-        {
-            playerList[i].GetComponent<PlayerController>().cardList.Clear();
-        }
-    }
-*/
+    #endregion
 }

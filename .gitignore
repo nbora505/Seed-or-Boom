@@ -77,3 +77,6 @@ crashlytics-build.properties
 
 # KeyStore
 *.keystore
+
+# TestBuild ignore
+/TestBuild

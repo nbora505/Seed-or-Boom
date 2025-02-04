@@ -89,7 +89,7 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < playerList.Count; i++)
         {
             //AI 플레이어인 경우에는 그냥 넘어가고...
-            if (playerList[i].GetComponent<PlayerController>().isAIPlayer || playerList[i].GetComponent<AIPlayer>().isAIPlayer) ;
+            if (playerList[i].GetComponent<PlayerController>().isAIPlayer || playerList[i].GetComponent<AIPlayer>().isAIPlayer);
             //플레이어인 경우 상태가 isReady가 될 때까지 대기하다가 체크되면 다음 플레이어로 넘어가서 체크.
             else
             {
@@ -125,7 +125,7 @@ public class GameManager : MonoBehaviour
         centerCardDeck.SetActive(true);
         yield return new WaitForSeconds(1f);
         cardManager.DoCardShuffle();
-        cardManager.TestUserCard(playerList.Count);
+        cardManager.TestUserCard(playerList.Count, false);
 
         //승수 결정받기;
         yield return StartCoroutine(DecideWinCnt());

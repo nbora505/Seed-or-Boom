@@ -1,23 +1,59 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class ReadyButton : MonoBehaviour
+public class ReadyButton : MonoBehaviourPunCallbacks
 {
-    public PlayerController playerController; // ÀÌ ¹öÆ°ÀÌ ¿¬°áµÈ ÇÃ·¹ÀÌ¾î
+    public PlayerController playerController;
     public GameObject readyText;
     public GameObject readyButton;
     public GameObject readyButtonEffect;
 
+    public Button btn;
+    public MultiplayGameManager gameManager;
+
     private void Start()
     {
-        //ÀÌ ¹öÆ°ÀÇ ÁÖÀÎÀÌ AIÇÃ·¹ÀÌ¾î¸é
-        if (playerController.isAIPlayer || this.GetComponentInParent<AIPlayer>().isAIPlayer)
+        // PhotonView ì»´í¬ë„ŒíŠ¸ë¥¼ ReadyButton ì˜¤ë¸Œì íŠ¸ì— ë¶€ì°©í–ˆëŠ”ì§€ í™•ì¸í•©ë‹ˆë‹¤.
+        PhotonView photonView = GetComponent<PhotonView>();
+        btn = GetComponent<Button>();  // Button ì»´í¬ë„ŒíŠ¸ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
+        if (btn != null && photonView.IsMine)
         {
-            playerController.isReady = true; //¹Ù·Î ÁØºñ½ÃÅ°°í
-            readyText.SetActive(false); //ÅØ½ºÆ® ºñÈ°¼ºÈ­
-            this.gameObject.SetActive(false); // ¹öÆ° ºñÈ°¼ºÈ­
+            btn.onClick.AddListener(OnReadyButtonClicked);
         }
+
+        // MultiplayGameManagerë¥¼ ì°¾ìŠµë‹ˆë‹¤.
+        gameManager = FindObjectOfType<MultiplayGameManager>();
+
+        // AI í”Œë ˆì´ì–´ì¸ ê²½ìš°, ì¤€ë¹„ ì²˜ë¦¬ í›„ ë²„íŠ¼ì„ ì œê±°í•©ë‹ˆë‹¤.
+        if (playerController != null && (playerController.isAIPlayer || GetComponentInParent<AIPlayer>()?.isAIPlayer == true))
+        {
+            playerController.isReady = true;
+            readyText.SetActive(false);
+            gameObject.SetActive(false);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (btn != null)
+        {
+            btn.onClick.RemoveListener(OnReadyButtonClicked);
+        }
+    }
+
+    public void OnReadyButtonClicked()
+    {
+        // ë¡œì»¬ í”Œë ˆì´ì–´ì˜ ì¤€ë¹„ ìƒíƒœë¥¼ ì„¤ì •í•©ë‹ˆë‹¤.
+        PhotonNetwork.LocalPlayer.CustomProperties["IsReady"] = true;
+
+        // ëª¨ë“  í´ë¼ì´ì–¸íŠ¸ì— ì¤€ë¹„ ìƒíƒœë¥¼ ë™ê¸°í™”í•©ë‹ˆë‹¤.
+        gameManager.photonView.RPC("CheckPlayerReady", RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber);
+
+        // **ìˆ˜ì •ëœ ë¶€ë¶„:** ReadyButton ìŠ¤í¬ë¦½íŠ¸ì— ë¶€ì°©ëœ ìì‹ ì˜ PhotonViewë¥¼ ì‚¬ìš©í•´ RPCë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
+        photonView.RPC("RemoveButtonRPC", RpcTarget.AllBuffered);
     }
 
     public void readyBtn()
@@ -25,24 +61,33 @@ public class ReadyButton : MonoBehaviour
         if (playerController != null)
         {
             playerController.isReady = true;
-            Debug.Log($"{playerController.name}°¡ ÁØºñµÇ¾ú½À´Ï´Ù!");
-            
-            readyText.SetActive(false); //ÅØ½ºÆ® ºñÈ°¼ºÈ­
-            readyButton.transform.Find("Button2").gameObject.SetActive(false); // ¹öÆ° ¸ğµ¨¸µ ºñÈ°¼ºÈ­
+            Debug.Log($"{playerController.name} ì¤€ë¹„ ì™„ë£Œ!");
 
-            StartCoroutine(removeReadyButton());
+            readyText.SetActive(false);
+            Transform button2 = readyButton.transform.Find("Button2");
+            if (button2 != null)
+            {
+                button2.gameObject.SetActive(false);
+            }
+            StartCoroutine(RemoveReadyButton());
         }
         else
         {
-            Debug.LogError("PlayerController°¡ ¼³Á¤µÇÁö ¾Ê¾Ò³×?");
+            Debug.LogError("PlayerControllerê°€ í• ë‹¹ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤!");
         }
     }
 
-    IEnumerator removeReadyButton()
+    IEnumerator RemoveReadyButton()
     {
-        readyButtonEffect.SetActive(true); //ÀÌÆåÆ® ¶ç¿ì°í
-        yield return new WaitForSeconds(1); //1ÃÊ ±â´Ù¸° ´ÙÀ½¿¡
+        readyButtonEffect.SetActive(true);
+        yield return new WaitForSeconds(1f);
+        gameObject.SetActive(false);
+    }
 
-        this.gameObject.SetActive(false); // ¹öÆ° ºñÈ°¼ºÈ­
+    [PunRPC]
+    public void RemoveButtonRPC()
+    {
+        // ì´ RPC ë©”ì„œë“œëŠ” ReadyButton ì˜¤ë¸Œì íŠ¸ë¥¼ ëª¨ë“  í´ë¼ì´ì–¸íŠ¸ì—ì„œ ë¹„í™œì„±í™”í•©ë‹ˆë‹¤.
+        gameObject.SetActive(false);
     }
 }

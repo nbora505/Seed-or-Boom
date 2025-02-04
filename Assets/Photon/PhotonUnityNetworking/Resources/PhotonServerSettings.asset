@@ -28,7 +28,7 @@ MonoBehaviour:
     AuthMode: 0
     EnableLobbyStatistics: 0
     NetworkLogging: 1
-  DevRegion: 
+  DevRegion: rue
   PunLogging: 0
   EnableSupportLogger: 0
   RunInBackground: 1
@@ -59,6 +59,16 @@ MonoBehaviour:
   - SubmitWinCount
   - UpdateLeaderPlayer
   - UpdateTurnWinner
+  - OnDestroy
+  - OnReadyButtonClicked
+  - readyBtn
+  - RemoveReadyButton
+  - RemoveButtonRPC
+  - OnSubmitScoreButtonClicked
+  - SendWinScore
+  - GetWinScore
+  - ShowCardUI
+  - UpdateStartButtonUI
   DisableAutoOpenWizard: 1
   ShowSettings: 1
-  DevRegionSetOnce: 0
+  DevRegionSetOnce: 1
