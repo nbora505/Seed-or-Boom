@@ -15411,9 +15411,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 934752434}
-        m_TargetAssemblyTypeName: ButtonManager, Assembly-CSharp
-        m_MethodName: StartBtn
+      - m_Target: {fileID: 1077264572}
+        m_TargetAssemblyTypeName: MultiplayGameManager, Assembly-CSharp
+        m_MethodName: OnClickStartGameEventListener
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
