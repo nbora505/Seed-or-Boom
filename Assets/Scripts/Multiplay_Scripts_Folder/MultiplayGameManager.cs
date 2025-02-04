@@ -162,7 +162,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     void DistributeCards()
     {
         cardManager.DoCardShuffle();
-        cardManager.TestUserCard(playerList.Count, true);
+        cardManager.TestUserCard(playerList.Count);
     }
 
     [PunRPC]

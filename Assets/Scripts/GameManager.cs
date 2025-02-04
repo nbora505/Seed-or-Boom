@@ -27,6 +27,7 @@ public class GameManager : MonoBehaviour
     public Text noticeturnText;
     public Text LogText;
 
+    public bool isReady = false;
     public bool isGameReady = false;
 
     public int maxPlayerCnt = 4;
@@ -49,10 +50,10 @@ public class GameManager : MonoBehaviour
     public CameraManager cameraManager;
 
 
-    private void Awake()
-    {
-        SpawnPlayer();
-    }
+    //private void Awake()
+    //{
+    //    SpawnPlayer();
+    //}
 
     void Start()
     {      
@@ -71,34 +72,36 @@ public class GameManager : MonoBehaviour
         StartCoroutine(ReadyToStart());
     }
 
-    void SpawnPlayer()
-    {
-        int characterSelectIndex = 0;
+    //void SpawnPlayer()
+    //{
+    //    int characterSelectIndex = 0;
 
-        // 프리팹 선택 및 스폰 위치 계산
-        GameObject selectedCharacter = characterPrefabs[characterSelectIndex];
-        GameObject spawnedPlayer = Instantiate(selectedCharacter, spawnCharacter.transform.position, Quaternion.identity);
-        spawnedPlayer.transform.parent = spawnCharacter.transform;
+    //    // 프리팹 선택 및 스폰 위치 계산
+    //    GameObject selectedCharacter = characterPrefabs[characterSelectIndex];
+    //    GameObject spawnedPlayer = Instantiate(selectedCharacter, spawnCharacter.transform.position, Quaternion.identity);
+    //    spawnedPlayer.transform.parent = spawnCharacter.transform;
 
-    }
+    //}
 
     //플레이어들이 모두 Ready 상태인지 체크
+
     IEnumerator ReadyToStart()
     {
         //플레이어들이 준비버튼을 눌렀는지 확인. 확인만 순서대로 하는거지 준비버튼 누르는 단계가 순서대로 진행되는 건 아님!
-        for (int i = 0; i < playerList.Count; i++)
-        {
-            //AI 플레이어인 경우에는 그냥 넘어가고...
-            if (playerList[i].GetComponent<PlayerController>().isAIPlayer || playerList[i].GetComponent<AIPlayer>().isAIPlayer);
-            //플레이어인 경우 상태가 isReady가 될 때까지 대기하다가 체크되면 다음 플레이어로 넘어가서 체크.
-            else
-            {
-                yield return new WaitUntil(() => playerList[i].GetComponent<PlayerController>().isReady);
+        //for (int i = 0; i < playerList.Count; i++)
+        //{
+        //    //AI 플레이어인 경우에는 그냥 넘어가고...
+        //    if (playerList[i].GetComponent<PlayerController>().isAIPlayer || playerList[i].GetComponent<AIPlayer>().isAIPlayer);
+        //    //플레이어인 경우 상태가 isReady가 될 때까지 대기하다가 체크되면 다음 플레이어로 넘어가서 체크.
+        //    else
+        //    {
+        //        yield return new WaitUntil(() => playerList[i].GetComponent<PlayerController>().isReady);
 
-            }
-        }
+        //    }
+        //}
 
         //마지막 플레이어까지 넘어갔으면 게임 시작 버튼 활성화
+        yield return new WaitUntil(() => isReady);
         startBtn.SetActive(true);
 
         //게임 시작 버튼 눌릴 때까지 대기
@@ -109,7 +112,7 @@ public class GameManager : MonoBehaviour
         startBtnEffect.SetActive(true); //버튼 이펙트 생성
 
         Debug.Log("::::::::: 게임 시작!!! ::::::::");
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(1.5f);
         startBtn.SetActive(false); //버튼 제거
         StartCoroutine(StartRound());
     }
@@ -125,7 +128,7 @@ public class GameManager : MonoBehaviour
         centerCardDeck.SetActive(true);
         yield return new WaitForSeconds(1f);
         cardManager.DoCardShuffle();
-        cardManager.TestUserCard(playerList.Count, false);
+        cardManager.TestUserCard(playerList.Count);
 
         //승수 결정받기;
         yield return StartCoroutine(DecideWinCnt());
