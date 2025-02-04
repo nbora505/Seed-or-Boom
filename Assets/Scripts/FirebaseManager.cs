@@ -124,11 +124,11 @@ public class FirebaseManager : MonoBehaviour
         getDataFirebase.GetGameData(1,1);
         yield return new WaitForSeconds(1);
         member1.text = $"member1 : {getDataFirebase.member1}";
-        member2.text = $"member1 : {getDataFirebase.member2}";
-        member3.text = $"member1 : {getDataFirebase.member3}";
-        mode.text = $"member1 : {getDataFirebase.mode}";
-        startTime.text = $"member1 : {getDataFirebase.startTime}";
-        winner.text = $"member1 : {getDataFirebase.winner}";
+        member2.text = $"member2 : {getDataFirebase.member2}";
+        member3.text = $"member3 : {getDataFirebase.member3}";
+        mode.text = $"mode : {getDataFirebase.mode}";
+        startTime.text = $"startTime : 2025년 2월 4일 오전11시";
+        winner.text = $"winner : {getDataFirebase.winner}";
     }
     public void GetGameData()
     {
