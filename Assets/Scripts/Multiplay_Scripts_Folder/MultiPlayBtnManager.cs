@@ -45,10 +45,10 @@ public class MultiPlayBtnManager : MonoBehaviourPunCallbacks
         PlayerController playerController = multiplayGameManager.playerList[playerid].GetComponent<PlayerController>();
 
         playerController.increaseBtn.GetComponent<Button>().onClick.RemoveAllListeners();
-        playerController.increaseBtn.GetComponent<Button>().onClick.RemoveAllListeners();
+        playerController.decreaseBtn.GetComponent<Button>().onClick.RemoveAllListeners();
 
         playerController.increaseBtn.GetComponent<Button>().onClick.AddListener(OnIncreaseScoreButtonClicked);
-        playerController.increaseBtn.GetComponent<Button>().onClick.AddListener(OnDecreaseScoreButtonClicked);
+        playerController.decreaseBtn.GetComponent<Button>().onClick.AddListener(OnDecreaseScoreButtonClicked);
 
         playerid = playerID;
         Debug.LogWarning("In***********************");
