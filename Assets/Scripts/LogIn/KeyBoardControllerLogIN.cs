@@ -18,6 +18,8 @@ public class KeyBoardControllerLogIN: MonoBehaviour
     public bool pwOn = false;
     public bool capsLockOn = true;
 
+    public List<TMP_Text> keyBtnTxts;
+
     public FirebaseMain firebaseMain;
     // Start is called before the first frame update
     void Start()
@@ -103,11 +105,21 @@ public class KeyBoardControllerLogIN: MonoBehaviour
         {
             capsLockOn = false;
             capsLockBtn.GetComponent<Image>().color = Color.grey;
+            for (int i = 0; i < keyBtnTxts.Count; i++)
+            {
+                string str = keyBtnTxts[i].text.Replace(keyBtnTxts[i].text, keyBtnTxts[i].text.ToLower());
+                keyBtnTxts[i].text = str;
+            }
         }
         else
         {
             capsLockOn = true;
             capsLockBtn.GetComponent<Image>().color = Color.white;
+            for (int i = 0; i < keyBtnTxts.Count; i++)
+            {
+                string str = keyBtnTxts[i].text.Replace(keyBtnTxts[i].text, keyBtnTxts[i].text.ToUpper());
+                keyBtnTxts[i].text = str;
+            }
         }
     }
 }
