@@ -62,7 +62,7 @@ public class ReadyButton : MonoBehaviour
     private Button btn;
     private MultiplayGameManager gameManager;
 
-    private void Awake()
+    private void Start()
     {
         // MultiplayGameManager 인스턴스 참조 (씬에 단 한 개 있다고 가정)
         gameManager = FindObjectOfType<MultiplayGameManager>();
@@ -88,6 +88,7 @@ public class ReadyButton : MonoBehaviour
     [PunRPC]
     private void OnDestroy()
     {
+        Debug.Log("Destroy");
         // 이벤트 리스너 제거 (메모리 누수 방지)
         if (btn != null)
         {
@@ -101,6 +102,8 @@ public class ReadyButton : MonoBehaviour
         // 네트워크 상 준비 처리를 위해 MultiplayGameManager의 함수를 호출합니다.
         if (gameManager != null)
         {
+            Debug.Log("Clicked");
+
             // 모든 클라이언트에게 플레이어 준비 상태 전파 (RPC 호출)
             gameManager.OnClickReadyButtonEventListener();
 
@@ -115,6 +118,7 @@ public class ReadyButton : MonoBehaviour
         readyBtn();
     }
 
+    [PunRPC]
     public void readyBtn()
     {
         if (playerController != null)
@@ -141,6 +145,7 @@ public class ReadyButton : MonoBehaviour
         }
     }
 
+    [PunRPC]
     IEnumerator RemoveReadyButton()
     {
         readyButtonEffect.SetActive(true);
