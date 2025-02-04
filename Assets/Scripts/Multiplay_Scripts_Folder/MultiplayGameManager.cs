@@ -123,7 +123,9 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     IEnumerator DelayedPlayerListUpdate()
     {
-        yield return new WaitForSeconds(0.5f); // 약간의 지연
+        // 다른 클라이언트에서 플레이어 리스트에 나 자신이 포함되지 않은 것을 확인함.
+        // 일단 무식하게 생성될 때까지 약 3초간의 지연을 주는 것으로 트라이.
+        yield return new WaitForSeconds(3f); // 약간의 지연
         UpdatePlayerList();
     }
 
