@@ -4,19 +4,19 @@
 
 //public class ReadyButton : MonoBehaviour
 //{
-//    public PlayerController playerController; // ÀÌ ¹öÆ°ÀÌ ¿¬°áµÈ ÇÃ·¹ÀÌ¾î
+//    public PlayerController playerController; // ï¿½ï¿½ ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½
 //    public GameObject readyText;
 //    public GameObject readyButton;
 //    public GameObject readyButtonEffect;
 
 //    private void Start()
 //    {
-//        //ÀÌ ¹öÆ°ÀÇ ÁÖÀÎÀÌ AIÇÃ·¹ÀÌ¾î¸é
+//        //ï¿½ï¿½ ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ AIï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½
 //        if (playerController.isAIPlayer || this.GetComponentInParent<AIPlayer>().isAIPlayer)
 //        {
-//            playerController.isReady = true; //¹Ù·Î ÁØºñ½ÃÅ°°í
-//            readyText.SetActive(false); //ÅØ½ºÆ® ºñÈ°¼ºÈ­
-//            this.gameObject.SetActive(false); // ¹öÆ° ºñÈ°¼ºÈ­
+//            playerController.isReady = true; //ï¿½Ù·ï¿½ ï¿½Øºï¿½ï¿½Å°ï¿½ï¿½
+//            readyText.SetActive(false); //ï¿½Ø½ï¿½Æ® ï¿½ï¿½È°ï¿½ï¿½È­
+//            this.gameObject.SetActive(false); // ï¿½ï¿½Æ° ï¿½ï¿½È°ï¿½ï¿½È­
 //        }
 //    }
 
@@ -25,25 +25,25 @@
 //        if (playerController != null)
 //        {
 //            playerController.isReady = true;
-//            Debug.Log($"{playerController.name}°¡ ÁØºñµÇ¾ú½À´Ï´Ù!");
+//            Debug.Log($"{playerController.name}ï¿½ï¿½ ï¿½Øºï¿½Ç¾ï¿½ï¿½ï¿½ï¿½Ï´ï¿½!");
 
-//            readyText.SetActive(false); //ÅØ½ºÆ® ºñÈ°¼ºÈ­
-//            readyButton.transform.Find("Button2").gameObject.SetActive(false); // ¹öÆ° ¸ðµ¨¸µ ºñÈ°¼ºÈ­
+//            readyText.SetActive(false); //ï¿½Ø½ï¿½Æ® ï¿½ï¿½È°ï¿½ï¿½È­
+//            readyButton.transform.Find("Button2").gameObject.SetActive(false); // ï¿½ï¿½Æ° ï¿½ðµ¨¸ï¿½ ï¿½ï¿½È°ï¿½ï¿½È­
 
 //            StartCoroutine(removeReadyButton());
 //        }
 //        else
 //        {
-//            Debug.LogError("PlayerController°¡ ¼³Á¤µÇÁö ¾Ê¾Ò³×?");
+//            Debug.LogError("PlayerControllerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò³ï¿½?");
 //        }
 //    }
 
 //    IEnumerator removeReadyButton()
 //    {
-//        readyButtonEffect.SetActive(true); //ÀÌÆåÆ® ¶ç¿ì°í
-//        yield return new WaitForSeconds(1); //1ÃÊ ±â´Ù¸° ´ÙÀ½¿¡
+//        readyButtonEffect.SetActive(true); //ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
+//        yield return new WaitForSeconds(1); //1ï¿½ï¿½ ï¿½ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-//        this.gameObject.SetActive(false); // ¹öÆ° ºñÈ°¼ºÈ­
+//        this.gameObject.SetActive(false); // ï¿½ï¿½Æ° ï¿½ï¿½È°ï¿½ï¿½È­
 //    }
 //}
 
@@ -54,7 +54,7 @@ using Photon.Pun;
 using Photon.Realtime;
 public class ReadyButton : MonoBehaviourPunCallbacks
 {
-    public PlayerController playerController; // ÀÌ ¹öÆ°ÀÌ ¿¬°áµÈ ÇÃ·¹ÀÌ¾î
+    public PlayerController playerController; // ï¿½ï¿½ ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½
     public GameObject readyText;
     public GameObject readyButton;
     public GameObject readyButtonEffect;
@@ -64,18 +64,18 @@ public class ReadyButton : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        // MultiplayGameManager ÀÎ½ºÅÏ½º ÂüÁ¶ (¾À¿¡ ´Ü ÇÑ °³ ÀÖ´Ù°í °¡Á¤)
-        gameManager = FindObjectOfType<MultiplayGameManager>();
-        // ÀÌ ¿ÀºêÁ§Æ®¿¡ Button ÄÄÆ÷³ÍÆ®°¡ ÀÖ´Ù¸é °¡Á®¿Í¼­ ÀÌº¥Æ® ¸®½º³Ê Ãß°¡
-        btn = GetComponent<Button>();
-
-
-        if (btn != null)
+        PhotonView photonView = GetComponent<PhotonView>();
+        if (btn != null && photonView.IsMine)
         {
             btn.onClick.AddListener(OnReadyButtonClicked);
         }
 
-        // ¸¸¾à ÀÌ ¹öÆ°ÀÇ ÁÖÀÎÀÌ AI¶ó¸é ¹Ù·Î ÁØºñ »óÅÂ·Î ÀüÈ¯ÇÏ°í ¹öÆ° ºñÈ°¼ºÈ­
+        // MultiplayGameManager ï¿½Î½ï¿½ï¿½Ï½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´Ù°ï¿½ ï¿½ï¿½ï¿½ï¿½)
+        gameManager = FindObjectOfType<MultiplayGameManager>();
+        // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ Button ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ö´Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
+        btn = GetComponent<Button>();
+
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ AIï¿½ï¿½ï¿½ ï¿½Ù·ï¿½ ï¿½Øºï¿½ ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½È¯ï¿½Ï°ï¿½ ï¿½ï¿½Æ° ï¿½ï¿½È°ï¿½ï¿½È­
         if (playerController != null &&
             (playerController.isAIPlayer || GetComponentInParent<AIPlayer>()?.isAIPlayer == true))
         {
@@ -85,11 +85,10 @@ public class ReadyButton : MonoBehaviourPunCallbacks
         }
     }
 
-    [PunRPC]
     private void OnDestroy()
     {
         Debug.Log("Destroy");
-        // ÀÌº¥Æ® ¸®½º³Ê Á¦°Å (¸Þ¸ð¸® ´©¼ö ¹æÁö)
+        // ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½Þ¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
         if (btn != null)
         {
             btn.onClick.RemoveListener(OnReadyButtonClicked);
@@ -100,45 +99,43 @@ public class ReadyButton : MonoBehaviourPunCallbacks
     {
         if (gameManager != null)
         {
-            // ¸ðµç Å¬¶óÀÌ¾ðÆ®¿¡ ÇÃ·¹ÀÌ¾î ÁØºñ »óÅÂ¸¦ ¾Ë¸²
+            // ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½Øºï¿½ ï¿½ï¿½ï¿½Â¸ï¿½ ï¿½Ë¸ï¿½
             gameManager.OnClickReadyButtonEventListener();
 
-            // ¹öÆ° Á¦°Å¸¦ ¸ðµç Å¬¶óÀÌ¾ðÆ®¿¡¼­ ½ÇÇàÇÏµµ·Ï RPC È£Ãâ
+            // ï¿½ï¿½Æ° ï¿½ï¿½ï¿½Å¸ï¿½ ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ RPC È£ï¿½ï¿½
             photonView.RPC("RemoveButtonRPC", RpcTarget.All);
         }
 
-        // ±âÁ¸ UI Ã³¸® ¹× ·ÎÁ÷ ½ÇÇà
+        // ï¿½ï¿½ï¿½ï¿½ UI Ã³ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         readyBtn();
     }
 
-    [PunRPC]
     public void readyBtn()
     {
         if (playerController != null)
         {
             playerController.isReady = true;
-            Debug.Log($"{playerController.name}°¡ ÁØºñµÇ¾ú½À´Ï´Ù!");
+            Debug.Log($"{playerController.name}ï¿½ï¿½ ï¿½Øºï¿½Ç¾ï¿½ï¿½ï¿½ï¿½Ï´ï¿½!");
 
-            // ÁØºñ ÅØ½ºÆ® ºñÈ°¼ºÈ­
+            // ï¿½Øºï¿½ ï¿½Ø½ï¿½Æ® ï¿½ï¿½È°ï¿½ï¿½È­
             readyText.SetActive(false);
 
-            // ¹öÆ° ³»ºÎÀÇ "Button2" ¿ÀºêÁ§Æ®°¡ ÀÖ´Ù¸é ºñÈ°¼ºÈ­ (¸ðµ¨¸µ Á¦°Å µî)
+            // ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ "Button2" ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ö´Ù¸ï¿½ ï¿½ï¿½È°ï¿½ï¿½È­ (ï¿½ðµ¨¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½)
             Transform button2 = readyButton.transform.Find("Button2");
             if (button2 != null)
             {
                 button2.gameObject.SetActive(false);
             }
 
-            // ÀÌÆåÆ®¸¦ º¸¿©ÁÖ°í ÀÏÁ¤ ½Ã°£ ÈÄ ¹öÆ° ºñÈ°¼ºÈ­ Ã³¸®
+            // ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ ï¿½ï¿½Æ° ï¿½ï¿½È°ï¿½ï¿½È­ Ã³ï¿½ï¿½
             StartCoroutine(RemoveReadyButton());
         }
         else
         {
-            Debug.LogError("PlayerController°¡ ¼³Á¤µÇÁö ¾Ê¾Ò½À´Ï´Ù!");
+            Debug.LogError("PlayerControllerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò½ï¿½ï¿½Ï´ï¿½!");
         }
     }
 
-    [PunRPC]
     IEnumerator RemoveReadyButton()
     {
         readyButtonEffect.SetActive(true);
