@@ -50,7 +50,7 @@ public class ReadyButton : MonoBehaviourPunCallbacks
         PhotonNetwork.LocalPlayer.CustomProperties["IsReady"] = true;
 
         // 모든 클라이언트에 준비 상태를 동기화합니다.
-        gameManager.photonView.RPC("CheckPlayerReady", RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber);
+        gameManager.photonView.RPC("RPC_CheckPlayerReady", RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber);
 
         // **수정된 부분:** ReadyButton 스크립트에 부착된 자신의 PhotonView를 사용해 RPC를 호출합니다.
         photonView.RPC("RemoveButtonRPC", RpcTarget.AllBuffered);
