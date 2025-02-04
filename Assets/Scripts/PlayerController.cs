@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    
+    public MultiplayGameManager multiplayGameManager;
     //[변수]
     public bool isAIPlayer = false;
     public bool isReady = false;
@@ -68,15 +68,22 @@ public class PlayerController : MonoBehaviour
     public void DrawBomb(int selectedBombNum)//함수 폭탄 결정(파라메터:선택된 심지 번호)
     {
         int isTrueBomb = Random.Range(0, bombList.Count);
-        string playerName = gm.playerList[gm.curTurn].name;
+        //string playerName = gm.playerList[gm.curTurn].name;
+        //if (isTrueBomb == selectedBombNum)
+        //{
+        //    Debug.Log(gameObject.name + "... 사망!!!!!");
+
+        //    // 사망처리
+        //    isDead = true;
+        //    gm.deadList.Add(this.gameObject);
+        string playerName = multiplayGameManager.playerList[multiplayGameManager.curTurn].name;
         if (isTrueBomb == selectedBombNum)
         {
             Debug.Log(gameObject.name + "... 사망!!!!!");
 
             // 사망처리
             isDead = true;
-            gm.deadList.Add(this.gameObject);
-
+            multiplayGameManager.deadList.Add(this.gameObject);
             //사망 연출은 여기서 처리하는 걸로
             //this.gameObject.SetActive(false);
             for (int i = 0; i < remainingBomb; i++)

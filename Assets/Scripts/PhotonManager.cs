@@ -224,7 +224,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             spawnPoint.position,
             spawnPoint.rotation);
 
-
+        
 
         // 생성된 플레이어 오브젝트의 PhotonView ID를 획득
         int viewID = spawnedPlayer.GetComponent<PhotonView>().ViewID;
@@ -244,6 +244,16 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         {
             masterManager.playerList.Add(spawnedPlayer);
             Debug.Log($"Master added spawned player for actor {actorNumber}");
+            // PlayerController 연결
+            PlayerController playerController = spawnedPlayer.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                if (multiplayGameManager == null)
+                {
+                    multiplayGameManager = FindObjectOfType<MultiplayGameManager>();
+                }
+                playerController.multiplayGameManager = multiplayGameManager;
+            }
         }
     }
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)

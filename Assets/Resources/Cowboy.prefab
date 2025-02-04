@@ -3406,6 +3406,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5afac2e4ab60e0f42b885dc0b8fac6d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  multiplayGameManager: {fileID: 0}
   isAIPlayer: 0
   isReady: 0
   cardList: 
@@ -3433,6 +3434,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9f609df25b91204bbcd6e86688ccdc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  multiplayGameManager: {fileID: 0}
   isAIPlayer: 0
   isReady: 0
   cardList: 
@@ -4677,6 +4679,10 @@ PrefabInstance:
     - target: {fileID: 4760409400617906469, guid: 042c287632f3a3245a823ba615522f63, type: 3}
       propertyPath: m_Name
       value: Player_Deck
+      objectReference: {fileID: 0}
+    - target: {fileID: 4760409400617906469, guid: 042c287632f3a3245a823ba615522f63, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

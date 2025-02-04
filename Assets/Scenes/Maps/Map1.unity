@@ -24606,6 +24606,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9f609df25b91204bbcd6e86688ccdc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  multiplayGameManager: {fileID: 0}
   isAIPlayer: 0
   isReady: 0
   cardList: 
@@ -39844,6 +39845,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9f609df25b91204bbcd6e86688ccdc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  multiplayGameManager: {fileID: 0}
   isAIPlayer: 0
   isReady: 0
   cardList: 
@@ -64320,6 +64322,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9f609df25b91204bbcd6e86688ccdc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  multiplayGameManager: {fileID: 0}
   isAIPlayer: 0
   isReady: 0
   cardList: 
