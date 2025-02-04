@@ -60,7 +60,43 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
         // Photon 동기화 문제 방지를 위해 자동 씬 동기화 비활성화
         PhotonNetwork.AutomaticallySyncScene = false;
     }
+    public void UpdatePlayerList()
+    {
+        // "Player" 태그가 붙은 모든 오브젝트를 찾아 ActorNumber 기준(오름차순)으로 정렬
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        playerList = new List<GameObject>(
+            players.OrderBy(p => p.GetComponent<PhotonView>().Owner.ActorNumber)
+        );
+        Debug.Log($"UpdatePlayerList: playerList Count = {playerList.Count}");
+    }
 
+    #region MonoBehaviour Methods
+    private void Start()
+    {
+        // 씬 로드 후 또는 시작 시에 플레이어 리스트를 업데이트합니다.
+        UpdatePlayerList();
+    }
+
+    private new void OnEnable()
+    {
+        // 씬이 로드될 때마다 업데이트하도록 구독
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private new void OnDisable()
+    {
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
+    {
+        if (scene.name == "Map1")
+        {
+            // 게임씬 로드 후 각 클라이언트에서 플레이어 리스트를 다시 업데이트
+            UpdatePlayerList();
+        }
+    }
+    #endregion
     // IPunObservable 인터페이스 구현 – 마스터가 쓰고 나머지가 읽음
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {

@@ -267,7 +267,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         {
             var multiplayGameManager = GameObject.Find("MultiplayGameManager").GetComponent<MultiplayGameManager>();
             spawnPoints = multiplayGameManager.spawnPoints;
-            //multiplayGameManager.UpdatePlayerList();
+            multiplayGameManager.UpdatePlayerList();
             // 모든 클라이언트가 자신의 캐릭터를 로컬에서 생성하도록 함.
             StartCoroutine(SpawnLocalPlayerWithDelay());
         }
