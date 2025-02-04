@@ -71,7 +71,7 @@ public class ReadyButton : MonoBehaviourPun
             readyButton.SetActive(true);
             gameManager = FindObjectOfType<MultiplayGameManager>();
             // 이 오브젝트에 Button 컴포넌트가 있다면 가져와서 이벤트 리스너 추가
-            btn = GetComponent<Button>();
+            btn = readyButton.GetComponent<Button>();
 
             btn.onClick.AddListener(OnReadyButtonClicked);
         }
