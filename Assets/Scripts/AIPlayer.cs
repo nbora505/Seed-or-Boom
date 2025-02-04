@@ -102,6 +102,7 @@ public class AIPlayer : PlayerController
 
             //사망 연출은 여기서 처리하는 걸로
             //this.gameObject.SetActive(false);
+            Instantiate(Resources.Load<GameObject>("Explosion"), this.gameObject.transform);
             Animator anim = gameObject.GetComponent<Animator>();
             anim.SetBool("isDead", true);
             gm.LogText.text = gameObject.name + "사망";
