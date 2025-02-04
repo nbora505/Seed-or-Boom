@@ -381,12 +381,22 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             if (PhotonNetwork.IsMasterClient)
             {
-                currentTurnIndex++;
-                // 다음 턴으로 진행
-                photonView.RPC("RPC_ProcessTurn", RpcTarget.All, currentTurnIndex);
+                photonView.RPC("RPC_IncreaseTurnIndex", RpcTarget.All);
             }
         }
     }
+
+    [PunRPC]
+    void RPC_IncreaseTurnIndex()
+    {
+        currentTurnIndex++;
+        // 다음 턴으로 진행
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("RPC_ProcessTurn", RpcTarget.All, currentTurnIndex);
+        }
+    }
+
 
     // 턴 진행 RPC – turnOrder는 현재 턴 순서에 따른 플레이어 리스트의 인덱스 (0부터 시작)
     [PunRPC]
