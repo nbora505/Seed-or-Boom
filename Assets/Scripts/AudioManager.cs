@@ -34,7 +34,7 @@ public class AudioManager : MonoBehaviour
     }
     public void UIBtnSound()
     {
-        audioSource.PlayOneShot(uiBtnSound);
+        audioSource.PlayOneShot(uiBtnSound, 4);
     }
     public void BombSound()
     {
