@@ -33,13 +33,14 @@ public class MultiPlayBtnManager : MonoBehaviourPunCallbacks
     #region Wins
     public void ShowPlayerPanel(bool onoff)
     {
-        multiplayGameManager.playerList[playerid].GetComponent<PlayerController>().playerCanvas.SetActive(onoff);
-        //    .transform.Find("Player_Canvas/Panel");
-        //PlayerPanel.gameObject.SetActive(onoff);
+        multiplayGameManager.playerList[playerid]
+            .GetComponent<PlayerController>().playerCanvas.SetActive(onoff);
     }
 
     public void showWinBtn(int playerID, GameObject winBtn)
     {
+        // 전달받은 playerID를 바로 할당
+        playerid = playerID;
         winBtn.SetActive(true);
 
         PlayerController playerController = multiplayGameManager.playerList[playerid].GetComponent<PlayerController>();
@@ -52,16 +53,14 @@ public class MultiPlayBtnManager : MonoBehaviourPunCallbacks
         playerController.decreaseBtn.GetComponent<Button>().onClick.AddListener(OnDecreaseScoreButtonClicked);
         playerController.submitBtn.GetComponent<Button>().onClick.AddListener(OnSubmitScoreButtonClicked);
 
-
-        playerid = playerID;
-        Debug.LogWarning("In***********************");
+        Debug.LogWarning("WinBtn shown for player " + playerid);
         GameObject appearEffect = Resources.Load<GameObject>("AppearEffect");
         Instantiate(appearEffect, winBtn.transform);
     }
 
     public void hideWinBtn(GameObject winBtn)
     {
-        winBtn.gameObject.SetActive(false);
+        winBtn.SetActive(false);
     }
 
     public void OnIncreaseScoreButtonClicked()
@@ -69,18 +68,16 @@ public class MultiPlayBtnManager : MonoBehaviourPunCallbacks
         if (!multiplayGameManager.playerList[playerid].GetComponent<PhotonView>().IsMine)
             return;
 
-        Transform PlayerPanelPos = multiplayGameManager.playerList[playerid].GetComponent<PlayerController>().winningText.gameObject.transform;
-
-
-        Text playerText = PlayerPanelPos.GetComponent<Text>();
+        // winningText가 GameObject라면 GetComponent<Text>()로 Text 컴포넌트를 가져옵니다.
+        Text playerText = multiplayGameManager.playerList[playerid]
+            .GetComponent<PlayerController>().winningText.GetComponent<Text>();
 
         expectedWin++;
         logText.text = expectedWin.ToString();
         playerText.text = expectedWin.ToString();
 
-        buttonTransform = multiplayGameManager.playerList[playerid].GetComponent<PlayerController>().increaseBtn.gameObject.transform;
-
-        //buttonTransform.DOPunchScale(new Vector3(0.2f, 0.2f, 0), 2.5f, 5, 2);
+        buttonTransform = multiplayGameManager.playerList[playerid]
+            .GetComponent<PlayerController>().increaseBtn.transform;
     }
 
     public void OnDecreaseScoreButtonClicked()
@@ -88,19 +85,15 @@ public class MultiPlayBtnManager : MonoBehaviourPunCallbacks
         if (!multiplayGameManager.playerList[playerid].GetComponent<PhotonView>().IsMine)
             return;
 
-        Transform PlayerPanelPos = multiplayGameManager.playerList[playerid].GetComponent<PlayerController>().winningText.gameObject.transform;
-
-
-        Text playerText = PlayerPanelPos.GetComponent<Text>();
+        Text playerText = multiplayGameManager.playerList[playerid]
+            .GetComponent<PlayerController>().winningText.GetComponent<Text>();
 
         expectedWin--;
         logText.text = expectedWin.ToString();
         playerText.text = expectedWin.ToString();
 
-        buttonTransform = multiplayGameManager.playerList[playerid].GetComponent<PlayerController>().decreaseBtn.gameObject.transform;
-
-        //buttonTransform.DOPunchScale(new Vector3(0.2f, 0.2f, 0), 2.5f, 5, 2);
-        // 비슷한 방식으로 구현
+        buttonTransform = multiplayGameManager.playerList[playerid]
+            .GetComponent<PlayerController>().decreaseBtn.transform;
     }
 
     public void OnSubmitScoreButtonClicked()
@@ -110,13 +103,14 @@ public class MultiPlayBtnManager : MonoBehaviourPunCallbacks
 
         if (expectedWin >= 0 && expectedWin <= 4)
         {
-            multiplayGameManager.gameObject.GetPhotonView().RPC("SubmitWinCount", RpcTarget.All, playerid, expectedWin);
-            logText.DOText("승리횟수 :" + expectedWin.ToString() + "번 제출완료", 1.2f);
+            multiplayGameManager.gameObject.GetPhotonView()
+                .RPC("SubmitWinCount", RpcTarget.All, playerid, expectedWin);
+            logText.DOText("승리횟수: " + expectedWin.ToString() + " 제출완료", 1.2f);
             multiplayGameManager.selectedWin = 0;
         }
         else
         {
-            logText.text = "0에서 4사이의 값만 입력 가능합니다.";
+            logText.text = "0에서 4 사이의 값만 입력 가능합니다.";
             logText.color = Color.red;
         }
     }
@@ -125,22 +119,18 @@ public class MultiPlayBtnManager : MonoBehaviourPunCallbacks
     #region Cards
     public void ShowCard(List<int> cardList, int playerID)
     {
-        foreach (var cardInstance in activeCardInstances)
+        foreach (var instance in activeCardInstances)
         {
-            Destroy(cardInstance);
+            Destroy(instance);
         }
         activeCardInstances.Clear();
 
         Transform[] cardPositions = new Transform[4];
-
         GameObject currentPlayer = multiplayGameManager.playerList[playerID];
-        Debug.LogError(currentPlayer);
-        
 
         for (int i = 0; i < 4; i++)
         {
             cardPositions[i] = currentPlayer.GetComponent<PlayerController>().cardPosList[i];
-            Debug.LogError(cardPositions[i].transform.position);
         }
 
         for (int i = 0; i < cardList.Count && i < cardPositions.Length; i++)
@@ -172,7 +162,7 @@ public class MultiPlayBtnManager : MonoBehaviourPunCallbacks
         Destroy(cardInstance);
 
         logText.text = "";
-        logText.DOText("카드값 : " + cardValue.ToString() + " 제출완료", 1f);
+        logText.DOText("카드값: " + cardValue.ToString() + " 제출완료", 1f);
 
         multiplayGameManager.checkSubmitCard = 0;
     }

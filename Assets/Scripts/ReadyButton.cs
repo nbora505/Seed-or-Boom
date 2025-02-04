@@ -95,20 +95,28 @@ public class ReadyButton : MonoBehaviourPunCallbacks
         }
     }
 
-    public void OnReadyButtonClicked()
-    {
-        if (gameManager != null)
-        {
-            // ��� Ŭ���̾�Ʈ�� �÷��̾� �غ� ���¸� �˸�
-            gameManager.OnClickReadyButtonEventListener();
+    //public void OnReadyButtonClicked()
+    //{
+    //    if (gameManager != null)
+    //    {
+    //        // ��� Ŭ���̾�Ʈ�� �÷��̾� �غ� ���¸� �˸�
+    //        gameManager.OnClickReadyButtonEventListener();
 
-            // ��ư ���Ÿ� ��� Ŭ���̾�Ʈ���� �����ϵ��� RPC ȣ��
-            photonView.RPC("RemoveButtonRPC", RpcTarget.All);
-        }
+    //        // ��ư ���Ÿ� ��� Ŭ���̾�Ʈ���� �����ϵ��� RPC ȣ��
+    //        photonView.RPC("RemoveButtonRPC", RpcTarget.All);
+    //    }
 
         
-    }
+    //}
+    public void OnReadyButtonClicked()
+    {
+        // 예를 들어, 현재 로컬 플레이어의 ActorNumber를 사용하여 RPC 호출
+        PhotonNetwork.LocalPlayer.CustomProperties["IsReady"] = true;
+        gameManager.photonView.RPC("CheckPlayerReady", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber);
 
+        RemoveButtonRPC();
+        // 필요에 따라 UI 업데이트 처리
+    }
     public void readyBtn()
     {
         if (playerController != null)

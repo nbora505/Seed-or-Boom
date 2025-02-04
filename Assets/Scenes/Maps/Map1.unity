@@ -15414,7 +15414,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1077264572}
         m_TargetAssemblyTypeName: MultiplayGameManager, Assembly-CSharp
-        m_MethodName: OnClickStartGameEventListener
+        m_MethodName: StartGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -24631,6 +24631,12 @@ MonoBehaviour:
   isDead: 0
   gm: {fileID: 1598734125}
   winBtn: {fileID: 0}
+  playerCanvas: {fileID: 0}
+  winningText: {fileID: 0}
+  increaseBtn: {fileID: 0}
+  decreaseBtn: {fileID: 0}
+  submitBtn: {fileID: 0}
+  cardPosList: []
   cardDeckObject: {fileID: 0}
   quads: {fileID: 0}
   expectedWins: 0
@@ -39873,6 +39879,12 @@ MonoBehaviour:
   isDead: 0
   gm: {fileID: 1598734125}
   winBtn: {fileID: 0}
+  playerCanvas: {fileID: 0}
+  winningText: {fileID: 0}
+  increaseBtn: {fileID: 0}
+  decreaseBtn: {fileID: 0}
+  submitBtn: {fileID: 0}
+  cardPosList: []
   cardDeckObject: {fileID: 0}
   quads: {fileID: 0}
   expectedWins: 0
@@ -50634,6 +50646,7 @@ MonoBehaviour:
   expectedWin: 0
   selectCard: 0
   activeCardInstances: []
+  playerid: 0
 --- !u!1 &1598734124
 GameObject:
   m_ObjectHideFlags: 0
@@ -64413,6 +64426,12 @@ MonoBehaviour:
   isDead: 0
   gm: {fileID: 1598734125}
   winBtn: {fileID: 0}
+  playerCanvas: {fileID: 0}
+  winningText: {fileID: 0}
+  increaseBtn: {fileID: 0}
+  decreaseBtn: {fileID: 0}
+  submitBtn: {fileID: 0}
+  cardPosList: []
   cardDeckObject: {fileID: 0}
   quads: {fileID: 0}
   expectedWins: 0
