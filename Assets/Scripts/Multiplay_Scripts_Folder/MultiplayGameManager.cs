@@ -54,6 +54,15 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     public bool winCountSelectionComplete = false;
     #endregion
 
+    public void OnStartButtonClicked()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            // RpcTarget.AllBuffered를 사용하여 나중에 접속하는 클라이언트에게도 적용
+            photonView.RPC("RPC_StartGame", RpcTarget.AllBuffered);
+        }
+    }
+
     #region MonoBehaviour & Photon Setup
     private void Awake()
     {
