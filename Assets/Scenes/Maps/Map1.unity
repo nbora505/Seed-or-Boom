@@ -15366,7 +15366,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &504262834
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34104,8 +34104,6 @@ MonoBehaviour:
   readyText: {fileID: 416266863}
   readyButton: {fileID: 1045576826}
   readyButtonEffect: {fileID: 1242096605}
-  btn: {fileID: 0}
-  gameManager: {fileID: 0}
 --- !u!1001 &1048375594
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -47472,8 +47470,6 @@ MonoBehaviour:
   readyText: {fileID: 329601135}
   readyButton: {fileID: 1462267923}
   readyButtonEffect: {fileID: 1264356001}
-  btn: {fileID: 0}
-  gameManager: {fileID: 0}
 --- !u!1001 &1468013784
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -63389,8 +63385,6 @@ MonoBehaviour:
   readyText: {fileID: 1241262556}
   readyButton: {fileID: 1965338968}
   readyButtonEffect: {fileID: 283802000}
-  btn: {fileID: 0}
-  gameManager: {fileID: 0}
 --- !u!1001 &1969112438
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -69196,8 +69190,6 @@ MonoBehaviour:
   readyText: {fileID: 692876553}
   readyButton: {fileID: 2134484209}
   readyButtonEffect: {fileID: 1936663971}
-  btn: {fileID: 0}
-  gameManager: {fileID: 0}
 --- !u!1001 &2136157808
 PrefabInstance:
   m_ObjectHideFlags: 0
