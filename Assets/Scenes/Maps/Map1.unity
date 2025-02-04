@@ -8890,7 +8890,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!20 &304412852
 Camera:
   m_ObjectHideFlags: 0
@@ -24567,6 +24567,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3944587745200262282, guid: 4b9751947473d5441821a72b841d092b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4097257670660874040, guid: 4b9751947473d5441821a72b841d092b, type: 3}
       propertyPath: m_Name
       value: Player1
@@ -24619,6 +24623,10 @@ PrefabInstance:
       propertyPath: bombPrefab.Array.data[2]
       value: 
       objectReference: {fileID: 43117096}
+    - target: {fileID: 6768428641289623783, guid: 4b9751947473d5441821a72b841d092b, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6768428641289623783, guid: 4b9751947473d5441821a72b841d092b, type: 3}
       propertyPath: m_Controller
       value: 
@@ -50898,6 +50906,9 @@ MonoBehaviour:
   winEffect: {fileID: 4760255938751766969, guid: e61aeb2a2908adc43a388eba4809750c, type: 3}
   centerCanvas: {fileID: 453149800}
   pointer: {fileID: 305769809}
+  characterPrefabs:
+  - {fileID: 8849390686682753043, guid: 4949370b4f4dae54ebf9c006cef1b0de, type: 3}
+  spawnCharacter: {fileID: 299537825}
   noticeturnText: {fileID: 1538823220}
   LogText: {fileID: 1057223484}
   isGameReady: 0

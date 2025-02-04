@@ -21,6 +21,9 @@ public class GameManager : MonoBehaviour
     public GameObject centerCanvas;
     public GameObject pointer;
 
+    public GameObject[] characterPrefabs;
+    public GameObject spawnCharacter;
+
     public Text noticeturnText;
     public Text LogText;
 
@@ -45,6 +48,12 @@ public class GameManager : MonoBehaviour
     public ButtonManager buttonManager;
     public CameraManager cameraManager;
 
+
+    private void Awake()
+    {
+        SpawnPlayer();
+    }
+
     void Start()
     {      
         //플레이어 객체들 리스트에 추가
@@ -62,24 +71,16 @@ public class GameManager : MonoBehaviour
         StartCoroutine(ReadyToStart());
     }
 
-    //void SpawnPlayer()
-    //{
-    //    int actorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
-    //    //플레이어의 CustomProperties에서 CharacterIndex 가져오기 (없으면 기본 1)
-    //    Debug.Log($"플레이어 {actorNumber}의 캐릭터 인덱스: {characterSelectIndex}");
+    void SpawnPlayer()
+    {
+        int characterSelectIndex = 0;
 
-    //    // 프리팹 선택 및 스폰 위치 계산
-    //    GameObject selectedCharacter = characterPrefabs[characterSelectIndex];
-    //    GameObject spawnedPlayer = PhotonNetwork.Instantiate(
-    //        selectedCharacter.name,
-    //        spawnPoints[(actorNumber - 1) % spawnPoints.Length].position,
-    //        Quaternion.identity);
+        // 프리팹 선택 및 스폰 위치 계산
+        GameObject selectedCharacter = characterPrefabs[characterSelectIndex];
+        GameObject spawnedPlayer = Instantiate(selectedCharacter, spawnCharacter.transform.position, Quaternion.identity);
+        spawnedPlayer.transform.parent = spawnCharacter.transform;
 
-    //    // 생성된 플레이어 오브젝트의 PhotonView ID를 획득
-    //    int viewID = spawnedPlayer.GetComponent<PhotonView>().ViewID;
-    //    // 마스터 클라이언트에 자신의 스폰 정보를 전달
-    //    photonView.RPC("ReportSpawn", RpcTarget.MasterClient, actorNumber, viewID);
-    //}
+    }
 
     //플레이어들이 모두 Ready 상태인지 체크
     IEnumerator ReadyToStart()
