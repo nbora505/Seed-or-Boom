@@ -66,7 +66,7 @@ public class ReadyButton : MonoBehaviourPun
 
     private void Start()
     {
-        if (btn != null && photonView.IsMine)
+        if (photonView.IsMine)
         {
             readyButton.SetActive(true);
             gameManager = FindObjectOfType<MultiplayGameManager>();
