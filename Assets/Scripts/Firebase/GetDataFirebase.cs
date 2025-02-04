@@ -128,7 +128,7 @@ public class GetDataFirebase : MonoBehaviour
             daySt = day.ToString();
         }
 
-        DocumentReference docRef = db.Collection("gameData").Document(firebaseMain.auth.CurrentUser.UserId).Collection(daySt).Document("game" + gameNum.ToString());
+        DocumentReference docRef = db.Collection("gameData").Document("YivIF5AvOih4wVPEFYKMaoxcplu1").Collection(daySt).Document("game" + gameNum.ToString());
 
         //pull your Email to DB.
         yield return docRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>
