@@ -6536,13 +6536,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 231540113}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.558, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -1.837, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1893761673}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1001 &235741907
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8890,7 +8890,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!20 &304412852
 Camera:
   m_ObjectHideFlags: 0
@@ -11012,6 +11012,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e8df546da4157243a54ac19d39538fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  multiplayGameManager: {fileID: 0}
 --- !u!1001 &371053787
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24739,6 +24740,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9f609df25b91204bbcd6e86688ccdc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  multiplayGameManager: {fileID: 0}
   isAIPlayer: 0
   isReady: 0
   cardList: 
@@ -24749,6 +24751,13 @@ MonoBehaviour:
   bombVisible: 0
   isDead: 0
   gm: {fileID: 1598734125}
+  winBtn: {fileID: 0}
+  playerCanvas: {fileID: 0}
+  winningText: {fileID: 0}
+  increaseBtn: {fileID: 0}
+  decreaseBtn: {fileID: 0}
+  submitBtn: {fileID: 0}
+  cardPosList: []
   cardDeckObject: {fileID: 0}
   quads: {fileID: 0}
   expectedWins: 0
@@ -30300,6 +30309,7 @@ MonoBehaviour:
   scoreManager: {fileID: 365595091}
   playerController: {fileID: 0}
   cardManager: {fileID: 1400924154}
+  multiplayGameManager: {fileID: 0}
   playerLogText: {fileID: 0}
   expectedWin: 0
   selectCard: 0
@@ -34345,6 +34355,8 @@ MonoBehaviour:
   readyText: {fileID: 416266863}
   readyButton: {fileID: 1045576826}
   readyButtonEffect: {fileID: 1242096605}
+  btn: {fileID: 0}
+  gameManager: {fileID: 0}
 --- !u!1001 &1048375594
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -35778,7 +35790,7 @@ MonoBehaviour:
   winCntOfEachTurn: 
   cardManager: {fileID: 1400924154}
   scoreManager: {fileID: 365595091}
-  buttonManager: {fileID: 934752434}
+  buttonManager: {fileID: 0}
   cameraManager: {fileID: 0}
   firebaseManager: {fileID: 1951178451}
   characterPrefabs:
@@ -35791,6 +35803,7 @@ MonoBehaviour:
   - {fileID: 2035100915}
   - {fileID: 1330498761}
   - {fileID: 1766890556}
+  winCountSelectionComplete: 0
 --- !u!4 &1077267784 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4378574186273825804, guid: 2cbdadcf7a87aff45b809f68c0793aba, type: 3}
@@ -40063,6 +40076,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9f609df25b91204bbcd6e86688ccdc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  multiplayGameManager: {fileID: 0}
   isAIPlayer: 1
   isReady: 0
   cardList: 
@@ -40073,6 +40087,13 @@ MonoBehaviour:
   bombVisible: 0
   isDead: 0
   gm: {fileID: 1598734125}
+  winBtn: {fileID: 0}
+  playerCanvas: {fileID: 0}
+  winningText: {fileID: 0}
+  increaseBtn: {fileID: 0}
+  decreaseBtn: {fileID: 0}
+  submitBtn: {fileID: 0}
+  cardPosList: []
   cardDeckObject: {fileID: 0}
   quads: {fileID: 0}
   expectedWins: 0
@@ -43339,13 +43360,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1330498760}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1.521}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: 0, y: -1, z: 1.743}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1893761673}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1001 &1334834064
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -44888,6 +44909,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameManager: {fileID: 1598734125}
+  multiplayGameManager: {fileID: 0}
   card: 
   cardset: 
 --- !u!4 &1400924155
@@ -47726,6 +47748,8 @@ MonoBehaviour:
   readyText: {fileID: 329601135}
   readyButton: {fileID: 1462267923}
   readyButtonEffect: {fileID: 1264356001}
+  btn: {fileID: 0}
+  gameManager: {fileID: 0}
 --- !u!1001 &1468013784
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -51055,7 +51079,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1598734125
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56265,7 +56289,7 @@ Transform:
   m_GameObject: {fileID: 1766890555}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1.43}
+  m_LocalPosition: {x: 0, y: -1, z: -1.843}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -61563,7 +61587,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1888962860
 Transform:
   m_ObjectHideFlags: 0
@@ -64128,6 +64152,8 @@ MonoBehaviour:
   readyText: {fileID: 1241262556}
   readyButton: {fileID: 1965338968}
   readyButtonEffect: {fileID: 283802000}
+  btn: {fileID: 0}
+  gameManager: {fileID: 0}
 --- !u!1001 &1969112438
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -65065,6 +65091,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9f609df25b91204bbcd6e86688ccdc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  multiplayGameManager: {fileID: 0}
   isAIPlayer: 1
   isReady: 0
   cardList: 
@@ -65075,6 +65102,13 @@ MonoBehaviour:
   bombVisible: 0
   isDead: 0
   gm: {fileID: 1598734125}
+  winBtn: {fileID: 0}
+  playerCanvas: {fileID: 0}
+  winningText: {fileID: 0}
+  increaseBtn: {fileID: 0}
+  decreaseBtn: {fileID: 0}
+  submitBtn: {fileID: 0}
+  cardPosList: []
   cardDeckObject: {fileID: 0}
   quads: {fileID: 0}
   expectedWins: 0
@@ -65936,13 +65970,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2035100914}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.37, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 1.778, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1893761673}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1001 &2036302032
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -69944,6 +69978,8 @@ MonoBehaviour:
   readyText: {fileID: 692876553}
   readyButton: {fileID: 2134484209}
   readyButtonEffect: {fileID: 1936663971}
+  btn: {fileID: 0}
+  gameManager: {fileID: 0}
 --- !u!1001 &2136157808
 PrefabInstance:
   m_ObjectHideFlags: 0
