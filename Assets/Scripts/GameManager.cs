@@ -4,6 +4,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using DG.Tweening;
 
 
@@ -17,6 +18,7 @@ public class GameManager : MonoBehaviour
     public GameObject centerCardDeck;
     public GameObject winEffect;
     public GameObject centerCanvas;
+    public GameObject pointer;
 
     public Text noticeturnText;
     public Text LogText;
@@ -152,6 +154,9 @@ public class GameManager : MonoBehaviour
         {
             LogText.text = $"최후의 승자는 {playerList[0].gameObject.name}";
 
+            //5초 정도 기다렸다가 로비 씬으로
+            yield return new WaitForSeconds(5f);
+            SceneManager.LoadScene("Lobby");
         }
         else
         {
@@ -176,6 +181,8 @@ public class GameManager : MonoBehaviour
             string playerName = playerList[curTurn].name;
             Debug.LogWarning( i+1 + "번째 순서" + playerName + "입니다.");
             noticeturnText.text += (i + 1 + "번째 순서 : " + playerName + "\n");
+
+            yield return StartCoroutine(MovePointer(playerList[curTurn].transform));
 
             //ai일 경우
             if (playerList[curTurn].GetComponent<PlayerController>().isAIPlayer || playerList[curTurn].GetComponent<AIPlayer>().isAIPlayer)
@@ -215,6 +222,8 @@ public class GameManager : MonoBehaviour
 
     IEnumerator SubmitCard()
     {
+        yield return StartCoroutine(MovePointer(playerList[curTurn].transform));
+
         // 만약에 겟 컴포넌트를 했을 때, 그게 널이면, 
         if (playerList[curTurn].GetComponent<PlayerController>().isAIPlayer || playerList[curTurn].GetComponent<AIPlayer>().isAIPlayer)
         {
@@ -279,6 +288,8 @@ public class GameManager : MonoBehaviour
     IEnumerator CheckRoundResult()
     {
         GameObject curPlayer = playerList[curTurn];
+
+        yield return StartCoroutine(MovePointer(curPlayer.transform));
 
         if (predictedWinCnt[curTurn] == winCntOfEachTurn[curTurn])
         {
@@ -349,5 +360,14 @@ public class GameManager : MonoBehaviour
         {
             playerList[i].GetComponent<PlayerController>().cardList.Clear();
         }
+    }
+
+    public IEnumerator MovePointer(Transform curTransform)
+    {
+        float newX = curTransform.position.x;
+        float newY = curTransform.position.y + 3f;
+        float newZ = curTransform.position.z;
+        pointer.transform.position = new Vector3 (newX, newY, newZ);
+        yield return new WaitForSeconds(1);
     }
 }
