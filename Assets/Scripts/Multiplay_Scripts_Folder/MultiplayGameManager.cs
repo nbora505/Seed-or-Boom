@@ -283,9 +283,18 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     void CheckAllPlayerReady()
     {
         if (playerList.All(p => p.GetComponent<PlayerController>().isReady))
+        {
             startBtn.SetActive(true);
+            // MasterClient가 시작 버튼 활성화를 전체에 알리기 위한 RPC 호출
+            photonView.RPC("UpdateStartButtonUI", RpcTarget.AllBuffered);
+        }
     }
-
+    [PunRPC]
+    void UpdateStartButtonUI()
+    {
+        // 모든 클라이언트에서 시작 버튼을 활성화
+        startBtn.SetActive(true);
+    }
     // 라운드 시작 코루틴 : 승수 선택 후 카드 분배 및 턴 진행
     public IEnumerator StartRoundCoroutine()
     {
