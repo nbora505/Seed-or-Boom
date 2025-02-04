@@ -1,60 +1,12 @@
-//using System.Collections;
-//using Unity.VisualScripting;
-//using UnityEngine;
-
-//public class ReadyButton : MonoBehaviour
-//{
-//    public PlayerController playerController; // �� ��ư�� ����� �÷��̾�
-//    public GameObject readyText;
-//    public GameObject readyButton;
-//    public GameObject readyButtonEffect;
-
-//    private void Start()
-//    {
-//        //�� ��ư�� ������ AI�÷��̾��
-//        if (playerController.isAIPlayer || this.GetComponentInParent<AIPlayer>().isAIPlayer)
-//        {
-//            playerController.isReady = true; //�ٷ� �غ��Ű��
-//            readyText.SetActive(false); //�ؽ�Ʈ ��Ȱ��ȭ
-//            this.gameObject.SetActive(false); // ��ư ��Ȱ��ȭ
-//        }
-//    }
-
-//    public void readyBtn()
-//    {
-//        if (playerController != null)
-//        {
-//            playerController.isReady = true;
-//            Debug.Log($"{playerController.name}�� �غ�Ǿ����ϴ�!");
-
-//            readyText.SetActive(false); //�ؽ�Ʈ ��Ȱ��ȭ
-//            readyButton.transform.Find("Button2").gameObject.SetActive(false); // ��ư �𵨸� ��Ȱ��ȭ
-
-//            StartCoroutine(removeReadyButton());
-//        }
-//        else
-//        {
-//            Debug.LogError("PlayerController�� �������� �ʾҳ�?");
-//        }
-//    }
-
-//    IEnumerator removeReadyButton()
-//    {
-//        readyButtonEffect.SetActive(true); //����Ʈ ����
-//        yield return new WaitForSeconds(1); //1�� ��ٸ� ������
-
-//        this.gameObject.SetActive(false); // ��ư ��Ȱ��ȭ
-//    }
-//}
-
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
+
 public class ReadyButton : MonoBehaviourPunCallbacks
 {
-    public PlayerController playerController; // �� ��ư�� ����� �÷��̾�
+    public PlayerController playerController;
     public GameObject readyText;
     public GameObject readyButton;
     public GameObject readyButtonEffect;
@@ -65,19 +17,17 @@ public class ReadyButton : MonoBehaviourPunCallbacks
     private void Start()
     {
         PhotonView photonView = GetComponent<PhotonView>();
+        btn = GetComponent<Button>();  // Button 컴포넌트를 가져옵니다.
         if (btn != null && photonView.IsMine)
         {
             btn.onClick.AddListener(OnReadyButtonClicked);
         }
 
-        // MultiplayGameManager �ν��Ͻ� ���� (���� �� �� �� �ִٰ� ����)
+        // MultiplayGameManager를 찾습니다.
         gameManager = FindObjectOfType<MultiplayGameManager>();
-        // �� ������Ʈ�� Button ������Ʈ�� �ִٸ� �����ͼ� �̺�Ʈ ������ �߰�
-        btn = GetComponent<Button>();
 
-        // ���� �� ��ư�� ������ AI��� �ٷ� �غ� ���·� ��ȯ�ϰ� ��ư ��Ȱ��ȭ
-        if (playerController != null &&
-            (playerController.isAIPlayer || GetComponentInParent<AIPlayer>()?.isAIPlayer == true))
+        // AI 플레이어인 경우
+        if (playerController != null && (playerController.isAIPlayer || GetComponentInParent<AIPlayer>()?.isAIPlayer == true))
         {
             playerController.isReady = true;
             readyText.SetActive(false);
@@ -87,37 +37,20 @@ public class ReadyButton : MonoBehaviourPunCallbacks
 
     private void OnDestroy()
     {
-        Debug.Log("Destroy");
-        // �̺�Ʈ ������ ���� (�޸� ���� ����)
         if (btn != null)
         {
             btn.onClick.RemoveListener(OnReadyButtonClicked);
         }
     }
 
-    //public void OnReadyButtonClicked()
-    //{
-    //    if (gameManager != null)
-    //    {
-    //        // ��� Ŭ���̾�Ʈ�� �÷��̾� �غ� ���¸� �˸�
-    //        gameManager.OnClickReadyButtonEventListener();
-
-    //        // ��ư ���Ÿ� ��� Ŭ���̾�Ʈ���� �����ϵ��� RPC ȣ��
-    //        photonView.RPC("RemoveButtonRPC", RpcTarget.All);
-    //    }
-
-
-    //}
     public void OnReadyButtonClicked()
     {
-        // 로컬 플레이어의 커스텀 프로퍼티를 업데이트 (필요한 경우)
+        // 로컬 플레이어의 준비 상태를 설정하고 모든 클라이언트에 동기화합니다.
         PhotonNetwork.LocalPlayer.CustomProperties["IsReady"] = true;
-
-        // 이제 모든 클라이언트에 RPC를 보내 준비 상태를 업데이트하도록 함
         gameManager.photonView.RPC("CheckPlayerReady", RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber);
 
-        // 버튼 제거 (모든 클라이언트에서 로컬 UI 업데이트)
-        RemoveButtonRPC();
+        // 버튼 제거 RPC 호출 (모든 클라이언트에 적용)
+        gameManager.photonView.RPC("RemoveButtonRPC", RpcTarget.AllBuffered);
     }
 
     public void readyBtn()
@@ -125,24 +58,19 @@ public class ReadyButton : MonoBehaviourPunCallbacks
         if (playerController != null)
         {
             playerController.isReady = true;
-            Debug.Log($"{playerController.name}�� �غ�Ǿ����ϴ�!");
+            Debug.Log($"{playerController.name} 준비 완료!");
 
-            // �غ� �ؽ�Ʈ ��Ȱ��ȭ
             readyText.SetActive(false);
-
-            // ��ư ������ "Button2" ������Ʈ�� �ִٸ� ��Ȱ��ȭ (�𵨸� ���� ��)
             Transform button2 = readyButton.transform.Find("Button2");
             if (button2 != null)
             {
                 button2.gameObject.SetActive(false);
             }
-
-            // ����Ʈ�� �����ְ� ���� �ð� �� ��ư ��Ȱ��ȭ ó��
             StartCoroutine(RemoveReadyButton());
         }
         else
         {
-            Debug.LogError("PlayerController�� �������� �ʾҽ��ϴ�!");
+            Debug.LogError("PlayerController가 할당되지 않았습니다!");
         }
     }
 
@@ -159,6 +87,3 @@ public class ReadyButton : MonoBehaviourPunCallbacks
         gameObject.SetActive(false);
     }
 }
-
-
-

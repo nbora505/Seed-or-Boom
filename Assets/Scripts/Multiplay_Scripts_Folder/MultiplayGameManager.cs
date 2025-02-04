@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,7 +7,7 @@ using DG.Tweening;
 using Photon.Pun;
 using Photon.Realtime;
 
-public class MultiplayGameManager : MonoBehaviourPunCallbacks
+public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
 {
     [Header("Game Objects & UI")]
     public List<GameObject> playerList;
@@ -24,16 +24,18 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     public int maxRound = 3;
     public int curTurn;
     public int maxCardCnt = 5;
-    public int leaderIndex = 0; // ÇöÀç ¸®´õ ÇÃ·¹ÀÌ¾îÀÇ ÀÎµ¦½º
+    public int leaderIndex = 0; // í˜„ì¬ ë¦¬ë” í”Œë ˆì´ì–´ì˜ ì¸ë±ìŠ¤
 
     [Header("Game State Variables")]
     public int selectedBomb = -1;
     public int selectedWin = -1;
     public int checkSubmitCard = -1;
     public int selectedCard = 0;
-    public List<int> submitCardList = new List<int>(); // Á¦ÃâµÈ Ä«µå ¸®½ºÆ®
-    public int[] predictedWinCnt;  // ÇÃ·¹ÀÌ¾îº° ¿¹»ó ½Â¼ö
-    public int[] winCntOfEachTurn; // ÅÏº° ½Â¸® È½¼ö ±â·Ï
+    public List<int> submitCardList = new List<int>(); // ì œì¶œëœ ì¹´ë“œ ë¦¬ìŠ¤íŠ¸
+
+    // ë™ê¸°í™”í•  ë°°ì—´ë“¤
+    public int[] predictedWinCnt;  // í”Œë ˆì´ì–´ë³„ ì˜ˆìƒ ìŠ¹ìˆ˜
+    public int[] winCntOfEachTurn; // í„´ë³„ ìŠ¹ë¦¬ íšŸìˆ˜ ê¸°ë¡
 
     [Header("Managers")]
     public CardManager cardManager;
@@ -47,13 +49,32 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     [Tooltip("Spawn Points")]
     public Transform[] spawnPoints;
 
-    // ½Â¼ö ¼±ÅÃ ´Ü°è°¡ ¸ğµÎ ³¡³µ´ÂÁö È®ÀÎÇÏ±â À§ÇÑ ÇÃ·¡±×
+    // ìŠ¹ìˆ˜ ì„ íƒ ë‹¨ê³„ê°€ ëª¨ë‘ ëë‚¬ëŠ”ì§€ í™•ì¸í•˜ê¸° ìœ„í•œ í”Œë˜ê·¸ (ë™ê¸°í™” ëŒ€ìƒ)
     public bool winCountSelectionComplete = false;
 
     private void Awake()
     {
-        PhotonNetwork.AutomaticallySyncScene = false; // ¹æ µ¿±âÈ­ ¹®Á¦ ¹æÁö
+        PhotonNetwork.AutomaticallySyncScene = false; // ë°© ë™ê¸°í™” ë¬¸ì œ ë°©ì§€
     }
+
+    #region IPunObservable êµ¬í˜„
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        // MasterClientê°€ ì“°ê³ , ë‚˜ë¨¸ì§€ëŠ” ì½ìŠµë‹ˆë‹¤.
+        if (stream.IsWriting)
+        {
+            stream.SendNext(winCountSelectionComplete);
+            stream.SendNext(predictedWinCnt);
+            stream.SendNext(winCntOfEachTurn);
+        }
+        else
+        {
+            winCountSelectionComplete = (bool)stream.ReceiveNext();
+            predictedWinCnt = (int[])stream.ReceiveNext();
+            winCntOfEachTurn = (int[])stream.ReceiveNext();
+        }
+    }
+    #endregion
 
     #region Photon Callbacks
     public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -61,13 +82,13 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsMasterClient)
         {
             photonView.RPC("DisconnectedUserDeadAnimation", RpcTarget.All, otherPlayer.ActorNumber);
-            LogText.text = $"ÇÃ·¹ÀÌ¾î {otherPlayer.NickName}°¡ ¹æÀ» ¶°³µ½À´Ï´Ù.";
+            LogText.text = $"í”Œë ˆì´ì–´ {otherPlayer.NickName}ê°€ ë°©ì„ ë– ë‚¬ìŠµë‹ˆë‹¤.";
         }
     }
 
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
-        LogText.text = $"ÇöÀç ¹æÀåÀº {newMasterClient.NickName}ÀÔ´Ï´Ù.";
+        LogText.text = $"í˜„ì¬ ë°©ì¥ì€ {newMasterClient.NickName}ì…ë‹ˆë‹¤.";
     }
     #endregion
 
@@ -104,7 +125,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     public void StartGame()
     {
         startBtn.SetActive(false);
-        LogText.text = "°ÔÀÓ ½ÃÀÛ!";
+        LogText.text = "ê²Œì„ ì‹œì‘!";
         if (PhotonNetwork.IsMasterClient)
             StartCoroutine(StartRoundCoroutine());
     }
@@ -121,7 +142,6 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     {
         predictedWinCnt = new int[playerList.Count];
         winCntOfEachTurn = new int[playerList.Count];
-        // ÃÊ±âÈ­ ½Ã ½Â¼ö ¼±ÅÃ ÇÃ·¡±×µµ false·Î
         winCountSelectionComplete = false;
         cardManager.ResetCardSet();
         foreach (var player in playerList)
@@ -130,7 +150,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         }
     }
 
-    // Ä«µå ºĞ¹è´Â ½Â¼ö ¼±ÅÃ ÈÄ ÁøÇàÇÕ´Ï´Ù.
+    // ì¹´ë“œ ë¶„ë°°ëŠ” ìŠ¹ìˆ˜ ì„ íƒì´ ì™„ë£Œëœ í›„ ì§„í–‰
     [PunRPC]
     void DistributeCards()
     {
@@ -142,27 +162,25 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     void SubmitWinCount(int playerID, int winCount)
     {
         predictedWinCnt[playerID] = winCount;
-        LogText.text = $"{playerList[playerID].name} ½Â¼ö: {winCount}";
+        LogText.text = $"{playerList[playerID].name} ìŠ¹ìˆ˜: {winCount}";
         if (PhotonNetwork.IsMasterClient)
         {
-            // ´ÙÀ½ ÇÃ·¹ÀÌ¾î ÁøÇà
             photonView.RPC("ProcessDecideWinCount", RpcTarget.All, playerID + 1);
         }
     }
 
-    // ½Â¼ö ¼±ÅÃ ÇÁ·Î¼¼½º (¸ğµç ÇÃ·¹ÀÌ¾î°¡ Â÷·Ê´ë·Î ÁøÇà)
+    // ìŠ¹ìˆ˜ ì„ íƒ í”„ë¡œì„¸ìŠ¤ â€“ ëª¨ë“  í”Œë ˆì´ì–´ê°€ ì°¨ë¡€ëŒ€ë¡œ ì§„í–‰
     [PunRPC]
     void ProcessDecideWinCount(int playerID)
     {
         if (playerID >= playerList.Count)
         {
-            // ¸ğµç ÇÃ·¹ÀÌ¾î ½Â¼ö ¼±ÅÃ ¿Ï·á
             winCountSelectionComplete = true;
             return;
         }
         int actualPlayerIndex = (leaderIndex + playerID) % playerList.Count;
         GameObject currentPlayer = playerList[actualPlayerIndex];
-        noticeturnText.text += $"{actualPlayerIndex + 1}¹øÂ°: {currentPlayer.name}\n";
+        noticeturnText.text += $"{actualPlayerIndex + 1}ë²ˆì§¸: {currentPlayer.name}\n";
 
         if (currentPlayer.GetComponent<PhotonView>().IsMine)
         {
@@ -173,13 +191,12 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
             }
             else
             {
-                // ½Â¼ö ¼±ÅÃ UI È°¼ºÈ­ (»ç¶÷ ÇÃ·¹ÀÌ¾î)
                 StartCoroutine(WaitForPlayerWinCountSubmit(actualPlayerIndex));
             }
         }
     }
 
-    // ÅÏ ÁøÇàÀº Ä«µå ºĞ¹è ÈÄ ½ÃÀÛµË´Ï´Ù.
+    // í„´ ì§„í–‰ (ì¹´ë“œ ë¶„ë°° í›„ ì‹œì‘)
     [PunRPC]
     void ProcessTurn(int playerID)
     {
@@ -221,7 +238,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     void UpdateTurnWinner(int winnerID)
     {
         winCntOfEachTurn[winnerID]++;
-        LogText.text = $"{playerList[winnerID].name} ÅÏ ½Â¸®!";
+        LogText.text = $"{playerList[winnerID].name} í„´ ìŠ¹ë¦¬!";
     }
 
     [PunRPC]
@@ -258,7 +275,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     {
         if (playerList.Count == 1)
         {
-            LogText.text = $"ÃÖÈÄÀÇ ½ÂÀÚ: {playerList[0].name}";
+            LogText.text = $"ìµœí›„ì˜ ìŠ¹ì: {playerList[0].name}";
             string winnerName = playerList[0].GetComponent<PhotonView>().Owner.NickName;
             List<string> playerNames = playerList.Select(p => p.GetComponent<PhotonView>().Owner.NickName).ToList();
             firebaseManager.SaveGameResult(winnerName, playerNames);
@@ -267,7 +284,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         }
     }
 
-    // UI¿ë RPC: °¢ Å¬¶óÀÌ¾ğÆ®¿¡¼­ Ä«µå Á¦Ãâ UI È°¼ºÈ­
+    // UIìš© RPC â€“ ê° í´ë¼ì´ì–¸íŠ¸ì—ì„œ ì¹´ë“œ ì œì¶œ UI í™œì„±í™”
     [PunRPC]
     void ShowCardUI(int playerID)
     {
@@ -277,6 +294,13 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
             buttonManager.ShowCard(curCardList, playerID);
         }
     }
+
+    // RPCë¥¼ í†µí•´ ëª¨ë“  í´ë¼ì´ì–¸íŠ¸ì— ì‹œì‘ ë²„íŠ¼ í™œì„±í™” ì‹ í˜¸ ì „ë‹¬ (Buffered ì‚¬ìš©)
+    [PunRPC]
+    void UpdateStartButtonUI()
+    {
+        startBtn.SetActive(true);
+    }
     #endregion
 
     #region Helper Methods & Coroutines
@@ -285,37 +309,29 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         if (playerList.All(p => p.GetComponent<PlayerController>().isReady))
         {
             startBtn.SetActive(true);
-            // MasterClient°¡ ½ÃÀÛ ¹öÆ° È°¼ºÈ­¸¦ ÀüÃ¼¿¡ ¾Ë¸®±â À§ÇÑ RPC È£Ãâ
             photonView.RPC("UpdateStartButtonUI", RpcTarget.AllBuffered);
         }
     }
-    [PunRPC]
-    void UpdateStartButtonUI()
-    {
-        // ¸ğµç Å¬¶óÀÌ¾ğÆ®¿¡¼­ ½ÃÀÛ ¹öÆ°À» È°¼ºÈ­
-        startBtn.SetActive(true);
-    }
-    // ¶ó¿îµå ½ÃÀÛ ÄÚ·çÆ¾ : ½Â¼ö ¼±ÅÃ ÈÄ Ä«µå ºĞ¹è ¹× ÅÏ ÁøÇà
+
+    // ìŠ¹ìˆ˜ ì„ íƒ í›„ ì¹´ë“œ ë¶„ë°° ë° í„´ ì§„í–‰ì„ ìœ„í•œ ì½”ë£¨í‹´
     public IEnumerator StartRoundCoroutine()
     {
         yield return new WaitForSeconds(3f);
         photonView.RPC("ResetLists", RpcTarget.All);
 
-        // ¸ÕÀú ½Â¼ö ¼±ÅÃ ´Ü°è ÁøÇà (Ä«µå´Â ¹èºĞÇÏÁö ¾ÊÀ½)
+        // ë¨¼ì € ìŠ¹ìˆ˜ ì„ íƒ ë‹¨ê³„ ì§„í–‰ â€“ ì¹´ë“œ ë¶„ë°°ëŠ” í•˜ì§€ ì•ŠìŒ
         photonView.RPC("StartDecideWinCount", RpcTarget.All);
-        // ±â´Ù¸² : ¸ğµç ÇÃ·¹ÀÌ¾îÀÇ ½Â¼ö ¼±ÅÃÀÌ ¿Ï·áµÉ ¶§±îÁö ´ë±â
         yield return new WaitUntil(() => winCountSelectionComplete);
 
-        // ½Â¼ö ¼±ÅÃÀÌ ¿Ï·áµÈ ÈÄ Ä«µå ºĞ¹è ÈÄ ÅÏ ÁøÇà
+        // ìŠ¹ìˆ˜ ì„ íƒ ì™„ë£Œ í›„ ì¹´ë“œ ë¶„ë°° ë° í„´ ì§„í–‰
         photonView.RPC("DistributeCards", RpcTarget.All);
         StartCoroutine(StartTurnCoroutine());
     }
 
-    // RPC·Î È£ÃâÇÒ ÁØºñ ´Ü°è
+    // ìŠ¹ìˆ˜ ì„ íƒ ì‹œì‘ RPC í˜¸ì¶œ â€“ MasterClientì—ì„œ ìˆœì°¨ ì§„í–‰
     [PunRPC]
     void StartDecideWinCount()
     {
-        // ½Â¼ö ¼±ÅÃ ÇÁ·Î¼¼½º´Â MasterClient°¡ ¼øÂ÷ÀûÀ¸·Î ÁøÇàÇÏµµ·Ï ÇÔ
         if (PhotonNetwork.IsMasterClient)
         {
             photonView.RPC("ProcessDecideWinCount", RpcTarget.All, 0);
@@ -334,7 +350,6 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         photonView.RPC("ProcessTurn", RpcTarget.All, 0);
     }
 
-    // Ãß°¡µÈ StartNextTurn ¸Ş¼­µå
     void StartNextTurn()
     {
         if (submitCardList.Count >= playerList.Count * 4)
@@ -350,7 +365,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
 
     IEnumerator WaitForPlayerWinCountSubmit(int playerID)
     {
-        LogText.text = $"{playerList[playerID].name} ½Â¼ö ¼±ÅÃ Áß...";
+        LogText.text = $"{playerList[playerID].name} ìŠ¹ìˆ˜ ì„ íƒ ì¤‘...";
         buttonManager.showWinBtn(playerID, playerList[playerID].GetComponent<PlayerController>().winBtn);
         buttonManager.ShowPlayerPanel(true);
 

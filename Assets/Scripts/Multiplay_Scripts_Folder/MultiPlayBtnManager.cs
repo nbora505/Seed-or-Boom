@@ -68,7 +68,6 @@ public class MultiPlayBtnManager : MonoBehaviourPunCallbacks
         if (!multiplayGameManager.playerList[playerid].GetComponent<PhotonView>().IsMine)
             return;
 
-        // winningText가 GameObject라면 GetComponent<Text>()로 Text 컴포넌트를 가져옵니다.
         Text playerText = multiplayGameManager.playerList[playerid]
             .GetComponent<PlayerController>().winningText.GetComponent<Text>();
 
