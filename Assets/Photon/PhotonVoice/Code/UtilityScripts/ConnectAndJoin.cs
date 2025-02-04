@@ -18,7 +18,7 @@ using System.Collections.Generic;
 namespace Photon.Voice.Unity.UtilityScripts
 {
     [RequireComponent(typeof(VoiceConnection))]
-    public class ConnectAndJoin : MonoBehaviour, IConnectionCallbacks, IMatchmakingCallbacks
+    public class ConnectAndJoin : MonoBehaviour, IMatchmakingCallbacks
     {
         private VoiceConnection voiceConnection;
 
