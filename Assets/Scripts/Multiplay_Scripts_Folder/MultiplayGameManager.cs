@@ -57,6 +57,13 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
         PhotonNetwork.AutomaticallySyncScene = false; // 방 동기화 문제 방지
     }
 
+    public void UpdatePlayerList()
+    {
+        // "Player" 태그가 붙은 모든 오브젝트를 찾아서 ActorNumber 기준으로 정렬 후 리스트로 저장합니다.
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        playerList = new List<GameObject>(players.OrderBy(p => p.GetComponent<PhotonView>().Owner.ActorNumber));
+        Debug.Log($"UpdatePlayerList: playerList Count = {playerList.Count}");
+    }
     #region IPunObservable 구현
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
