@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
+using Photon.Pun;
 
 
 public class GameManager : MonoBehaviour
@@ -19,6 +20,9 @@ public class GameManager : MonoBehaviour
     public GameObject winEffect;
     public GameObject centerCanvas;
     public GameObject pointer;
+
+    public GameObject[] characterPrefabs;
+    public GameObject spawnCharacter;
 
     public Text noticeturnText;
     public Text LogText;
@@ -44,6 +48,12 @@ public class GameManager : MonoBehaviour
     public ButtonManager buttonManager;
     public CameraManager cameraManager;
 
+
+    private void Awake()
+    {
+        SpawnPlayer();
+    }
+
     void Start()
     {      
         //플레이어 객체들 리스트에 추가
@@ -59,6 +69,17 @@ public class GameManager : MonoBehaviour
 
         //준비/시작버튼 대기
         StartCoroutine(ReadyToStart());
+    }
+
+    void SpawnPlayer()
+    {
+        int characterSelectIndex = 0;
+
+        // 프리팹 선택 및 스폰 위치 계산
+        GameObject selectedCharacter = characterPrefabs[characterSelectIndex];
+        GameObject spawnedPlayer = Instantiate(selectedCharacter, spawnCharacter.transform.position, Quaternion.identity);
+        spawnedPlayer.transform.parent = spawnCharacter.transform;
+
     }
 
     //플레이어들이 모두 Ready 상태인지 체크
