@@ -361,7 +361,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     void DistributeCards()
     {
         cardManager.DoCardShuffle();
-        cardManager.TestUserCard(playerList.Count);
+        cardManager.TestUserCard(playerList.Count, true);
     }
     void StartTurn()
     {

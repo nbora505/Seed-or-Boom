@@ -102,7 +102,7 @@ public class GameManager : MonoBehaviour
         centerCardDeck.SetActive(true);
         yield return new WaitForSeconds(1f);
         cardManager.DoCardShuffle();
-        cardManager.TestUserCard(playerList.Count);
+        cardManager.TestUserCard(playerList.Count, false);
 
         //승수 결정받기;
         yield return StartCoroutine(DecideWinCnt());
