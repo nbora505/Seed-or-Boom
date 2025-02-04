@@ -161,11 +161,25 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     void SubmitWinCount(int playerID, int winCount)
     {
+        if (predictedWinCnt == null || playerID < 0 || playerID >= predictedWinCnt.Length)
+        {
+            Debug.LogError($"SubmitWinCount: playerID {playerID} out of range. Array length: {predictedWinCnt?.Length}");
+            return;
+        }
+
         predictedWinCnt[playerID] = winCount;
+
+        if (playerID < 0 || playerID >= playerList.Count)
+        {
+            Debug.LogError($"SubmitWinCount: playerID {playerID} out of range in playerList. Count: {playerList.Count}");
+            return;
+        }
+
         LogText.text = $"{playerList[playerID].name} 승수: {winCount}";
+
         if (PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC("ProcessDecideWinCount", RpcTarget.All, playerID + 1);
+            photonView.RPC("ProcessDecideWinCount", RpcTarget.AllBuffered, playerID + 1);
         }
     }
 
@@ -317,14 +331,16 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     public IEnumerator StartRoundCoroutine()
     {
         yield return new WaitForSeconds(3f);
-        photonView.RPC("ResetLists", RpcTarget.All);
+        // 버퍼링된 RPC로 상태 초기화
+        photonView.RPC("ResetLists", RpcTarget.AllBuffered);
 
-        // 먼저 승수 선택 단계 진행 – 카드 분배는 하지 않음
-        photonView.RPC("StartDecideWinCount", RpcTarget.All);
+        // 승수 선택 단계 시작 (버퍼링)
+        photonView.RPC("StartDecideWinCount", RpcTarget.AllBuffered);
+
         yield return new WaitUntil(() => winCountSelectionComplete);
 
-        // 승수 선택 완료 후 카드 분배 및 턴 진행
-        photonView.RPC("DistributeCards", RpcTarget.All);
+        // 승수 선택 완료 후 카드 분배 및 턴 진행 (버퍼링)
+        photonView.RPC("DistributeCards", RpcTarget.AllBuffered);
         StartCoroutine(StartTurnCoroutine());
     }
 
