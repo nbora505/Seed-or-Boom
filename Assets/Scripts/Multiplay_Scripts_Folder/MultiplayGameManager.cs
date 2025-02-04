@@ -237,9 +237,12 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
 
     void CheckAllPlayerReady()
     {
-        if (playerList.All(player => 
+        if (playerList.All(player =>
         player.GetComponent<PlayerController>().isReady))
+        {
             startBtn.SetActive(true);
+            startBtn.GetComponent<Button>().onClick.AddListener(OnClickStartGameEventListener);
+        }
     }
 
     #region GameStartWithRoundProgress
