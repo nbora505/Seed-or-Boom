@@ -42,7 +42,10 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     public MultiPlayBtnManager buttonManager;
     public CameraManager cameraManager;
     public FirebaseManager firebaseManager;
-    
+
+    private int currentTurnPlayerIndex = -1;
+    private bool isTurnProcessing = false;
+
     [Tooltip("Character's Prefabs")]
     public GameObject[] characterPrefabs;
 
@@ -305,24 +308,47 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     void ProcessDecideWinCount(int playerID)
     {
         int actualPlayerIndex = (leaderIndex + playerID) % playerList.Count;
-        GameObject currentPlayer = playerList[actualPlayerIndex];
-        Debug.Log($"{actualPlayerIndex + 1}번째 순서의 플레이어: {currentPlayer.name}");
 
-        string playerName = playerList[actualPlayerIndex].name;
-        Debug.LogWarning($"{actualPlayerIndex + 1}번 째 순서 {playerName}입니다.");
+        // 모든 클라이언트에게 현재 턴 정보 전달
+        photonView.RPC("UpdateCurrentTurnPlayer", RpcTarget.All, actualPlayerIndex);
+
+        GameObject currentPlayer = playerList[actualPlayerIndex];
+        string playerName = currentPlayer.name;
+
         noticeturnText.text += $"{actualPlayerIndex + 1}번 째 순서 : {playerName}\n";
 
-        if (playerList[actualPlayerIndex].GetComponent<PhotonView>().IsMine)
+        if (currentPlayer.GetComponent<PhotonView>().IsMine)
         {
-            if (playerList[actualPlayerIndex].GetComponent<AIPlayer>().isAIPlayer)
+            if (currentPlayer.GetComponent<AIPlayer>().isAIPlayer)
             {
-                int aiWinCount = playerList[actualPlayerIndex].GetComponent<AIPlayer>().CalculateOddsOfWinning(0.69f, 0.29f);
+                int aiWinCount = currentPlayer.GetComponent<AIPlayer>().CalculateOddsOfWinning(0.69f, 0.29f);
                 photonView.RPC("SubmitWinCount", RpcTarget.All, actualPlayerIndex, aiWinCount);
             }
             else
             {
+                photonView.RPC("ShowWinButtonUI", RpcTarget.All, actualPlayerIndex);
                 StartCoroutine(WaitForPlayerWinCountSubmit(actualPlayerIndex));
             }
+        }
+    }
+
+    [PunRPC]
+    void UpdateCurrentTurnPlayer(int playerIndex)
+    {
+        currentTurnPlayerIndex = playerIndex;
+        isTurnProcessing = true;
+
+        string playerName = playerList[playerIndex].name;
+        LogText.text = $"현재 턴: {playerName}의 차례입니다.";
+    }
+
+    [PunRPC]
+    void ShowWinButtonUI(int playerIndex)
+    {
+        if (playerList[playerIndex].GetComponent<PhotonView>().IsMine)
+        {
+            buttonManager.ShowWinBtn(playerIndex, playerList[playerIndex].GetComponent<PlayerController>().winBtn);
+            buttonManager.ShowPlayerPanel(true);
         }
     }
 
@@ -330,17 +356,20 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     {
         LogText.text = "";
         LogText.DOText($"{playerList[playerID].name}님이 승수를 선택할 차례입니다.", 1);
-        buttonManager.showWinBtn(playerID, playerList[playerID].GetComponent<PlayerController>().winBtn);
-        buttonManager.ShowPlayerPanel(true);
 
         yield return new WaitUntil(() => selectedWin == 0);
 
         photonView.RPC("SubmitWinCount", RpcTarget.All, playerID, predictedWinCnt[playerID]);
-
-        buttonManager.ShowPlayerPanel(false);
-        buttonManager.hideWinBtn(playerList[playerID].GetComponent<PlayerController>().winBtn);
+        photonView.RPC("HideWinButtonUI", RpcTarget.All, playerID);
 
         selectedWin = -1;
+    }
+
+    [PunRPC]
+    void HideWinButtonUI(int playerID)
+    {
+        buttonManager.ShowPlayerPanel(false);
+        buttonManager.hideWinBtn(playerList[playerID].GetComponent<PlayerController>().winBtn);
     }
 
     [PunRPC]
