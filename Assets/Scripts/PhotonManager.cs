@@ -258,6 +258,11 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     }
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        if (!gameObject.activeInHierarchy)
+        {
+            gameObject.SetActive(true);
+        }
+
         if (scene.name == "Map1")
         {
             var multiplayGameManager = GameObject.Find("MultiplayGameManager").GetComponent<MultiplayGameManager>();
