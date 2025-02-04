@@ -245,20 +245,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
         // 다음 플레이어의 승수 입력 순서를 진행 (현재 순서는 playerIndex 기준이 아닌 leader 기준의 순번)
         if (PhotonNetwork.IsMasterClient)
         {
-            int currentOrder;
-
-            if (playerIndex >= leaderIndex)
-            {
-                currentOrder = playerIndex - leaderIndex;
-            }
-            else
-            {
-                currentOrder = playerList.Count - leaderIndex + playerIndex;
-            }
-
-            int nextOrder = currentOrder + 1;
-
-            Debug.LogError($"Current playerIndex: {playerIndex}, Leader: {leaderIndex}, CurrentOrder: {currentOrder}, NextOrder: {nextOrder}");
+            int nextOrder = (playerIndex - leaderIndex + playerList.Count + 1) % playerList.Count;
 
             // 다음 순서는 현재 playerIndex + 1를 의미 (leader 기준 순서 계산)
             photonView.RPC("RPC_ProcessDecideWinCount", RpcTarget.AllBuffered, nextOrder);
