@@ -381,7 +381,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             if (PhotonNetwork.IsMasterClient)
             {
-                photonView.RPC("RPC_IncreaseTurnIndex", RpcTarget.All);
+                photonView.RPC("RPC_CheckTurnResult", RpcTarget.All);
             }
         }
     }
@@ -435,14 +435,23 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         if (!PhotonNetwork.IsMasterClient) return;
 
-        for (int i = 0; i < playerList.Count; i++)
+        int winnerIndex = -1;
+        int highestCard = -1;
+
+        for (int i = 0; i < submitCardList.Count; i++)
         {
-            bool isWinner = cardManager.CardCompare(submitCardList, i);
-            if (isWinner)
+            if (submitCardList[i] > highestCard)
             {
-                photonView.RPC("RPC_UpdateTurnWinner", RpcTarget.All, i);
+                highestCard = submitCardList[i];
+                winnerIndex = i;
             }
         }
+
+        if (winnerIndex != -1)
+        {
+            photonView.RPC("RPC_UpdateTurnWinner", RpcTarget.All, winnerIndex);
+        }
+
         StartNextTurn();
     }
 
