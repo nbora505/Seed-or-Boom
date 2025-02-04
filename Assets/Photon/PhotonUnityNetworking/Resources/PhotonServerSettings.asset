@@ -67,6 +67,19 @@ MonoBehaviour:
   - OnSubmitScoreButtonClicked
   - SendWinScore
   - GetWinScore
+  - UpdateTurnUI
+  - HideWinButtonUI
+  - ShowWinButtonUI
+  - UpdateCurrentTurnPlayer
+  - ShowPlayerPanel
+  - OnSubmitCardButtonClicked
+  - ProcessCardSubmission
+  - ResetCardState
+  - ShowCard
+  - ShowWinBtn
+  - SubmitWinCountUI
+  - SyncCardState
+  - UpdateExpectedWin
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
