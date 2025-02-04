@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using Photon.Pun;
 using Photon.Realtime;
+using ExitGames.Client.Photon;
 
 
 public class MultiplayGameManager : MonoBehaviourPunCallbacks
@@ -42,21 +43,21 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     public ButtonManager buttonManager;
     public CameraManager cameraManager;
     public FirebaseManager firebaseManager;
-    
+
     [Tooltip("Character's Prefabs")]
     public GameObject[] characterPrefabs;
 
     [Tooltip("Empty Gameobj of SpawnPoints")]
     public Transform[] spawnPoints;
 
-    
+
     #region UnityCallBacks
     private void Awake()
     {
         PhotonNetwork.AutomaticallySyncScene = false; // 방 터짐 방지
-        
+
     }
-    
+
     #endregion
 
     [PunRPC]
@@ -74,7 +75,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     }
     void nun()
     {
-        
+
     }
     #region PunCallBacksLines
     //public override void OnJoinedRoom()
@@ -108,6 +109,15 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
 
         Debug.LogWarning($"현재 방장은 {newMasterClient}입니다.");
     }
+
+    //public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+    //{
+    //    if (!PhotonNetwork.IsMasterClient) return;
+    //    if (!changedProps.ContainsKey("IsReady")) return;
+
+    //    CheckAllPlayerReady();
+    //} 버전이 낮아서 불가능.
+
     #endregion
     //public IEnumerator WaitForPlayerListAndSpawn(int actorNumberID)
     //{
@@ -117,7 +127,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     //    Debug.Log($"현재 플레이어 리스트 수: {PhotonNetwork.PlayerList.Length}");
 
     //    SpwanPlayer(actorNumberID-1);
-        
+
     //}
     #region PunRPCLines
 
@@ -154,10 +164,10 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         ////    photonView.RPC("StartGame", RpcTarget.All);
         ////}
         ///
-       
+
         GameObject player = playerList.Find(player => player.GetComponent<PhotonView>().Owner.ActorNumber == playerID);
 
-        if(player != null) player.GetComponent<PlayerController>().isReady = true;
+        if (player != null) player.GetComponent<PlayerController>().isReady = true;
 
         if (PhotonNetwork.IsMasterClient) CheckAllPlayerReady();
     }
@@ -219,27 +229,33 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     /// </summary>
 
     #region ButtonFuncLines
-    public void  OnClickReadyButtonEventListener()
-    {
-        photonView.RPC("CheckPlayerReady", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber);
-        Destroy(this.gameObject);
-    }
+    //public void  OnClickReadyButtonEventListener()
+    //{
+    //    photonView.RPC("CheckPlayerReady", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber);
+    //    Destroy(this.gameObject);
+    //}
 
     public void OnClickStartGameEventListener()
     {
         if (PhotonNetwork.IsMasterClient)
-        { 
+        {
             photonView.RPC("StartGame", RpcTarget.All);
             isGameReady = true;
         }
     }
     #endregion
 
-    void CheckAllPlayerReady()
+    public void CheckAllPlayerReady()
     {
-        if (playerList.All(player => 
-        player.GetComponent<PlayerController>().isReady))
+        var players = PhotonNetwork.PlayerList;
+
+        if (players.All(player => player.CustomProperties.ContainsKey("IsReady") && (bool)player.CustomProperties["IsReady"]))
+        {
             startBtn.SetActive(true);
+        }
+        //if (playerList.All(player => 
+        //player.GetComponent<PlayerController>().isReady))
+        //    startBtn.SetActive(true);
     }
 
     #region GameStartWithRoundProgress
@@ -253,7 +269,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
             StartCoroutine(StartRoundCoroutine());
         //Invoke(nameof(StartRound), 3f);
     }
-    
+
     [PunRPC]
     void UpdateLeaderPlayer(int newLeaderIndex)
     {
@@ -282,10 +298,10 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void StartDecideWinCount()
     {
-        if(!PhotonNetwork.IsMasterClient) return;
+        if (!PhotonNetwork.IsMasterClient) return;
 
         Debug.Log("***************Win Decide");
-        photonView.RPC("ProcessDecideWinCount",RpcTarget.All, 0);
+        photonView.RPC("ProcessDecideWinCount", RpcTarget.All, 0);
     }
 
     [PunRPC]
@@ -362,7 +378,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     }
     void StartTurn()
     {
-        if(!PhotonNetwork.IsMasterClient) return;
+        if (!PhotonNetwork.IsMasterClient) return;
 
         Debug.LogWarning("*******************turn Start");
         photonView.RPC("ProcessTurn", RpcTarget.All, 0);
@@ -371,9 +387,9 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void ProcessTurn(int playerID)
     {
-        if(playerID >= playerList.Count)
+        if (playerID >= playerList.Count)
         {
-            if(PhotonNetwork.IsMasterClient)
+            if (PhotonNetwork.IsMasterClient)
                 photonView.RPC("CheckTurnResult", RpcTarget.All);
             return;
         }
@@ -421,7 +437,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
             }
 
             //// 턴 이동
-            if(PhotonNetwork.IsMasterClient &&  submitCardList.Count >= playerList.Count)
+            if (PhotonNetwork.IsMasterClient && submitCardList.Count >= playerList.Count)
             {
                 photonView.RPC("ProcessTurn", RpcTarget.All, playerID + 1);
             }
@@ -461,7 +477,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
 
     void StartNextTurn()
     {
-        if(submitCardList.Count >= playerList.Count * 4)
+        if (submitCardList.Count >= playerList.Count * 4)
         {
             photonView.RPC("StartRoundEnd", RpcTarget.All);
         }
@@ -476,8 +492,8 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     void StartRoundEnd()
     {
         Debug.Log("*****************result round");
-        
-        if(PhotonNetwork.IsMasterClient)
+
+        if (PhotonNetwork.IsMasterClient)
         {
             StartCoroutine(ProcessRoundEnd());
         }
@@ -489,7 +505,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         GameObject deadPlayer = playerList[playerID];
         deadList.Add(deadPlayer);
     }
-    
+
     [PunRPC]
     void PrepareNextRound()
     {
@@ -497,19 +513,19 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         noticeturnText.text = "";
         curRound++;
 
-        if(playerList.Count <= 1)
+        if (playerList.Count <= 1)
         {
             photonView.RPC("EndGame", RpcTarget.All);
         }
         else
         {
-            if(curTurn > maxRound)
+            if (curTurn > maxRound)
             {
                 photonView.RPC("EndGame", RpcTarget.All);
             }
             else
             {
-                if(PhotonNetwork.IsMasterClient)
+                if (PhotonNetwork.IsMasterClient)
                 {
                     leaderIndex = (leaderIndex + 1) % playerList.Count;
                     photonView.RPC("UpdateLeaderPlayer", RpcTarget.All, leaderIndex);
@@ -547,7 +563,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void EndGame()
     {
-        if(playerList.Count == 1)
+        if (playerList.Count == 1)
         {
             LogText.text = $"최후의 승자는 {playerList[0].gameObject.name}";
             string winnerName = playerList[0].GetComponent<PhotonView>().Owner.NickName;
@@ -586,11 +602,11 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
 
     IEnumerator ProcessRoundEnd()
     {
-        for(int i = 0; i< playerList.Count; i++) 
+        for (int i = 0; i < playerList.Count; i++)
         {
             yield return StartCoroutine(CheckPlayerResult(i));
 
-            if(CheckGameEnd())
+            if (CheckGameEnd())
             {
                 photonView.RPC("EndGame", RpcTarget.All);
                 yield break;
@@ -627,6 +643,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(1f);
     }
     #endregion
+}
 /*
     void Start()
     {
@@ -917,4 +934,3 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         }
     }
 */
-}
