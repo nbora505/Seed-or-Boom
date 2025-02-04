@@ -63,13 +63,24 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
+    public override void OnJoinedRoom()
+    {
+        UpdatePlayerList();
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        UpdatePlayerList();
+    }
     #region MonoBehaviour & Photon Setup
     private void Awake()
     {
         // Photon 동기화 문제 방지를 위해 자동 씬 동기화 비활성화
         PhotonNetwork.AutomaticallySyncScene = false;
     }
-    public void UpdatePlayerList()
+
+    [PunRPC]
+    public void RPC_UpdatePlayerList()
     {
         // "Player" 태그가 붙은 모든 오브젝트를 찾아 ActorNumber 기준(오름차순)으로 정렬
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
@@ -77,6 +88,11 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
             players.OrderBy(p => p.GetComponent<PhotonView>().Owner.ActorNumber)
         );
         Debug.Log($"UpdatePlayerList: playerList Count = {playerList.Count}");
+    }
+
+    public void UpdatePlayerList()
+    {
+        photonView.RPC("RPC_UpdatePlayerList", RpcTarget.All);
     }
 
     #region MonoBehaviour Methods
@@ -127,6 +143,8 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     #region Photon Callbacks
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
+        UpdatePlayerList();
+
         // 여기서 actorNumber(Photon의 1부터 시작하는 번호)를 사용
         if (PhotonNetwork.IsMasterClient)
         {
