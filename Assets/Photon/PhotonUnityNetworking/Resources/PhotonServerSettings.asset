@@ -69,6 +69,24 @@ MonoBehaviour:
   - GetWinScore
   - ShowCardUI
   - UpdateStartButtonUI
+  - RPC_CheckPlayerReady
+  - RPC_CheckTurnResult
+  - RPC_DisconnectedUserDeadAnimation
+  - RPC_DistributeCards
+  - RPC_EndGame
+  - RPC_PrepareNextRound
+  - RPC_ProcessDecideWinCount
+  - RPC_ProcessTurn
+  - RPC_RemoveDisconnectUserFromList
+  - RPC_ResetLists
+  - RPC_ShowCardUI
+  - RPC_StartDecideWinCount
+  - RPC_StartGame
+  - RPC_StartRoundEnd
+  - RPC_SubmitWinCount
+  - RPC_UpdateLeaderPlayer
+  - RPC_UpdateStartButtonUI
+  - RPC_UpdateTurnWinner
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

@@ -15414,7 +15414,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1077264572}
         m_TargetAssemblyTypeName: MultiplayGameManager, Assembly-CSharp
-        m_MethodName: StartGame
+        m_MethodName: RPC_StartGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -35573,6 +35573,7 @@ MonoBehaviour:
   - {fileID: 2035100915}
   - {fileID: 1330498761}
   - {fileID: 1766890556}
+  winCountSelectionComplete: 0
 --- !u!114 &1077264573
 MonoBehaviour:
   m_ObjectHideFlags: 0
