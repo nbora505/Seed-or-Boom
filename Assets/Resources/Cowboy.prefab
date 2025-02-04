@@ -1987,6 +1987,8 @@ MonoBehaviour:
   readyText: {fileID: 7661062494712760689}
   readyButton: {fileID: 5156235811094000774}
   readyButtonEffect: {fileID: 2116774339944012746}
+  btn: {fileID: 0}
+  gameManager: {fileID: 0}
 --- !u!114 &343918725354634861
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -44,16 +44,16 @@ public class OVRPlayerControllerPhotonSync : MonoBehaviourPunCallbacks
             return;
         }
 
-        if(OVRInput.Get(OVRInput.RawButton.LIndexTrigger))
-        {
-            cardObj.SetActive(true);
-            // card apear
-        }
+        //if(OVRInput.Get(OVRInput.RawButton.LIndexTrigger))
+        //{
+        //    cardObj.SetActive(true);
+        //    // card apear
+        //}
 
-        if(OVRInput.GetUp(OVRInput.RawButton.LIndexTrigger))
-        {
-            cardObj.SetActive(false);
-            // card disapear
-        }
+        //if(OVRInput.GetUp(OVRInput.RawButton.LIndexTrigger))
+        //{
+        //    cardObj.SetActive(false);
+        //    // card disapear
+        //}
     }
 }

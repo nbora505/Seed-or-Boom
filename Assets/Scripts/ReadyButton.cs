@@ -59,8 +59,8 @@ public class ReadyButton : MonoBehaviourPunCallbacks
     public GameObject readyButton;
     public GameObject readyButtonEffect;
 
-    private Button btn;
-    private MultiplayGameManager gameManager;
+    public Button btn;
+    public MultiplayGameManager gameManager;
 
     private void Start()
     {
@@ -107,7 +107,7 @@ public class ReadyButton : MonoBehaviourPunCallbacks
         }
 
         // ���� UI ó�� �� ���� ����
-        readyBtn();
+        RemoveButtonRPC();
     }
 
     public void readyBtn()
