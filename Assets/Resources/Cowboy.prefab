@@ -3460,7 +3460,17 @@ MonoBehaviour:
   bombVisible: 0
   isDead: 0
   gm: {fileID: 0}
-  cardDeckObject: {fileID: 0}
+  winBtn: {fileID: 4629816041383069350}
+  playerCanvas: {fileID: 2193673012714780915}
+  winningText: {fileID: 7010268506959844705}
+  increaseBtn: {fileID: 2965962456256825934}
+  decreaseBtn: {fileID: 5609023943375067192}
+  cardPosList:
+  - {fileID: 9092529109604287002}
+  - {fileID: 8128852346787773493}
+  - {fileID: 2561635647673319772}
+  - {fileID: 4763545860315491206}
+  cardDeckObject: {fileID: 1682544497785433253}
   quads: {fileID: 0}
   expectedWins: 0
   nowTotalWins: 0
@@ -3488,6 +3498,12 @@ MonoBehaviour:
   bombVisible: 0
   isDead: 0
   gm: {fileID: 0}
+  winBtn: {fileID: 0}
+  playerCanvas: {fileID: 0}
+  winningText: {fileID: 0}
+  increaseBtn: {fileID: 0}
+  decreaseBtn: {fileID: 0}
+  cardPosList: []
   cardDeckObject: {fileID: 0}
   quads: {fileID: 0}
   expectedWins: 0
@@ -3772,6 +3788,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b4678057618dc1a45a02e48a21d57282, type: 3}
+--- !u!1 &2965962456256825934 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3003465940160014079, guid: b4678057618dc1a45a02e48a21d57282, type: 3}
+  m_PrefabInstance: {fileID: 38073337622932657}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5105600523219827125 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5070490091885778180, guid: b4678057618dc1a45a02e48a21d57282, type: 3}
@@ -3866,6 +3887,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 93b772ea76cbcf94c8f29492cbcff27a, type: 3}
+--- !u!1 &5609023943375067192 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5440926635135920971, guid: 93b772ea76cbcf94c8f29492cbcff27a, type: 3}
+  m_PrefabInstance: {fileID: 456355039312933747}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6531018832942139866 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6698993923845782185, guid: 93b772ea76cbcf94c8f29492cbcff27a, type: 3}
@@ -4733,6 +4759,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 042c287632f3a3245a823ba615522f63, type: 3}
+--- !u!1 &1682544497785433253 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4760409400617906469, guid: 042c287632f3a3245a823ba615522f63, type: 3}
+  m_PrefabInstance: {fileID: 6145661345091771776}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5434165481181160394 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2171806872908430922, guid: 042c287632f3a3245a823ba615522f63, type: 3}

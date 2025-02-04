@@ -39,7 +39,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
 
     public CardManager cardManager;
     public ScoreManager scoreManager;
-    public ButtonManager buttonManager;
+    public MultiPlayBtnManager buttonManager;
     public CameraManager cameraManager;
     public FirebaseManager firebaseManager;
     
@@ -320,7 +320,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     {
         LogText.text = "";
         LogText.DOText($"{playerList[playerID].name}님이 승수를 선택할 차례입니다.", 1);
-        buttonManager.showWinBtn();
+        buttonManager.showWinBtn(playerID, playerList[playerID].GetComponent<PlayerController>().winBtn);
         buttonManager.ShowPlayerPanel(true);
 
         yield return new WaitUntil(() => selectedWin == 0);
@@ -328,7 +328,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         photonView.RPC("SubmitWinCount", RpcTarget.All, playerID, predictedWinCnt[playerID]);
 
         buttonManager.ShowPlayerPanel(false);
-        buttonManager.hideWinBtn();
+        buttonManager.hideWinBtn(playerList[playerID].GetComponent<PlayerController>().winBtn);
 
         selectedWin = -1;
     }
@@ -415,7 +415,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
                 // 현재 플레이어의 카드만 표시
                 LogText.text = "";
                 LogText.text = playerName + " 카드 선택 하세요";
-                buttonManager.ShowCard(curCardList);
+                buttonManager.ShowCard(curCardList, playerID);
 
                 //// 플레이어가 카드를 제출할 때까지 대기
                 yield return new WaitUntil(() => checkSubmitCard == 0);

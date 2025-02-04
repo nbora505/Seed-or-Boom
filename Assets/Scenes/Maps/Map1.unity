@@ -7734,6 +7734,7 @@ Transform:
   - {fileID: 1400924155}
   - {fileID: 934752433}
   - {fileID: 365595090}
+  - {fileID: 1590931189}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &272318990
@@ -24629,6 +24630,7 @@ MonoBehaviour:
   bombVisible: 0
   isDead: 0
   gm: {fileID: 1598734125}
+  winBtn: {fileID: 0}
   cardDeckObject: {fileID: 0}
   quads: {fileID: 0}
   expectedWins: 0
@@ -35552,7 +35554,7 @@ MonoBehaviour:
   winCntOfEachTurn: 
   cardManager: {fileID: 1400924154}
   scoreManager: {fileID: 365595091}
-  buttonManager: {fileID: 934752434}
+  buttonManager: {fileID: 1590931190}
   cameraManager: {fileID: 0}
   firebaseManager: {fileID: 0}
   characterPrefabs:
@@ -39870,6 +39872,7 @@ MonoBehaviour:
   bombVisible: 0
   isDead: 0
   gm: {fileID: 1598734125}
+  winBtn: {fileID: 0}
   cardDeckObject: {fileID: 0}
   quads: {fileID: 0}
   expectedWins: 0
@@ -50573,6 +50576,64 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4367446063463388806, guid: 9dd78571b67b563409c6f199cfce47b6, type: 3}
   m_PrefabInstance: {fileID: 1590140055}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1590931188
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1590931189}
+  - component: {fileID: 1590931190}
+  m_Layer: 0
+  m_Name: MultiButtonManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1590931189
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1590931188}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 270769330}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1590931190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1590931188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a8f18384a8eb9b4a9e7590a863f476c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  multiplayGameManager: {fileID: 1077264572}
+  scoreManager: {fileID: 365595091}
+  cardManager: {fileID: 1400924154}
+  logText: {fileID: 1057223484}
+  playerLogText: {fileID: 1538823220}
+  cardButtonPrefab:
+  - {fileID: 3263101730794325902, guid: ee8adbfefaa9d12468924c7dc2e8e73e, type: 3}
+  - {fileID: 6543507672598923233, guid: c72e00640585a9846b99016fb5c41d0b, type: 3}
+  - {fileID: 5379619790451274251, guid: 4fbd51bc63fbe334488a64fd531f4acf, type: 3}
+  - {fileID: 5852004934108787535, guid: 33f0bc96524b59c439d07758b8858309, type: 3}
+  buttonTransform: {fileID: 0}
+  expectedWin: 0
+  selectCard: 0
+  activeCardInstances: []
 --- !u!1 &1598734124
 GameObject:
   m_ObjectHideFlags: 0
@@ -64351,6 +64412,7 @@ MonoBehaviour:
   bombVisible: 0
   isDead: 0
   gm: {fileID: 1598734125}
+  winBtn: {fileID: 0}
   cardDeckObject: {fileID: 0}
   quads: {fileID: 0}
   expectedWins: 0

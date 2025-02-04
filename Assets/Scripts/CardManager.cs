@@ -120,12 +120,7 @@ public class CardManager : MonoBehaviour
 
                 for (int j = 0; j < 4; j++)
                 {
-                    if (multiplayGameManager.playerList[i].GetComponent<PlayerController>().isAIPlayer || gameManager.playerList[i].GetComponent<AIPlayer>().isAIPlayer)
-                    {
-                        multiplayGameManager.playerList[i].GetComponent<AIPlayer>().cardList.Add(GiveACardToUsers());
-                    }
-                    else
-                        multiplayGameManager.playerList[i].GetComponent<PlayerController>().cardList.Add(GiveACardToUsers());
+                    multiplayGameManager.playerList[i].GetComponent<PlayerController>().cardList.Add(GiveACardToUsers());
                 }
             }
             else

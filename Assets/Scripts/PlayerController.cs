@@ -25,6 +25,15 @@ public class PlayerController : MonoBehaviour
     public GameManager gm;
     Animator anim;
 
+    [Header("For Multi")]
+    public GameObject winBtn;
+    public GameObject playerCanvas;
+    public GameObject winningText;
+    public GameObject increaseBtn;
+    public GameObject decreaseBtn;
+
+    public List<Transform> cardPosList = new List<Transform>();
+
     public GameObject cardDeckObject;
     public GameObject quads;
 
