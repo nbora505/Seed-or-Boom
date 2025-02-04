@@ -267,6 +267,8 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
                 controller.cardList.Add(allCards[i * 4 + j]);
             }
             controller.cardDeckObject.SetActive(true);
+
+
         }
     }
 
@@ -491,11 +493,13 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         // 승수 선택 단계 시작 (Buffered) <- 순서 바꿔야 함. 카드를 제출하고 그 다음 승수 선택으로
         photonView.RPC("RPC_DistributeCards", RpcTarget.AllBuffered);
-        
+
+        photonView.RPC("RPC_StartDecideWinCount", RpcTarget.AllBuffered);
+
         yield return new WaitUntil(() => winCountSelectionComplete);
 
         // 승수 선택 완료 후 카드 분배 및 턴 진행
-        photonView.RPC("RPC_StartDecideWinCount", RpcTarget.AllBuffered);
+        //photonView.RPC("RPC_StartDecideWinCount", RpcTarget.AllBuffered);
         StartCoroutine(StartTurnCoroutine());
     }
 
