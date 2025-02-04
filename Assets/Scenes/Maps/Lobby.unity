@@ -64969,12 +64969,12 @@ MonoBehaviour:
   userWin: {fileID: 1492879741}
   userLose: {fileID: 1553392888}
   userChar: {fileID: 1569905848}
-  member1: {fileID: 0}
-  member2: {fileID: 0}
-  member3: {fileID: 0}
-  mode: {fileID: 0}
-  startTime: {fileID: 0}
-  winner: {fileID: 0}
+  member1: {fileID: 691023261}
+  member2: {fileID: 776399812}
+  member3: {fileID: 1383089436}
+  mode: {fileID: 372947284}
+  startTime: {fileID: 1518369035}
+  winner: {fileID: 892939898}
 --- !u!1 &1831514641
 GameObject:
   m_ObjectHideFlags: 0

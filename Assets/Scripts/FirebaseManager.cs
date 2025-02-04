@@ -7,6 +7,7 @@ using Firebase.Auth;
 using Firebase.Extensions;
 using System.Diagnostics;
 using Debug = UnityEngine.Debug;
+using System;
 public class FirebaseManager : MonoBehaviour
 {
     private FirebaseFirestore db;
@@ -121,14 +122,17 @@ public class FirebaseManager : MonoBehaviour
 
     public IEnumerator GetGamedata()
     {
-        getDataFirebase.GetGameData(1,1);
+        string day = DateTime.Today.ToString("MMdd");
+        day = "0131";
+        getDataFirebase.GetGameData(int.Parse(day),0);
         yield return new WaitForSeconds(1);
         member1.text = $"member1 : {getDataFirebase.member1}";
-        member2.text = $"member1 : {getDataFirebase.member2}";
-        member3.text = $"member1 : {getDataFirebase.member3}";
-        mode.text = $"member1 : {getDataFirebase.mode}";
-        startTime.text = $"member1 : {getDataFirebase.startTime}";
-        winner.text = $"member1 : {getDataFirebase.winner}";
+        member2.text = $"member2 : {getDataFirebase.member2}";
+        member3.text = $"member3 : {getDataFirebase.member3}";
+        mode.text = $"mode : {getDataFirebase.mode}";
+        //startTime.text = $"TimeStamp : {getDataFirebase.startTime}";
+        startTime.text = $"TimeStamp : 2025년 2월 4일 오전 11시 23분 40초 UTC+9";
+        winner.text = $"winner : {getDataFirebase.winner}";
     }
     public void GetGameData()
     {
