@@ -95,7 +95,7 @@ public class ReadyButton : MonoBehaviourPunCallbacks
         }
     }
 
-    private void OnReadyButtonClicked()
+    public void OnReadyButtonClicked()
     {
         if (gameManager != null)
         {
@@ -106,8 +106,7 @@ public class ReadyButton : MonoBehaviourPunCallbacks
             photonView.RPC("RemoveButtonRPC", RpcTarget.All);
         }
 
-        // ���� UI ó�� �� ���� ����
-        RemoveButtonRPC();
+        
     }
 
     public void readyBtn()
