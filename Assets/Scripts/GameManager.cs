@@ -248,6 +248,14 @@ public class GameManager : MonoBehaviour
             yield return new WaitUntil(() => checkSubmitCard == 0);
             
             checkSubmitCard = -1;
+
+            //나와있는 카드 프리팹들 제거
+            GameObject[] deleteCards = GameObject.FindGameObjectsWithTag("Card");
+            for (int i = 0; i < deleteCards.Length; i++)
+            {
+                Destroy(deleteCards[i]);
+            }
+
             playerList[curTurn].GetComponent<PlayerController>().quads.SetActive(false);
             playerList[curTurn].GetComponent<PlayerController>().cardDeckObject.GetComponent<Animator>().SetBool("Appear", true);
             yield return new WaitForSeconds(0.5f);

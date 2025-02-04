@@ -326,7 +326,8 @@ public class ButtonManager : MonoBehaviour
 
             // 카드 인스턴스 생성 및 위치 설정
             GameObject myInstance = Instantiate(cardPrefab, targetPosition.position, targetPosition.rotation);
-            myInstance.transform.SetParent(targetPosition); 
+            myInstance.transform.SetParent(targetPosition);
+            myInstance.tag = "Card";
 
             // 활성화된 인스턴스 저장
             activeCardInstances.Add(myInstance);
