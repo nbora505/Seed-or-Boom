@@ -268,7 +268,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
             }
             controller.cardDeckObject.SetActive(true);
 
-
+            photonView.RPC("RPC_ShowCardUI", RpcTarget.All, i);
         }
     }
 
