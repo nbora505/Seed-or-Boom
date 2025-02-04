@@ -17,6 +17,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     public GameObject leaderPlayer;
     public Text noticeturnText;
     public Text LogText;
+    private int currentTurnIndex = 0;
 
     [Header("Game Settings")]
     public bool isGameReady = false;
@@ -363,6 +364,29 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
             }
         }
     }
+    [PunRPC]
+    void RPC_SubmitCardFromPlayer(int cardValue, int playerID)
+    {
+        // 제출된 카드를 리스트에 추가
+        submitCardList.Add(cardValue);
+
+        // 해당 플레이어의 카드 리스트에서 제출된 카드 제거
+        PlayerController playerController = playerList[playerID].GetComponent<PlayerController>();
+        playerController.cardList.Remove(cardValue);
+
+        Debug.Log($"Card {cardValue} submitted by Player {playerID}. Total submitted cards: {submitCardList.Count}");
+
+        // 모든 플레이어가 카드를 제출했는지 확인
+        if (submitCardList.Count == playerList.Count)
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                currentTurnIndex++;
+                // 다음 턴으로 진행
+                photonView.RPC("RPC_ProcessTurn", RpcTarget.All, currentTurnIndex);
+            }
+        }
+    }
 
     // 턴 진행 RPC – turnOrder는 현재 턴 순서에 따른 플레이어 리스트의 인덱스 (0부터 시작)
     [PunRPC]
@@ -370,6 +394,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (turnOrder >= playerList.Count)
         {
+            currentTurnIndex = 0;
             photonView.RPC("RPC_CheckTurnResult", RpcTarget.All);
             return;
         }

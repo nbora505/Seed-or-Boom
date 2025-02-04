@@ -151,11 +151,12 @@ public class MultiPlayBtnManager : MonoBehaviourPunCallbacks
         if (!multiplayGameManager.playerList[playerID].GetComponent<PhotonView>().IsMine)
             return;
 
-        PlayerController playerController = multiplayGameManager.playerList[playerID]
-            .GetComponent<PlayerController>();
+        //PlayerController playerController = multiplayGameManager.playerList[playerID]
+        //    .GetComponent<PlayerController>();
 
-        playerController.cardList.Remove(cardValue);
-        multiplayGameManager.submitCardList.Add(cardValue);
+        //playerController.cardList.Remove(cardValue);
+        //multiplayGameManager.submitCardList.Add(cardValue);
+        multiplayGameManager.photonView.RPC("RPC_SubmitCardFromPlayer", RpcTarget.All, cardValue, playerID);
 
         activeCardInstances.Remove(cardInstance);
         Destroy(cardInstance);
