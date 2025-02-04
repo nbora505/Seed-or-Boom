@@ -9,7 +9,9 @@ public class AudioManager : MonoBehaviour
     public AudioSource audioSource;
     public AudioClip btnSound;
     public AudioClip sfxSound;
-    public UnityEngine.UI.Slider soundBar;
+    public AudioClip uiBtnSound;
+    public AudioClip bombSound;
+    public AudioClip typingSound;
     // Start is called before the first frame update
     void Start()
     {
@@ -30,9 +32,16 @@ public class AudioManager : MonoBehaviour
     {
         audioSource.PlayOneShot(sfxSound);
     }
-
-    public void VolumeChange()
-    { 
-        audioSource.volume = soundBar.value;
+    public void UIBtnSound()
+    {
+        audioSource.PlayOneShot(uiBtnSound);
+    }
+    public void BombSound()
+    {
+        audioSource.PlayOneShot(bombSound);
+    }
+    public void TypingSound()
+    {
+        audioSource.PlayOneShot(typingSound);
     }
 }
