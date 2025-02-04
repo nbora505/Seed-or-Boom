@@ -14508,7 +14508,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.15294118, g: 0.8627451, b: 0.58431375, a: 1}
   m_CustomCaretColor: 1
   m_SelectionColor: {r: 0.86666673, g: 0.8235295, b: 0.6784314, a: 0.5019608}
-  m_Text: nightfallnoise@gmail.com123153153135
+  m_Text: 8pp8pp@naver.com
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 4
   m_ReadOnly: 0
@@ -20871,7 +20871,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "nightfallnoise@gmail.com123153153135\u200B"
+  m_text: "8pp8pp@naver.com\u200B"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: fa08fff1716a04db18700207b6c202e5, type: 2}
   m_sharedMaterial: {fileID: 7908499825950019370, guid: fa08fff1716a04db18700207b6c202e5, type: 2}
@@ -20898,7 +20898,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 26.95
+  m_fontSize: 36
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1

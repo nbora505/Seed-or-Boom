@@ -172,7 +172,6 @@ public class FirebaseMain : MonoBehaviour
         string email = auth.CurrentUser.Email;
         Debug.Log(authUID);
         LoginFirebase(authUID, email);
-        UpdateNickName(a);
     }
 
     /// <summary>
