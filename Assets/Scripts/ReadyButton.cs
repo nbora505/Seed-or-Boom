@@ -66,9 +66,10 @@ public class ReadyButton : MonoBehaviour
     {
         // MultiplayGameManager 인스턴스 참조 (씬에 단 한 개 있다고 가정)
         gameManager = FindObjectOfType<MultiplayGameManager>();
-
         // 이 오브젝트에 Button 컴포넌트가 있다면 가져와서 이벤트 리스너 추가
         btn = GetComponent<Button>();
+
+
         if (btn != null)
         {
             btn.onClick.AddListener(OnReadyButtonClicked);
@@ -84,6 +85,7 @@ public class ReadyButton : MonoBehaviour
         }
     }
 
+    [PunRPC]
     private void OnDestroy()
     {
         // 이벤트 리스너 제거 (메모리 누수 방지)
@@ -93,6 +95,7 @@ public class ReadyButton : MonoBehaviour
         }
     }
 
+    [PunRPC]
     private void OnReadyButtonClicked()
     {
         // 네트워크 상 준비 처리를 위해 MultiplayGameManager의 함수를 호출합니다.

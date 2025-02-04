@@ -222,6 +222,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
     public void  OnClickReadyButtonEventListener()
     {
         photonView.RPC("CheckPlayerReady", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber);
+        Destroy(this.gameObject);
     }
 
     public void OnClickStartGameEventListener()
