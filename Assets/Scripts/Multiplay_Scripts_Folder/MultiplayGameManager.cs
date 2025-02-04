@@ -253,7 +253,6 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
 
             Debug.Log($"Current Order: {currentOrder}, Next Order: {nextOrder}");
 
-
             // 다음 순서는 현재 playerIndex + 1를 의미 (leader 기준 순서 계산)
             photonView.RPC("RPC_ProcessDecideWinCount", RpcTarget.AllBuffered, nextOrder);
         }
@@ -267,8 +266,21 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         if (nextPlayerOrder >= playerList.Count)
         {
-            winCountSelectionComplete = true;
-            return;
+            bool allPlayersSubmitted = true;
+            for (int i = 0; i < playerList.Count; i++)
+            {
+                if (predictedWinCnt[i] == 0)  // 아직 제출하지 않은 플레이어가 있는 경우
+                {
+                    allPlayersSubmitted = false;
+                    break;
+                }
+            }
+
+            if (allPlayersSubmitted)
+            {
+                winCountSelectionComplete = true;
+                return;
+            }
         }
         // leaderIndex를 기준으로 실제 플레이어 리스트 내 0 기반 인덱스 계산
         int playerIndex = (leaderIndex + nextPlayerOrder) % playerList.Count;
