@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
+using Photon.Pun;
 
 
 public class GameManager : MonoBehaviour
@@ -60,6 +61,25 @@ public class GameManager : MonoBehaviour
         //준비/시작버튼 대기
         StartCoroutine(ReadyToStart());
     }
+
+    //void SpawnPlayer()
+    //{
+    //    int actorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
+    //    //플레이어의 CustomProperties에서 CharacterIndex 가져오기 (없으면 기본 1)
+    //    Debug.Log($"플레이어 {actorNumber}의 캐릭터 인덱스: {characterSelectIndex}");
+
+    //    // 프리팹 선택 및 스폰 위치 계산
+    //    GameObject selectedCharacter = characterPrefabs[characterSelectIndex];
+    //    GameObject spawnedPlayer = PhotonNetwork.Instantiate(
+    //        selectedCharacter.name,
+    //        spawnPoints[(actorNumber - 1) % spawnPoints.Length].position,
+    //        Quaternion.identity);
+
+    //    // 생성된 플레이어 오브젝트의 PhotonView ID를 획득
+    //    int viewID = spawnedPlayer.GetComponent<PhotonView>().ViewID;
+    //    // 마스터 클라이언트에 자신의 스폰 정보를 전달
+    //    photonView.RPC("ReportSpawn", RpcTarget.MasterClient, actorNumber, viewID);
+    //}
 
     //플레이어들이 모두 Ready 상태인지 체크
     IEnumerator ReadyToStart()
