@@ -40,6 +40,8 @@ public class MultiPlayBtnManager : MonoBehaviourPunCallbacks
 
     public void showWinBtn(int playerID, GameObject winBtn)
     {
+        playerid = playerID;
+
         winBtn.SetActive(true);
 
         PlayerController playerController = multiplayGameManager.playerList[playerid].GetComponent<PlayerController>();
