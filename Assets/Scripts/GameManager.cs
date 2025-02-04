@@ -4,6 +4,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using DG.Tweening;
 
 
@@ -153,6 +154,9 @@ public class GameManager : MonoBehaviour
         {
             LogText.text = $"최후의 승자는 {playerList[0].gameObject.name}";
 
+            //5초 정도 기다렸다가 로비 씬으로
+            yield return new WaitForSeconds(5f);
+            SceneManager.LoadScene("Lobby");
         }
         else
         {
