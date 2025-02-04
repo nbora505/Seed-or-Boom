@@ -9,8 +9,9 @@ using Photon.Realtime;
 
 public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
 {
+    #region Public Fields & UI
     [Header("Game Objects & UI")]
-    public List<GameObject> playerList;
+    public List<GameObject> playerList;         // 플레이어 리스트 (0 기반 인덱스)
     public List<GameObject> deadList;
     public GameObject startBtn;
     public GameObject leaderPlayer;
@@ -24,7 +25,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     public int maxRound = 3;
     public int curTurn;
     public int maxCardCnt = 5;
-    public int leaderIndex = 0; // 현재 리더 플레이어의 인덱스
+    public int leaderIndex = 0; // 플레이어 리스트 내 리더의 0 기반 인덱스
 
     [Header("Game State Variables")]
     public int selectedBomb = -1;
@@ -33,9 +34,9 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     public int selectedCard = 0;
     public List<int> submitCardList = new List<int>(); // 제출된 카드 리스트
 
-    // 동기화할 배열들
-    public int[] predictedWinCnt;  // 플레이어별 예상 승수
-    public int[] winCntOfEachTurn; // 턴별 승리 횟수 기록
+    // 동기화할 배열들 (플레이어 리스트의 0 기반 인덱스 순서를 기준으로 함)
+    public int[] predictedWinCnt;  // 각 플레이어별 예상 승수
+    public int[] winCntOfEachTurn; // 각 턴별 승리 횟수 기록
 
     [Header("Managers")]
     public CardManager cardManager;
@@ -49,25 +50,20 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     [Tooltip("Spawn Points")]
     public Transform[] spawnPoints;
 
-    // 승수 선택 단계가 모두 끝났는지 확인하기 위한 플래그 (동기화 대상)
+    // 승수 선택 단계가 모두 끝났는지 확인 (동기화 대상)
     public bool winCountSelectionComplete = false;
+    #endregion
 
+    #region MonoBehaviour & Photon Setup
     private void Awake()
     {
-        PhotonNetwork.AutomaticallySyncScene = false; // 방 동기화 문제 방지
+        // Photon 동기화 문제 방지를 위해 자동 씬 동기화 비활성화
+        PhotonNetwork.AutomaticallySyncScene = false;
     }
 
-    public void UpdatePlayerList()
-    {
-        // "Player" 태그가 붙은 모든 오브젝트를 찾아서 ActorNumber 기준으로 정렬 후 리스트로 저장합니다.
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        playerList = new List<GameObject>(players.OrderBy(p => p.GetComponent<PhotonView>().Owner.ActorNumber));
-        Debug.Log($"UpdatePlayerList: playerList Count = {playerList.Count}");
-    }
-    #region IPunObservable 구현
+    // IPunObservable 인터페이스 구현 – 마스터가 쓰고 나머지가 읽음
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        // MasterClient가 쓰고, 나머지는 읽습니다.
         if (stream.IsWriting)
         {
             stream.SendNext(winCountSelectionComplete);
@@ -86,9 +82,10 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     #region Photon Callbacks
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
+        // 여기서 actorNumber(Photon의 1부터 시작하는 번호)를 사용
         if (PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC("DisconnectedUserDeadAnimation", RpcTarget.All, otherPlayer.ActorNumber);
+            photonView.RPC("RPC_DisconnectedUserDeadAnimation", RpcTarget.All, otherPlayer.ActorNumber);
             LogText.text = $"플레이어 {otherPlayer.NickName}가 방을 떠났습니다.";
         }
     }
@@ -100,27 +97,29 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     #endregion
 
     #region RPC Methods
+    // 액터 넘버를 사용하여 플레이어 찾기 – 액터 넘버는 Photon에서 1부터 시작함.
     [PunRPC]
-    void DisconnectedUserDeadAnimation(int playerID)
+    void RPC_DisconnectedUserDeadAnimation(int actorNumber)
     {
-        GameObject player = playerList.Find(p => p.GetComponent<PhotonView>().Owner.ActorNumber == playerID);
+        GameObject player = playerList.Find(p => p.GetComponent<PhotonView>().Owner.ActorNumber == actorNumber);
         if (player != null)
             player.GetComponent<Animator>().Play("Death");
-        photonView.RPC("RemoveDisconnectUserFromList", RpcTarget.All, playerID);
+        photonView.RPC("RPC_RemoveDisconnectUserFromList", RpcTarget.All, actorNumber);
     }
 
     [PunRPC]
-    void RemoveDisconnectUserFromList(int playerID)
+    void RPC_RemoveDisconnectUserFromList(int actorNumber)
     {
-        GameObject player = playerList.Find(p => p.GetComponent<PhotonView>().Owner.ActorNumber == playerID);
+        GameObject player = playerList.Find(p => p.GetComponent<PhotonView>().Owner.ActorNumber == actorNumber);
         if (player != null)
             playerList.Remove(player);
     }
 
+    // 여기서는 액터 넘버 대신 플레이어 리스트의 0 기반 인덱스(playerIndex)를 사용함
     [PunRPC]
-    public void CheckPlayerReady(int playerID)
+    public void RPC_CheckPlayerReady(int actorNumber)
     {
-        GameObject player = playerList.Find(p => p.GetComponent<PhotonView>().Owner.ActorNumber == playerID);
+        GameObject player = playerList.Find(p => p.GetComponent<PhotonView>().Owner.ActorNumber == actorNumber);
         if (player != null)
             player.GetComponent<PlayerController>().isReady = true;
 
@@ -129,7 +128,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     }
 
     [PunRPC]
-    public void StartGame()
+    public void RPC_StartGame()
     {
         startBtn.SetActive(false);
         LogText.text = "게임 시작!";
@@ -137,16 +136,18 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
             StartCoroutine(StartRoundCoroutine());
     }
 
+    // 리더 업데이트 : 플레이어 리스트의 인덱스를 사용
     [PunRPC]
-    void UpdateLeaderPlayer(int newLeaderIndex)
+    void RPC_UpdateLeaderPlayer(int newLeaderIndex)
     {
         leaderIndex = newLeaderIndex;
         leaderPlayer = playerList[newLeaderIndex];
     }
 
     [PunRPC]
-    void ResetLists()
+    void RPC_ResetLists()
     {
+        // 플레이어 리스트 순서(인덱스)를 기준으로 배열 초기화
         predictedWinCnt = new int[playerList.Count];
         winCntOfEachTurn = new int[playerList.Count];
         winCountSelectionComplete = false;
@@ -157,90 +158,97 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
-    // 카드 분배는 승수 선택이 완료된 후 진행
+    // 승수 선택이 완료된 후 카드 분배 진행
     [PunRPC]
-    void DistributeCards()
+    void RPC_DistributeCards()
     {
         cardManager.DoCardShuffle();
         cardManager.TestUserCard(playerList.Count, true);
     }
 
+    // 플레이어 리스트 내 0 기반 인덱스(playerIndex)를 사용 – 여기서는 액터 넘버와 달리 UI나 배열 접근에 쓰임
     [PunRPC]
-    void SubmitWinCount(int playerID, int winCount)
+    void RPC_SubmitWinCount(int playerIndex, int winCount)
     {
-        if (predictedWinCnt == null || playerID < 0 || playerID >= predictedWinCnt.Length)
+        if (predictedWinCnt == null || playerIndex < 0 || playerIndex >= predictedWinCnt.Length)
         {
-            Debug.LogError($"SubmitWinCount: playerID {playerID} out of range. Array length: {predictedWinCnt?.Length}");
+            Debug.LogError($"RPC_SubmitWinCount: playerIndex {playerIndex} out of range. Array length: {predictedWinCnt?.Length}");
             return;
         }
+        predictedWinCnt[playerIndex] = winCount;
 
-        predictedWinCnt[playerID] = winCount;
-
-        if (playerID < 0 || playerID >= playerList.Count)
+        if (playerIndex < 0 || playerIndex >= playerList.Count)
         {
-            Debug.LogError($"SubmitWinCount: playerID {playerID} out of range in playerList. Count: {playerList.Count}");
+            Debug.LogError($"RPC_SubmitWinCount: playerIndex {playerIndex} out of range in playerList. Count: {playerList.Count}");
             return;
         }
+        LogText.text = $"{playerList[playerIndex].name} 승수: {winCount}";
 
-        LogText.text = $"{playerList[playerID].name} 승수: {winCount}";
-
+        // 다음 플레이어의 승수 입력 순서를 진행 (현재 순서는 playerIndex 기준이 아닌 leader 기준의 순번)
         if (PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC("ProcessDecideWinCount", RpcTarget.AllBuffered, playerID + 1);
+            // 다음 순서는 현재 playerIndex + 1를 의미 (leader 기준 순서 계산)
+            photonView.RPC("RPC_ProcessDecideWinCount", RpcTarget.AllBuffered, playerIndex - leaderIndex + 1);
         }
     }
 
-    // 승수 선택 프로세스 – 모든 플레이어가 차례대로 진행
+    // 승수 선택 프로세스 : nextPlayerOrder는 리더 기준 순서 (0부터 시작)
     [PunRPC]
-    void ProcessDecideWinCount(int playerID)
+    void RPC_ProcessDecideWinCount(int nextPlayerOrder)
     {
-        if (playerID >= playerList.Count)
+        if (nextPlayerOrder >= playerList.Count)
         {
             winCountSelectionComplete = true;
             return;
         }
-        int actualPlayerIndex = (leaderIndex + playerID) % playerList.Count;
-        GameObject currentPlayer = playerList[actualPlayerIndex];
-        noticeturnText.text += $"{actualPlayerIndex + 1}번째: {currentPlayer.name}\n";
+        // leaderIndex를 기준으로 실제 플레이어 리스트 내 0 기반 인덱스 계산
+        int playerIndex = (leaderIndex + nextPlayerOrder) % playerList.Count;
+        GameObject currentPlayer = playerList[playerIndex];
+        noticeturnText.text += $"{playerIndex + 1}번째: {currentPlayer.name}\n";
 
-        if (currentPlayer.GetComponent<PhotonView>().IsMine)
+        PhotonView pv = currentPlayer.GetComponent<PhotonView>();
+        if (pv.IsMine)
         {
-            if (currentPlayer.GetComponent<AIPlayer>().isAIPlayer)
+            // AI인지 사람인지 구분
+            AIPlayer ai = currentPlayer.GetComponent<AIPlayer>();
+            if (ai != null && ai.isAIPlayer)
             {
-                int aiWin = currentPlayer.GetComponent<AIPlayer>().CalculateOddsOfWinning(0.69f, 0.29f);
-                photonView.RPC("SubmitWinCount", RpcTarget.All, actualPlayerIndex, aiWin);
+                int aiWin = ai.CalculateOddsOfWinning(0.69f, 0.29f);
+                photonView.RPC("RPC_SubmitWinCount", RpcTarget.All, playerIndex, aiWin);
             }
             else
             {
-                StartCoroutine(WaitForPlayerWinCountSubmit(actualPlayerIndex));
+                StartCoroutine(WaitForPlayerWinCountSubmit(playerIndex));
             }
         }
     }
 
-    // 턴 진행 (카드 분배 후 시작)
+    // 턴 진행 RPC – turnOrder는 현재 턴 순서에 따른 플레이어 리스트의 인덱스 (0부터 시작)
     [PunRPC]
-    void ProcessTurn(int playerID)
+    void RPC_ProcessTurn(int turnOrder)
     {
-        if (playerID >= playerList.Count)
+        if (turnOrder >= playerList.Count)
         {
-            photonView.RPC("CheckTurnResult", RpcTarget.All);
+            photonView.RPC("RPC_CheckTurnResult", RpcTarget.All);
             return;
         }
-        if (playerList[playerID].GetComponent<PhotonView>().IsMine)
+        GameObject currentPlayer = playerList[turnOrder];
+        if (currentPlayer.GetComponent<PhotonView>().IsMine)
         {
-            if (playerList[playerID].GetComponent<AIPlayer>().isAIPlayer)
+            AIPlayer ai = currentPlayer.GetComponent<AIPlayer>();
+            if (ai != null && ai.isAIPlayer)
             {
-                StartCoroutine(playerList[playerID].GetComponent<AIPlayer>().AITurn());
+                StartCoroutine(ai.AITurn());
             }
             else
             {
-                photonView.RPC("ShowCardUI", RpcTarget.All, playerID);
+                photonView.RPC("RPC_ShowCardUI", RpcTarget.All, turnOrder);
             }
         }
     }
 
     [PunRPC]
-    void CheckTurnResult()
+    void RPC_CheckTurnResult()
     {
         if (!PhotonNetwork.IsMasterClient) return;
 
@@ -249,28 +257,28 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
             bool isWinner = cardManager.CardCompare(submitCardList, i);
             if (isWinner)
             {
-                photonView.RPC("UpdateTurnWinner", RpcTarget.All, i);
+                photonView.RPC("RPC_UpdateTurnWinner", RpcTarget.All, i);
             }
         }
         StartNextTurn();
     }
 
     [PunRPC]
-    void UpdateTurnWinner(int winnerID)
+    void RPC_UpdateTurnWinner(int playerIndex)
     {
-        winCntOfEachTurn[winnerID]++;
-        LogText.text = $"{playerList[winnerID].name} 턴 승리!";
+        winCntOfEachTurn[playerIndex]++;
+        LogText.text = $"{playerList[playerIndex].name} 턴 승리!";
     }
 
     [PunRPC]
-    void StartRoundEnd()
+    void RPC_StartRoundEnd()
     {
         if (PhotonNetwork.IsMasterClient)
             StartCoroutine(ProcessRoundEnd());
     }
 
     [PunRPC]
-    void PrepareNextRound()
+    void RPC_PrepareNextRound()
     {
         RemovePlayerList();
         noticeturnText.text = "";
@@ -278,21 +286,21 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         if (playerList.Count <= 1 || curRound > maxRound)
         {
-            photonView.RPC("EndGame", RpcTarget.All);
+            photonView.RPC("RPC_EndGame", RpcTarget.All);
         }
         else
         {
             if (PhotonNetwork.IsMasterClient)
             {
                 leaderIndex = (leaderIndex + 1) % playerList.Count;
-                photonView.RPC("UpdateLeaderPlayer", RpcTarget.All, leaderIndex);
+                photonView.RPC("RPC_UpdateLeaderPlayer", RpcTarget.All, leaderIndex);
                 StartCoroutine(StartRoundCoroutine());
             }
         }
     }
 
     [PunRPC]
-    void EndGame()
+    void RPC_EndGame()
     {
         if (playerList.Count == 1)
         {
@@ -305,32 +313,33 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
-    // UI용 RPC – 각 클라이언트에서 카드 제출 UI 활성화
+    // UI용 RPC – 카드 제출 UI 활성화 (playerIndex는 플레이어 리스트 내 인덱스)
     [PunRPC]
-    void ShowCardUI(int playerID)
+    void RPC_ShowCardUI(int playerIndex)
     {
-        if (playerList[playerID].GetComponent<PhotonView>().IsMine)
+        if (playerList[playerIndex].GetComponent<PhotonView>().IsMine)
         {
-            List<int> curCardList = playerList[playerID].GetComponent<PlayerController>().cardList;
-            buttonManager.ShowCard(curCardList, playerID);
+            List<int> curCardList = playerList[playerIndex].GetComponent<PlayerController>().cardList;
+            buttonManager.ShowCard(curCardList, playerIndex);
         }
     }
 
-    // RPC를 통해 모든 클라이언트에 시작 버튼 활성화 신호 전달 (Buffered 사용)
+    // 모든 클라이언트에 시작 버튼 활성화 (Buffered RPC)
     [PunRPC]
-    void UpdateStartButtonUI()
+    void RPC_UpdateStartButtonUI()
     {
         startBtn.SetActive(true);
     }
     #endregion
 
     #region Helper Methods & Coroutines
+    // 모든 플레이어가 준비되었는지 검사하여 시작 버튼을 활성화
     void CheckAllPlayerReady()
     {
         if (playerList.All(p => p.GetComponent<PlayerController>().isReady))
         {
             startBtn.SetActive(true);
-            photonView.RPC("UpdateStartButtonUI", RpcTarget.AllBuffered);
+            photonView.RPC("RPC_UpdateStartButtonUI", RpcTarget.AllBuffered);
         }
     }
 
@@ -338,26 +347,27 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     public IEnumerator StartRoundCoroutine()
     {
         yield return new WaitForSeconds(3f);
-        // 버퍼링된 RPC로 상태 초기화
-        photonView.RPC("ResetLists", RpcTarget.AllBuffered);
+        // 상태 초기화를 위해 Buffered RPC 호출
+        photonView.RPC("RPC_ResetLists", RpcTarget.AllBuffered);
 
-        // 승수 선택 단계 시작 (버퍼링)
-        photonView.RPC("StartDecideWinCount", RpcTarget.AllBuffered);
+        // 승수 선택 단계 시작 (Buffered)
+        photonView.RPC("RPC_StartDecideWinCount", RpcTarget.AllBuffered);
 
         yield return new WaitUntil(() => winCountSelectionComplete);
 
-        // 승수 선택 완료 후 카드 분배 및 턴 진행 (버퍼링)
-        photonView.RPC("DistributeCards", RpcTarget.AllBuffered);
+        // 승수 선택 완료 후 카드 분배 및 턴 진행
+        photonView.RPC("RPC_DistributeCards", RpcTarget.AllBuffered);
         StartCoroutine(StartTurnCoroutine());
     }
 
-    // 승수 선택 시작 RPC 호출 – MasterClient에서 순차 진행
+    // 승수 선택 시작 RPC 호출 – 마스터 클라이언트에서 시작
     [PunRPC]
-    void StartDecideWinCount()
+    void RPC_StartDecideWinCount()
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC("ProcessDecideWinCount", RpcTarget.All, 0);
+            // 순서 번호 0부터 시작하여 승수 선택 진행
+            photonView.RPC("RPC_ProcessDecideWinCount", RpcTarget.All, 0);
         }
     }
 
@@ -367,17 +377,19 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
         StartTurn();
     }
 
+    // 마스터 클라이언트에서 턴 진행을 제어
     void StartTurn()
     {
         if (!PhotonNetwork.IsMasterClient) return;
-        photonView.RPC("ProcessTurn", RpcTarget.All, 0);
+        photonView.RPC("RPC_ProcessTurn", RpcTarget.All, 0);
     }
 
+    // 턴이 끝나면 다음 턴 또는 라운드 종료를 진행
     void StartNextTurn()
     {
         if (submitCardList.Count >= playerList.Count * 4)
         {
-            photonView.RPC("StartRoundEnd", RpcTarget.All);
+            photonView.RPC("RPC_StartRoundEnd", RpcTarget.All);
         }
         else
         {
@@ -386,21 +398,25 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
-    IEnumerator WaitForPlayerWinCountSubmit(int playerID)
+    // 사람 플레이어의 승수 입력 대기 코루틴 (playerIndex: 0 기반 인덱스)
+    IEnumerator WaitForPlayerWinCountSubmit(int playerIndex)
     {
-        LogText.text = $"{playerList[playerID].name} 승수 선택 중...";
-        buttonManager.showWinBtn(playerID, playerList[playerID].GetComponent<PlayerController>().winBtn);
+        LogText.text = $"{playerList[playerIndex].name} 승수 선택 중...";
+        // UI 버튼 표시 (playerIndex 기준)
+        buttonManager.showWinBtn(playerIndex, playerList[playerIndex].GetComponent<PlayerController>().winBtn);
         buttonManager.ShowPlayerPanel(true);
 
-        yield return new WaitUntil(() => selectedWin == 0);
+        // 플레이어가 승수를 선택할 때까지 대기 (UI에서 predictedWinCnt[playerIndex]가 설정되고, selectedWin가 변경되어야 함)
+        yield return new WaitUntil(() => selectedWin != -1 && predictedWinCnt[playerIndex] != 0);
 
-        photonView.RPC("SubmitWinCount", RpcTarget.All, playerID, predictedWinCnt[playerID]);
+        photonView.RPC("RPC_SubmitWinCount", RpcTarget.All, playerIndex, predictedWinCnt[playerIndex]);
 
         buttonManager.ShowPlayerPanel(false);
-        buttonManager.hideWinBtn(playerList[playerID].GetComponent<PlayerController>().winBtn);
+        buttonManager.hideWinBtn(playerList[playerIndex].GetComponent<PlayerController>().winBtn);
         selectedWin = -1;
     }
 
+    // 각 플레이어의 라운드 결과를 확인하여 폭탄 처리 등의 로직 진행
     IEnumerator ProcessRoundEnd()
     {
         for (int i = 0; i < playerList.Count; i++)
@@ -408,26 +424,30 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
             yield return StartCoroutine(CheckPlayerResult(i));
             if (CheckGameEnd())
             {
-                photonView.RPC("EndGame", RpcTarget.All);
+                photonView.RPC("RPC_EndGame", RpcTarget.All);
                 yield break;
             }
         }
         yield return new WaitForSeconds(2f);
-        photonView.RPC("PrepareNextRound", RpcTarget.All);
+        photonView.RPC("RPC_PrepareNextRound", RpcTarget.All);
     }
 
-    IEnumerator CheckPlayerResult(int playerID)
+    // 각 플레이어별 승수 결과 검사 (playerIndex 기준)
+    IEnumerator CheckPlayerResult(int playerIndex)
     {
-        if (predictedWinCnt[playerID] != winCntOfEachTurn[playerID])
+        if (predictedWinCnt[playerIndex] != winCntOfEachTurn[playerIndex])
         {
-            if (playerList[playerID].GetComponent<AIPlayer>().isAIPlayer)
-                yield return StartCoroutine(playerList[playerID].GetComponent<AIPlayer>().AIDrawBomb());
+            PlayerController controller = playerList[playerIndex].GetComponent<PlayerController>();
+            AIPlayer ai = playerList[playerIndex].GetComponent<AIPlayer>();
+            if (ai != null && ai.isAIPlayer)
+                yield return StartCoroutine(ai.AIDrawBomb());
             else
-                yield return StartCoroutine(scoreManager.CheckBomb(playerList[playerID].GetComponent<PlayerController>()));
+                yield return StartCoroutine(scoreManager.CheckBomb(controller));
         }
         yield return new WaitForSeconds(1f);
     }
 
+    // deadList에 포함된 플레이어 제거
     void RemovePlayerList()
     {
         foreach (GameObject dead in deadList)
@@ -437,6 +457,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
+    // 게임 종료 조건 검사 (예: 최대 플레이어 수 - 1 이상의 플레이어가 제거되었을 때)
     bool CheckGameEnd()
     {
         return deadList.Count >= maxPlayerCnt - 1;
