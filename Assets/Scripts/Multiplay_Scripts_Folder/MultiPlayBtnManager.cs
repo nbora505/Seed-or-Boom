@@ -46,9 +46,12 @@ public class MultiPlayBtnManager : MonoBehaviourPunCallbacks
 
         playerController.increaseBtn.GetComponent<Button>().onClick.RemoveAllListeners();
         playerController.decreaseBtn.GetComponent<Button>().onClick.RemoveAllListeners();
+        playerController.submitBtn.GetComponent<Button>().onClick.RemoveAllListeners();
 
         playerController.increaseBtn.GetComponent<Button>().onClick.AddListener(OnIncreaseScoreButtonClicked);
         playerController.decreaseBtn.GetComponent<Button>().onClick.AddListener(OnDecreaseScoreButtonClicked);
+        playerController.submitBtn.GetComponent<Button>().onClick.AddListener(OnSubmitScoreButtonClicked);
+
 
         playerid = playerID;
         Debug.LogWarning("In***********************");
@@ -77,7 +80,7 @@ public class MultiPlayBtnManager : MonoBehaviourPunCallbacks
 
         buttonTransform = multiplayGameManager.playerList[playerid].GetComponent<PlayerController>().increaseBtn.gameObject.transform;
 
-        buttonTransform.DOPunchScale(new Vector3(0.2f, 0.2f, 0), 2.5f, 5, 2);
+        //buttonTransform.DOPunchScale(new Vector3(0.2f, 0.2f, 0), 2.5f, 5, 2);
     }
 
     public void OnDecreaseScoreButtonClicked()
@@ -96,21 +99,27 @@ public class MultiPlayBtnManager : MonoBehaviourPunCallbacks
 
         buttonTransform = multiplayGameManager.playerList[playerid].GetComponent<PlayerController>().decreaseBtn.gameObject.transform;
 
-        buttonTransform.DOPunchScale(new Vector3(0.2f, 0.2f, 0), 2.5f, 5, 2);
+        //buttonTransform.DOPunchScale(new Vector3(0.2f, 0.2f, 0), 2.5f, 5, 2);
         // 비슷한 방식으로 구현
+    }
+
+    [PunRPC]
+    public void GetWinScore()
+    {
+        multiplayGameManager.selectedWin = 0;
+        multiplayGameManager.predictedWinCnt[playerid] = expectedWin;
+        logText.DOText("승리횟수 :" + expectedWin.ToString() + "번 제출완료", 1.2f);
+        expectedWin = 0;
     }
 
     public void OnSubmitScoreButtonClicked()
     {
-        if (!multiplayGameManager.playerList[multiplayGameManager.curTurn].GetComponent<PhotonView>().IsMine)
+        if (!multiplayGameManager.playerList[playerid].GetComponent<PhotonView>().IsMine)
             return;
 
         if (expectedWin >= 0 && expectedWin <= 4)
         {
-            multiplayGameManager.selectedWin = 0;
-            multiplayGameManager.predictedWinCnt[multiplayGameManager.curTurn] = expectedWin;
-            logText.DOText("승리횟수 :" + expectedWin.ToString() + "번 제출완료", 1.2f);
-            expectedWin = 0;
+            multiplayGameManager.GetComponent<PhotonView>().RPC("SubmitWinCount", RpcTarget.All, playerid, expectedWin);
         }
         else
         {

@@ -56,8 +56,16 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         PhotonNetwork.AutomaticallySyncScene = false; // 방 터짐 방지
         
     }
-    
+
     #endregion
+    //[PunRPC]
+    //public void GetWinScore(int playerid, int expectedWin, Text logText)
+    //{
+    //    selectedWin = 0;
+    //    predictedWinCnt[playerid] = expectedWin;
+    //    logText.DOText("승리횟수 :" + expectedWin.ToString() + "번 제출완료", 1.2f);
+    //    expectedWin = 0;
+    //}
 
     [PunRPC]
     void DisconnectedUserDeadAnimation(int playerID)

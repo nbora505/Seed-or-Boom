@@ -31,6 +31,7 @@ public class PlayerController : MonoBehaviour
     public GameObject winningText;
     public GameObject increaseBtn;
     public GameObject decreaseBtn;
+    public GameObject submitBtn;
 
     public List<Transform> cardPosList = new List<Transform>();
 

@@ -64,6 +64,8 @@ MonoBehaviour:
   - readyBtn
   - RemoveReadyButton
   - RemoveButtonRPC
+  - OnSubmitScoreButtonClicked
+  - SendWinScore
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

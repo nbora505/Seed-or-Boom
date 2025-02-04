@@ -1546,7 +1546,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &872736015875684660
 Transform:
   m_ObjectHideFlags: 0
@@ -3465,6 +3465,7 @@ MonoBehaviour:
   winningText: {fileID: 7010268506959844705}
   increaseBtn: {fileID: 2965962456256825934}
   decreaseBtn: {fileID: 5609023943375067192}
+  submitBtn: {fileID: 1386989023711693276}
   cardPosList:
   - {fileID: 9092529109604287002}
   - {fileID: 8128852346787773493}
@@ -3503,6 +3504,7 @@ MonoBehaviour:
   winningText: {fileID: 0}
   increaseBtn: {fileID: 0}
   decreaseBtn: {fileID: 0}
+  submitBtn: {fileID: 0}
   cardPosList: []
   cardDeckObject: {fileID: 0}
   quads: {fileID: 0}
