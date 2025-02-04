@@ -331,14 +331,14 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks
         buttonManager.showWinBtn(playerID, playerList[playerID].GetComponent<PlayerController>().winBtn);
         buttonManager.ShowPlayerPanel(true);
 
-        yield return new WaitUntil(() => buttonManager.expectedWin == 0);
+        yield return new WaitUntil(() => selectedWin == 0);
 
         photonView.RPC("SubmitWinCount", RpcTarget.All, playerID, predictedWinCnt[playerID]);
 
         buttonManager.ShowPlayerPanel(false);
         buttonManager.hideWinBtn(playerList[playerID].GetComponent<PlayerController>().winBtn);
 
-        buttonManager.expectedWin = -1;
+        selectedWin = -1;
     }
 
     [PunRPC]

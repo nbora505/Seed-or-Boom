@@ -112,7 +112,7 @@ public class MultiPlayBtnManager : MonoBehaviourPunCallbacks
         {
             multiplayGameManager.gameObject.GetPhotonView().RPC("SubmitWinCount", RpcTarget.All, playerid, expectedWin);
             logText.DOText("½Â¸®È½¼ö :" + expectedWin.ToString() + "¹ø Á¦Ãâ¿Ï·á", 1.2f);
-            expectedWin = 0;
+            multiplayGameManager.selectedWin = 0;
         }
         else
         {
