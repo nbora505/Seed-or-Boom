@@ -126,6 +126,7 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
         // 다른 클라이언트에서 플레이어 리스트에 나 자신이 포함되지 않은 것을 확인함.
         // 일단 무식하게 생성될 때까지 약 3초간의 지연을 주는 것으로 트라이.
         yield return new WaitForSeconds(3f); // 약간의 지연
+        Debug.LogError("3sec End******************");
         UpdatePlayerList();
     }
 
@@ -233,8 +234,37 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     void RPC_DistributeCards()
     {
-        cardManager.DoCardShuffle();
-        cardManager.TestUserCard(playerList.Count, true);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            cardManager.DoCardShuffle();
+            // 카드 분배 결과를 저장할 리스트
+            List<List<int>> allPlayerCards = new List<List<int>>();
+
+            // 각 플레이어별로 카드 4장씩 분배
+            for (int i = 0; i < playerList.Count; i++)
+            {
+                List<int> playerCards = new List<int>();
+                for (int j = 0; j < 4; j++)
+                {
+                    playerCards.Add(cardManager.GiveACardToUsers());
+                }
+                allPlayerCards.Add(playerCards);
+            }
+
+            // 분배된 카드 정보를 모든 클라이언트에게 전송
+            photonView.RPC("RPC_SyncDistributedCards", RpcTarget.All, allPlayerCards.ToArray());
+        }
+    }
+
+    [PunRPC]
+    void RPC_SyncDistributedCards(List<int>[] allCards)
+    {
+        for (int i = 0; i < playerList.Count; i++)
+        {
+            PlayerController controller = playerList[i].GetComponent<PlayerController>();
+            controller.cardList = new List<int>(allCards[i]);
+            controller.cardDeckObject.SetActive(true);
+        }
     }
 
     // 플레이어 리스트 내 0 기반 인덱스(playerIndex)를 사용 – 여기서는 액터 넘버와 달리 UI나 배열 접근에 쓰임
@@ -456,13 +486,13 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
         // 상태 초기화를 위해 Buffered RPC 호출
         photonView.RPC("RPC_ResetLists", RpcTarget.AllBuffered);
 
-        // 승수 선택 단계 시작 (Buffered)
-        photonView.RPC("RPC_StartDecideWinCount", RpcTarget.AllBuffered);
-
+        // 승수 선택 단계 시작 (Buffered) <- 순서 바꿔야 함. 카드를 제출하고 그 다음 승수 선택으로
+        photonView.RPC("RPC_DistributeCards", RpcTarget.AllBuffered);
+        
         yield return new WaitUntil(() => winCountSelectionComplete);
 
         // 승수 선택 완료 후 카드 분배 및 턴 진행
-        photonView.RPC("RPC_DistributeCards", RpcTarget.AllBuffered);
+        photonView.RPC("RPC_StartDecideWinCount", RpcTarget.AllBuffered);
         StartCoroutine(StartTurnCoroutine());
     }
 
