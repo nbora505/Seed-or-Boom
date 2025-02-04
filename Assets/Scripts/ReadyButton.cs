@@ -51,8 +51,8 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
-
-public class ReadyButton : MonoBehaviour
+using Photon.Realtime;
+public class ReadyButton : MonoBehaviourPunCallbacks
 {
     public PlayerController playerController; // 이 버튼이 연결된 플레이어
     public GameObject readyText;
@@ -96,25 +96,18 @@ public class ReadyButton : MonoBehaviour
         }
     }
 
-    [PunRPC]
     private void OnReadyButtonClicked()
     {
-        // 네트워크 상 준비 처리를 위해 MultiplayGameManager의 함수를 호출합니다.
         if (gameManager != null)
         {
-            Debug.Log("Clicked");
-
-            // 모든 클라이언트에게 플레이어 준비 상태 전파 (RPC 호출)
+            // 모든 클라이언트에 플레이어 준비 상태를 알림
             gameManager.OnClickReadyButtonEventListener();
 
-            //// 만약 현재 플레이어가 마스터 클라이언트라면 게임 시작 함수도 호출
-            //if (PhotonNetwork.IsMasterClient)
-            //{
-            //    gameManager.OnClickStartGameEventListener();
-            //}
+            // 버튼 제거를 모든 클라이언트에서 실행하도록 RPC 호출
+            photonView.RPC("RemoveButtonRPC", RpcTarget.All);
         }
 
-        // 기존 ReadyButton 기능 수행 (UI 처리 등)
+        // 기존 UI 처리 및 로직 실행
         readyBtn();
     }
 
@@ -150,6 +143,12 @@ public class ReadyButton : MonoBehaviour
     {
         readyButtonEffect.SetActive(true);
         yield return new WaitForSeconds(1f);
+        gameObject.SetActive(false);
+    }
+
+    [PunRPC]
+    public void RemoveButtonRPC()
+    {
         gameObject.SetActive(false);
     }
 }
