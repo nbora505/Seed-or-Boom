@@ -79,6 +79,9 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         // "Player" 태그가 붙은 모든 오브젝트를 찾아 ActorNumber 기준(오름차순)으로 정렬
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+
+        Debug.LogError($"Found players count: {players.Length}"); // 디버그 로그 추가
+
         playerList = new List<GameObject>(
             players.OrderBy(p => p.GetComponent<PhotonView>().Owner.ActorNumber)
         );
@@ -113,9 +116,17 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
         if (scene.name == "Map1")
         {
             // 게임씬 로드 후 각 클라이언트에서 플레이어 리스트를 다시 업데이트
-            UpdatePlayerList();
+            Debug.Log("Scene loaded: Map1");
+            StartCoroutine(DelayedPlayerListUpdate());
         }
     }
+
+    IEnumerator DelayedPlayerListUpdate()
+    {
+        yield return new WaitForSeconds(0.5f); // 약간의 지연
+        UpdatePlayerList();
+    }
+
     #endregion
     // IPunObservable 인터페이스 구현 – 마스터가 쓰고 나머지가 읽음
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -262,6 +273,13 @@ public class MultiplayGameManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     void RPC_ProcessDecideWinCount(int nextPlayerOrder)
     {
+        if (playerList == null || playerList.Count == 0)
+        {
+            Debug.LogError("PlayerList is empty or null!");
+            UpdatePlayerList(); // 리스트 재업데이트 시도
+            return;
+        }
+
         Debug.Log($"[ProcessDecideWinCount] nextPlayerOrder: {nextPlayerOrder}, playerList.Count: {playerList.Count}, leaderIndex: {leaderIndex}");
 
         if (nextPlayerOrder >= playerList.Count)
