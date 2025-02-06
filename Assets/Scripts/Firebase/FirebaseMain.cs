@@ -28,6 +28,8 @@ public class FirebaseMain : MonoBehaviour
     private FirebaseApp app;
     public FirebaseAuth auth;
 
+    public string nick = default;
+
 
     int invokeNum = 0; //It use count 3minute. 
 
@@ -172,7 +174,6 @@ public class FirebaseMain : MonoBehaviour
         string email = auth.CurrentUser.Email;
         Debug.Log(authUID);
         LoginFirebase(authUID, email);
-        UpdateNickName(a);
     }
 
     /// <summary>
@@ -205,22 +206,9 @@ public class FirebaseMain : MonoBehaviour
                     {
                         {"uid", uid},
                         {"email", email},
-                        {"nickName", nickField.text},
+                        {"nickName", nick},
                         {"win", 0},
-                        {"lose", 0},
-                        {"char", "GoblinMale"}
-                    };
-                }
-                else
-                {
-                    user = new Dictionary<string, object>
-                    {
-                        {"uid", uid},
-                        {"email", email},
-                        {"nickName", "default"},
-                        {"win", 0},
-                        {"lose", 0},
-                        {"char", "GoblinMale"}
+                        {"lose", 0}
                     };
                 }
                 docRef.SetAsync(user).ContinueWithOnMainThread(task =>
@@ -400,12 +388,9 @@ public class FirebaseMain : MonoBehaviour
     {
         UpdateNickName(nick);
     }
-
-    string a;
     public void UpdateNickInLogin()
     {
-        a = nickField.text;
-        //UpdateNickName(nickField.text);
+        nick = nickField.text;
         LogIn();
     }
 
@@ -419,7 +404,7 @@ public class FirebaseMain : MonoBehaviour
         DocumentReference docRef = db.Collection("users").Document(auth.CurrentUser.UserId);
         Dictionary<string, object> updateDic = new Dictionary<string, object>
         {
-            {"nick", nick }
+            {"nickName", nick }
         };
         //upadte new data to user's doc.
         docRef.UpdateAsync(updateDic).ContinueWithOnMainThread(task =>
@@ -438,17 +423,15 @@ public class FirebaseMain : MonoBehaviour
     /// <summary>
     /// Update user game date to FireStore
     /// </summary>
-    /// <param name="nick"> user's Nickname.
+    /// <param name="nicks"> user's Nickname.
     /// </param>
     /// <param name="win"> user's Win Count.
     /// </param>
     /// <param name="lose"> user's Lose Count.
     /// </param>
-    /// <param name="charac"> user's Last play character.
-    /// </param>
-    public void UpdateUserData(int win, int lose, string charac)
+    public void UpdateUserData(string nicks, int win, int lose)
     {
-        UpdateFirebase(win, lose, charac);
+        UpdateFirebase(nicks, win, lose);
     }
 
     /// <summary>
@@ -456,16 +439,15 @@ public class FirebaseMain : MonoBehaviour
     /// </summary>
     /// <param name="win"></param>
     /// <param name="lose"></param>
-    /// <param name="charac"></param>
-    private void UpdateFirebase(int win, int lose, string charac)
+    private void UpdateFirebase(string nicks,int win, int lose)
     {
         FirebaseFirestore db = FirebaseFirestore.DefaultInstance;
         DocumentReference docRef = db.Collection("users").Document(auth.CurrentUser.UserId);
         Dictionary<string, object> updateDic = new Dictionary<string, object>
         {
+            {"nickName", nicks },
             {"win", win},
-            {"lose", lose},
-            {"char", charac}
+            {"lose", lose}
         };
         //upadte new data to user's doc.
         docRef.UpdateAsync(updateDic).ContinueWithOnMainThread(task =>
