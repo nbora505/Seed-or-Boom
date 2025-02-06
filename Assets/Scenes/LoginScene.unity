@@ -1539,7 +1539,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -2710,7 +2710,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: EraseChar
         m_Mode: 1
@@ -3138,7 +3138,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -4158,7 +4158,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -4916,7 +4916,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: ClickCloseOrEnter
         m_Mode: 1
@@ -5582,7 +5582,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -5842,7 +5842,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -9696,7 +9696,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -10059,7 +10059,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -10323,7 +10323,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -13460,7 +13460,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -14681,7 +14681,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -14848,7 +14848,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -16940,7 +16940,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -17991,7 +17991,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -19824,7 +19824,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -21306,7 +21306,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 742466116}
-  - component: {fileID: 742466115}
+  - component: {fileID: 742466117}
   m_Layer: 0
   m_Name: KeyBoardControllerLogIN
   m_TagString: Untagged
@@ -21314,18 +21314,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &742466115
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 742466114}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3e982cea4a68b944b4c9adc3951d751, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &742466116
 Transform:
   m_ObjectHideFlags: 0
@@ -21341,6 +21329,55 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &742466117
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 742466114}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3e982cea4a68b944b4c9adc3951d751, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyBoardPanel: {fileID: 1773862365}
+  nickPanel: {fileID: 247621187}
+  capsLockBtn: {fileID: 1272929933}
+  emailField: {fileID: 500833676}
+  pwField: {fileID: 33783396}
+  nickField: {fileID: 33126264}
+  emailOn: 1
+  pwOn: 0
+  capsLockOn: 1
+  keyBtnTxts:
+  - {fileID: 765553004}
+  - {fileID: 42294323}
+  - {fileID: 1468008904}
+  - {fileID: 1347579144}
+  - {fileID: 280347936}
+  - {fileID: 1565255737}
+  - {fileID: 1169335003}
+  - {fileID: 1090115749}
+  - {fileID: 564764743}
+  - {fileID: 1107615683}
+  - {fileID: 754702469}
+  - {fileID: 905938826}
+  - {fileID: 1613984219}
+  - {fileID: 1971431941}
+  - {fileID: 1756958431}
+  - {fileID: 850144081}
+  - {fileID: 1995193667}
+  - {fileID: 1924936864}
+  - {fileID: 1254155846}
+  - {fileID: 2062348654}
+  - {fileID: 1217335495}
+  - {fileID: 1286553379}
+  - {fileID: 1546978329}
+  - {fileID: 1975881899}
+  - {fileID: 469267025}
+  - {fileID: 276876882}
+  firebaseMain: {fileID: 1628530249}
 --- !u!1 &744629588
 GameObject:
   m_ObjectHideFlags: 0
@@ -23842,7 +23879,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -29265,7 +29302,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -30258,7 +30295,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -31420,7 +31457,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -35019,7 +35056,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -35429,7 +35466,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -35905,7 +35942,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -36600,7 +36637,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -38547,7 +38584,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: ClickCapsLockBtn
         m_Mode: 1
@@ -39188,7 +39225,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -40674,7 +40711,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -42615,7 +42652,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -43367,7 +43404,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -43649,7 +43686,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -44798,7 +44835,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: ClickCloseOrEnter
         m_Mode: 1
@@ -46291,7 +46328,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -46632,7 +46669,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -47701,7 +47738,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: CloseNick
         m_Mode: 1
@@ -47713,7 +47750,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: EnterNick
         m_Mode: 1
@@ -48430,7 +48467,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -49904,7 +49941,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -50570,7 +50607,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -53702,7 +53739,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -55889,7 +55926,7 @@ MonoBehaviour:
   emailInput: {fileID: 500833676}
   passwordInput: {fileID: 33783396}
   p1: {fileID: 1084430202}
-  keyBoardScript: {fileID: 742466115}
+  keyBoardScript: {fileID: 742466117}
   keyboadrdLogin: {fileID: 1773862365}
 --- !u!4 &1772134974
 Transform:
@@ -56267,7 +56304,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -57733,7 +57770,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -58310,7 +58347,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: CloseNick
         m_Mode: 1
@@ -59041,7 +59078,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -61501,7 +61538,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: CloseNick
         m_Mode: 1
@@ -62340,7 +62377,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -64083,7 +64120,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5
@@ -65348,7 +65385,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 742466115}
+      - m_Target: {fileID: 742466117}
         m_TargetAssemblyTypeName: KeyBoardControllerLogIN, Assembly-CSharp
         m_MethodName: WriteChar
         m_Mode: 5

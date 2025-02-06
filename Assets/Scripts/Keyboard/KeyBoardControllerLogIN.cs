@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class KeyBoardControllerLogIN: MonoBehaviour
+public class KeyBoardControllerLogIN : MonoBehaviour
 {
     public GameObject keyBoardPanel;
     public GameObject nickPanel;
