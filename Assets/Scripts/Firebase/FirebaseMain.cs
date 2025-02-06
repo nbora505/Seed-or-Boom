@@ -185,6 +185,7 @@ public class FirebaseMain : MonoBehaviour
     /// </param>
     private void LoginFirebase(string uid, string email)
     {
+        SceneManager.LoadScene(0);
         FirebaseFirestore db = FirebaseFirestore.DefaultInstance;
         DocumentReference docRef = db.Collection("users").Document(uid);
         //docRef is your Doccument.
@@ -194,8 +195,6 @@ public class FirebaseMain : MonoBehaviour
             if (task.Result.Exists) //SignIn to FireStore
             {
                 Debug.Log("Login database success");
-
-                SceneManager.LoadScene(0);
             }
             else //IF new Account. You SignUp to FireStore
             {
@@ -214,7 +213,6 @@ public class FirebaseMain : MonoBehaviour
                 docRef.SetAsync(user).ContinueWithOnMainThread(task =>
                 {
                     Debug.Log("Make user data to database");
-                    SceneManager.LoadScene(0);
                 });
             }
         });
